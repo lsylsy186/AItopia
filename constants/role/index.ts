@@ -4,6 +4,8 @@ import { travelor } from './travelor';
 import { learnfaster } from './learnfaster';
 import { petBehaviorist } from './petBehaviorist';
 import { imageRecognizer } from './imageRecognizer';
+import { xiaohongshu } from './xiaohongshu';
+import { gov } from './gov';
 export {
   formType,
   language
@@ -15,6 +17,8 @@ export const defaultRoleList: IRole[] = [
   translator,
   travelor,
   imageRecognizer,
+  xiaohongshu,
+  gov,
   petBehaviorist,
   learnfaster,
 ];

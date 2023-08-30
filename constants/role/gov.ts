@@ -5,7 +5,7 @@ export const gov: IRole = {
   img: '/images/gov.png',
   imgAlt: 'Gov',
   title: '机关公文',
-  description: '量身打造机关公文写作',
+  description: '量身定制机关公文写作',
   example: '我是一位在{}工作多年的公文笔杆子',
   prompt: `
     # Role: 公文笔杆子

@@ -42,7 +42,7 @@ export const xiaohongshu: IRole = {
     key: 'role',
     type: formType.input,
   }, {
-    label: '人设',
+    label: '小红书号的类型',
     key: 'feature',
     type: formType.input,
   }, {

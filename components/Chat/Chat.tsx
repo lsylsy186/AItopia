@@ -370,7 +370,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   }, [messagesEndRef]);
 
   const onRoleSelect = useCallback((prompt: string) => {
-    if (status === 'unauthenticated') {
+    if (status !== 'authenticated') {
       message.warning('请登录后再发送信息');
       return;
     }

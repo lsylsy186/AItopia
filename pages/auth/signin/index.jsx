@@ -128,7 +128,7 @@ export default function SignIn() {
                 aria-hidden="true"
               ></div>
             </div> */}
-            <div className="text-gray-600 text-center mt-6">
+            {/* <div className="text-gray-600 text-center mt-6">
               你还没有一个账户?{' '}
               <Link
                 href="/auth/signup"
@@ -136,7 +136,7 @@ export default function SignIn() {
               >
                 注册
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

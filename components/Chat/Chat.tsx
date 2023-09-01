@@ -1,4 +1,6 @@
 import { IconClearAll, IconSettings } from '@tabler/icons-react';
+import message from 'antd/lib/message';
+import { useSession } from "next-auth/react";
 import {
   MutableRefObject,
   memo,
@@ -75,6 +77,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     handleUpdateConversation,
     dispatch: homeDispatch,
   } = useContext(HomeContext);
+  const { status } = useSession();
 
   const [currentMessage, setCurrentMessage] = useState<Message>();
   const [autoScrollEnabled, setAutoScrollEnabled] = useState<boolean>(true);
@@ -367,6 +370,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   }, [messagesEndRef]);
 
   const onRoleSelect = useCallback((prompt: string) => {
+    if (status === 'unauthenticated') {
+      message.warning('请登录后再发送信息');
+      return;
+    }
     handleSend({ role: 'user', content: prompt, hide: true }, 0, null);
   }, [handleSend]);
 

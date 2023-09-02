@@ -370,12 +370,13 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   }, [messagesEndRef]);
 
   const onRoleSelect = useCallback((prompt: string) => {
+    console.log('status', status);
     if (status !== 'authenticated') {
       message.warning('请登录后再发送信息');
       return;
     }
     handleSend({ role: 'user', content: prompt, hide: true }, 0, null);
-  }, [handleSend]);
+  }, [status, handleSend]);
 
   return (
     <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">

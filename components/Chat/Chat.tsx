@@ -540,6 +540,12 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                 handleSend(currentMessage, 2, null);
               }
             }}
+            onRepeat={() => {
+              if (currentMessage) {
+                const newMessage = { ...currentMessage, content: '重新生成回应' };
+                handleSend(newMessage, 0, null);
+              }
+            }}
             showScrollDownButton={showScrollDownButton}
           />
         </>

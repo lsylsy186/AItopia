@@ -4,7 +4,7 @@ import { travelor } from './travelor';
 import { learnfaster } from './learnfaster';
 import { petBehaviorist } from './petBehaviorist';
 import { imageRecognizer } from './imageRecognizer';
-import { xiaohongshu } from './xiaohongshu';
+import { xiaohongshu1, xiaohongshu2 } from './xiaohongshu';
 import { gov } from './gov';
 export {
   formType,
@@ -17,11 +17,15 @@ export const defaultRoleList: IRole[] = [
   translator,
   travelor,
   imageRecognizer,
-  xiaohongshu,
+  xiaohongshu1,
+  xiaohongshu2,
   gov,
   petBehaviorist,
   learnfaster,
-];
+].map((elem, index) => {
+  elem.index = index;
+  return elem;
+});
 
 
 // TODO: Create your own course with just one click, With this PROMPT you can create your complete course with all the details in just one click

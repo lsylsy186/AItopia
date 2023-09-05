@@ -3,7 +3,7 @@ import { language, formType, IRole } from './type';
 export const translator: IRole = {
   index: 0,
   img: '/images/translator.png',
-  imgAlt: 'Translator',
+  imgAlt: 'translator',
   title: '中英翻译',
   description: '你的专属中英翻译秘书',
   example: `接下来的所有指令都是将{}，翻译成{}`,

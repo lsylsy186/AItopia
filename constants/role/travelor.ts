@@ -3,7 +3,7 @@ import { formType, IRole } from './type';
 export const travelor: IRole = {
   index: 1,
   img: '/images/travel.png',
-  imgAlt: 'Travel',
+  imgAlt: 'travelor',
   title: '旅游顾问',
   description: '为你量身规划旅游线路',
   example: '请协助我制定一份非常详细的{}旅行行程，行程为{}天，从{}开始。',

@@ -23,12 +23,20 @@ export const metaConfig: IMeta = {
   [ENVS.normal]: {
     title: 'Chatbot UI',
     description: 'Build your own AI assistant.',
-    mask: null,
+    mask: [
+      'translator',
+      'travelor',
+      'imageRecognizer',
+      'xiaohongshu',
+      'gov',
+      'petBehaviorist',
+      'learnfaster'
+    ],
   },
   [ENVS.hebao]: {
     title: '禾宝传媒',
     description: '用于解压和锻炼你的心理素质，慎用',
-    mask: ['xiaohongshu2', 'videoScript'],
+    mask: ['hebaoxiaohongshu', 'videoScript'],
   }
 };
 

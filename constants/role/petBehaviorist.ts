@@ -3,7 +3,7 @@ import { formType, IRole } from './type';
 export const petBehaviorist: IRole = {
   index: 2,
   img: '/images/pet.png',
-  imgAlt: 'Pet',
+  imgAlt: 'petBehaviorist',
   title: '宠物达人',
   description: '解决养宠物时遇到问题的烦恼',
   example: '我有一只{}(eg: 具有攻击性行为的德国牧羊犬)，需要解决它{}(eg: 最近充满攻击性)的问题。',

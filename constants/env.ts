@@ -39,7 +39,7 @@ export const metaConfig: IMeta = {
     env: ENVS.hebao,
     title: '禾宝传媒',
     description: '用于解压和锻炼你的心理素质，慎用',
-    mask: ['hebaoxiaohongshu', 'videoScript'],
+    mask: ['hebaoxiaohongshu', 'hebaoVideoScript'],
   }
 };
 

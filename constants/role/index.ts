@@ -4,8 +4,8 @@ import { travelor } from './travelor';
 import { learnfaster } from './learnfaster';
 import { petBehaviorist } from './petBehaviorist';
 import { imageRecognizer } from './imageRecognizer';
-import { xiaohongshu, hebaoxiaohongshu } from './xiaohongshu';
-import { videoScript } from './videoScript';
+import { xiaohongshu } from './xiaohongshu';
+import { hebaoxiaohongshu, hebaoVideoScript } from './hebao';
 import { gov } from './gov';
 export {
   formType,
@@ -20,7 +20,7 @@ export const defaultRoleList: IRole[] = [
   imageRecognizer,
   xiaohongshu,
   hebaoxiaohongshu,
-  videoScript,
+  hebaoVideoScript,
   gov,
   petBehaviorist,
   learnfaster,

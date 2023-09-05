@@ -1,10 +1,10 @@
-import { language, formType, IRole } from './type';
+import { formType, IRole } from '../type';
 
-export const videoScript: IRole = {
+export const hebaoVideoScript: IRole = {
   index: 6,
-  img: '/images/videoScript.jpg',
-  imgAlt: 'videoScript',
-  title: '视频脚本',
+  img: '/images/hebaoVideoScript.jpg',
+  imgAlt: 'hebaoVideoScript',
+  title: '禾宝视频脚本小助手',
   description: '生成家具建材行业视频脚本',
   example: `需要{}类型的视频脚本，讲解的主体是{}，讲解主体的参数是{}，讲解主体的特点是{}，希望视频的长度有{}分钟`,
   prompt: `

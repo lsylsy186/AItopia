@@ -50,5 +50,4 @@ export const fetch = (): IRole => {
   }
 };
 
-
 export const imageRecognizer = fetch();

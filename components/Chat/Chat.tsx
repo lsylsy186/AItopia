@@ -23,7 +23,7 @@ import dynamic from 'next/dynamic'
 import { ChatBody, Conversation, Message } from '@/types/chat';
 import { Plugin } from '@/types/plugin';
 import HomeContext from '@/pages/api/home/home.context';
-import { getMeta } from '@/constants';
+import { getMeta, ENVS } from '@/constants';
 import Spinner from '../Spinner';
 import { ChatInput } from './ChatInput';
 import { ChatLoader } from './ChatLoader';
@@ -377,7 +377,9 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   }, [status, handleSend]);
 
   const meta = getMeta(window.location.href || '');
-  const title = meta.title;
+  const { title, env } = meta;
+
+  const showShortcutTool = env === ENVS.normal;
 
   return (
     <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">
@@ -455,7 +457,11 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                           }
                       />
                     </div> */}
-                    <div className='text-lg font-semibold text-stone-700'>快捷工具: </div>
+                    {
+                      showShortcutTool
+                        ? <div className='text-lg font-semibold text-stone-700'>快捷工具: </div>
+                        : <></>
+                    }
                     <RoleList onSelect={onRoleSelect} />
                   </>
                   )}

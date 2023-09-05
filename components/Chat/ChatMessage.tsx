@@ -15,6 +15,8 @@ import { updateConversation } from '@/utils/app/conversation';
 import { Message } from '@/types/chat';
 
 import HomeContext from '@/pages/api/home/home.context';
+import { getMeta, ENVS } from '@/constants';
+import Image from 'next/image';
 
 import { CodeBlock } from '../Markdown/CodeBlock';
 import { MemoizedReactMarkdown } from '../Markdown/MemoizedReactMarkdown';
@@ -124,6 +126,12 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
     }
   }, [isEditing]);
 
+  const UserIcon = () => {
+    const { env } = getMeta(window.location.href || '');
+    if (env === ENVS.hebao) return <Image priority src='/images/hebao.jpeg' alt='hebao' width={30} height={30} />
+    return <IconUser size={30} />
+  }
+
   if (message.hide) return (<></>);
 
   return (
@@ -139,7 +147,7 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
           {message.role === 'assistant' ? (
             <IconRobot size={30} />
           ) : (
-            <IconUser size={30} />
+            <UserIcon />
           )}
         </div>
 

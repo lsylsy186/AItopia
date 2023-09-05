@@ -13,6 +13,7 @@ interface IMetaData {
   description: string;
   mask: any;
   defautMessage?: string;
+  env: ENVS;
 }
 
 interface IMeta {
@@ -21,6 +22,7 @@ interface IMeta {
 
 export const metaConfig: IMeta = {
   [ENVS.normal]: {
+    env: ENVS.normal,
     title: 'Chatbot UI',
     description: 'Build your own AI assistant.',
     mask: [
@@ -34,6 +36,7 @@ export const metaConfig: IMeta = {
     ],
   },
   [ENVS.hebao]: {
+    env: ENVS.hebao,
     title: '禾宝传媒',
     description: '用于解压和锻炼你的心理素质，慎用',
     mask: ['hebaoxiaohongshu', 'videoScript'],

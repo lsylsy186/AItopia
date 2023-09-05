@@ -78,7 +78,7 @@ const promptTemplate = [
 export const xiaohongshu1: IRole = {
   index: 4,
   img: '/images/xiaohongshu.png',
-  imgAlt: 'Travel',
+  imgAlt: 'xiaohongshu1',
   title: '小红书1',
   description: '从人设定位开始撰写小红书文案',
   example: '你现在是一名{}，想在小红书平台做一名{}介绍博主, 提供{}个人设定位',
@@ -111,7 +111,7 @@ export const xiaohongshu1: IRole = {
 export const xiaohongshu2: IRole = {
   index: 4,
   img: '/images/xiaohongshu2.png',
-  imgAlt: 'Travel',
+  imgAlt: 'xiaohongshu2',
   title: '小红书2',
   description: '基于介绍的产品和品类撰写小红书文案',
   example: '作为一名资深的{}行业从业者（{}）, 想在小红书平台做一名{}（品类）介绍博主，这次主要推荐的是{}产品',

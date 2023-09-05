@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import RoleButton from '@/components/Buttons/RoleButton';
-import { IRole, defaultRoleList } from '@/constants';
+import { IRole, defaultRoleList, getMeta } from '@/constants';
 
 interface Props {
   onSelect: (params: string) => void;
@@ -11,10 +11,12 @@ const RoleList: FC<Props> = ({
   onSelect,
   list = defaultRoleList
 }) => {
+  const { mask } = getMeta(window.location.href || '');
+  const roleList = mask ? list.filter(elem => mask.includes(elem.imgAlt)) : list;
 
   return (
     <div className='flex flex-wrap md:w-full w-screen pb-40 overflow-y-scroll' style={{ marginTop: 10 }}>
-      {list.map((role: IRole) => (
+      {roleList.map((role: IRole) => (
         <div key={role.index} className='mr-7 w-1/4 md:mr-1 md:w-1/6'>
           <RoleButton role={role} onSelect={onSelect} />
         </div>

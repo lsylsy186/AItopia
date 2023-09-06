@@ -38,7 +38,7 @@ export const metaConfig: IMeta = {
   [ENVS.hebao]: {
     env: ENVS.hebao,
     title: '禾宝传媒',
-    description: 'Build your own AI assistant.',
+    description: 'Build your own AI assistant',
     mask: ['hebaoxiaohongshu', 'hebaoVideoScript'],
   }
 };

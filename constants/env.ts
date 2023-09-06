@@ -32,13 +32,13 @@ export const metaConfig: IMeta = {
       'xiaohongshu',
       'gov',
       'petBehaviorist',
-      'learnfaster'
+      'learnfaster',
     ],
   },
   [ENVS.hebao]: {
     env: ENVS.hebao,
     title: '禾宝传媒',
-    description: '用于解压和锻炼你的心理素质，慎用',
+    description: 'Build your own AI assistant.',
     mask: ['hebaoxiaohongshu', 'hebaoVideoScript'],
   }
 };

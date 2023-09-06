@@ -79,7 +79,7 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
     const { options } = currentRole;
     return (
       options?.map((item: IRoleOption) => {
-        const { type, label, option, key } = item;
+        const { type, label, option, key, width } = item;
         let Item = null;
         if (type === formType.select) {
           Item = <Select
@@ -91,7 +91,7 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
         } else if (type === formType.input) {
           Item = <Input
             placeholder={`请输入${label}`}
-            style={{ width: 200 }}
+            style={{ width: width ?? 200 }}
           />
         } else if (type === formType.imageUploader) {
           return <ImageUploader

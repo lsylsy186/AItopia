@@ -20,6 +20,7 @@ export interface IRoleOption {
   label: string;
   key: string;
   type: formType;
+  width?: number;
 }
 
 export enum language {

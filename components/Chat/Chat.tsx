@@ -539,6 +539,12 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                 handleSend(newMessage, 0, null);
               }
             }}
+            onContinue={() => {
+              if (currentMessage) {
+                const newMessage = { ...currentMessage, content: '继续' };
+                handleSend(newMessage, 0, null);
+              }
+            }}
             showScrollDownButton={showScrollDownButton}
           />
         </>

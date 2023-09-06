@@ -5,6 +5,8 @@ import {
   IconPlayerStop,
   IconRepeat,
   IconSend,
+  IconPlayerTrackNext,
+  IconRepeatOff
 } from '@tabler/icons-react';
 import {
   KeyboardEvent,
@@ -32,6 +34,7 @@ import { VariableModal } from './VariableModal';
 interface Props {
   onSend: (message: Message, plugin: Plugin | null) => void;
   onRegenerate: () => void;
+  onContinue: () => void;
   onRepeat: () => void;
   onScrollDownClick: () => void;
   stopConversationRef: MutableRefObject<boolean>;
@@ -42,6 +45,7 @@ interface Props {
 export const ChatInput = ({
   onSend,
   onRegenerate,
+  onContinue,
   onRepeat,
   onScrollDownClick,
   stopConversationRef,
@@ -260,6 +264,7 @@ export const ChatInput = ({
 
   const { env } = getMeta(window.location.href || '');
   const hideRegenerate = env === ENVS.hebao;
+  const showContinue = env === ENVS.hebao;
 
   return (
     <div className="absolute bottom-0 left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 dark:border-white/20 dark:via-[#343541] dark:to-[#343541] md:pt-2">
@@ -281,15 +286,22 @@ export const ChatInput = ({
                 hideRegenerate ? <></> : <button
                   className="flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
                   onClick={onRegenerate}
-                > <IconRepeat size={16} /> {t('Regenerate response')}
+                > <IconRepeatOff size={16} /> {t('Regenerate response')}
                 </button>
               }
               <button
                 className="flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
                 onClick={onRepeat}
               >
-                <IconRepeat size={16} /> 再次生成
+                <IconRepeat size={16} /> 再来一次
               </button>
+              {
+                showContinue ? <></> : <button
+                  className="flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+                  onClick={onContinue}
+                > <IconPlayerTrackNext size={16} /> 继续
+                </button>
+              }
             </div>
           )}
 

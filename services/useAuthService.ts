@@ -25,8 +25,24 @@ const useAuthService = () => {
     [fetchService],
   );
 
+  const fetchUserInfo = useCallback(
+    (params: { id: string }, signal?: AbortSignal) => {
+
+      const { id } = params;
+      return fetchService.get<IResponse>(`/api/user/${id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          // authorization: 
+        },
+        signal,
+      });
+    },
+    [fetchService],
+  );
+
   return {
     signUp,
+    fetchUserInfo
   };
 };
 

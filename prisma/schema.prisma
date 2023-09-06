@@ -30,12 +30,15 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
+  id       String   @id @default(uuid())
   email    String   @unique
   name     String?
   password String
   posts    Post[]
   profile  Profile?
+  account  Account?
+
+  createdAt DateTime @default(now()) @db.Timestamp(6) // 注册时间
 }
 
 model Post {
@@ -44,12 +47,21 @@ model Post {
   content   String?
   published Boolean @default(false)
   author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+  authorId  String
 }
 
 model Profile {
   id     Int     @id @default(autoincrement())
   bio    String?
-  userId Int     @unique
+  userId String  @unique
   user   User    @relation(fields: [userId], references: [id])
+}
+
+model Account {
+  id      Int @id @default(autoincrement())
+  balance Int @default(0)
+
+  // relation
+  user      User   @relation(fields: [accountId], references: [id])
+  accountId String @unique
 }

@@ -9,12 +9,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     if (!accessToken || !verifyJwt(accessToken)) {
       res.status(401).json(JSON.stringify({ error: 'unauthorized' }));
     }
-    const user = await prisma.user.findFirst({
-      where: {
-        id: query.id
+    const userPosts = await prisma.post.findMany({
+      where: { authorId: query.id },
+      include: {
+        author: {
+          select: {
+            email: true,
+            name: true,
+          }
+        }
       }
     });
-    res.status(200).json(JSON.stringify(user));
+    res.status(200).json(JSON.stringify(userPosts));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error' })

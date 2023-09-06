@@ -1,9 +1,27 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
-import React, { useCallback } from 'react';
+import message from 'antd/lib/message';
+import { useModel } from '@/hooks';
+import useAuthService from '@/services/useAuthService';
+import React, { useCallback, useEffect } from 'react';
 
 const SigninButton = () => {
   const { data: session } = useSession();
+  const { setUser, user } = useModel('global');
+  const { fetchUserInfo } = useAuthService();
   const signedIn = session && session.user;
+
+  useEffect(() => {
+    const requestUser = async () => {
+      const res = await fetchUserInfo({ id: signedIn?.id });
+      if (res.success) {
+        message.success(res.message);
+        setUser(res.data);
+      } else {
+        message.error(res.message);
+      }
+    }
+    // requestUser();
+  }, [signedIn, setUser]);
 
   const onSignInBtnClick = useCallback(() => {
     if (signedIn) signOut();

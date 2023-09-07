@@ -11,15 +11,15 @@ const SigninButton = () => {
   const signedIn = session && session.user;
 
   useEffect(() => {
-    const requestUser = async () => {
-      const res = await fetchUserInfo({ id: signedIn?.id });
-      if (res.success) {
-        message.success(res.message);
-        setUser(res.data);
-      } else {
-        message.error(res.message);
-      }
-    }
+    // const requestUser = async () => {
+    //   const res = await fetchUserInfo({ id: signedIn?.id });
+    //   if (res.success) {
+    //     message.success(res.message);
+    //     setUser(res.data);
+    //   } else {
+    //     message.error(res.message);
+    //   }
+    // }
     // requestUser();
   }, [signedIn, setUser]);
 

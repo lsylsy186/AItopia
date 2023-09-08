@@ -247,6 +247,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           // 文本安全 TODO 节流
           if (needContentContraints) {
             const security = await getContentSecurity({ text });
+            console.log('security', security);
             if (!security) {
               const newConversation = updatedConversation.messages.slice(0, -1);
               homeDispatch({

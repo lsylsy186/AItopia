@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import useAuthService from '@/services/useAuthService';
 
+const defaultAccount = {
+  balance: 0,
+}
+
 export const useGlobal = () => {
   const [roleModalOpen, setRoleModalOpen] = useState(false);
   const [currentRole, setCurrentRole] = useState({});
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState<any>({ account: defaultAccount });
 
   const { fetchUserInfo } = useAuthService();
 

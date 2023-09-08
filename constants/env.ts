@@ -1,9 +1,11 @@
 export enum ENVS {
+  local = 'local',
   normal = 'normal',
   hebao = 'hebao',
 }
 
 export const domains = {
+  [ENVS.local]: 'localhost',
   [ENVS.normal]: 'chat.goodae.top',
   [ENVS.hebao]: 'hebao.goodae.top',
 };
@@ -21,6 +23,20 @@ interface IMeta {
 }
 
 export const metaConfig: IMeta = {
+  [ENVS.local]: {
+    env: ENVS.local,
+    title: 'Chatbot UI',
+    description: 'Build your own AI assistant.',
+    mask: [
+      'translator',
+      'travelor',
+      'imageRecognizer',
+      'xiaohongshu',
+      'gov',
+      'petBehaviorist',
+      'learnfaster',
+    ],
+  },
   [ENVS.normal]: {
     env: ENVS.normal,
     title: 'Chatbot UI',

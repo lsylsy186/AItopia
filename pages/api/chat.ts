@@ -98,14 +98,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
     const { tokenCount, messagesToSend } = await calTokenLength(reqBody, promptToSend);
     const sentTokenresult = await updateBalance(tokenCount, userId || '', balance);
-    if (!sentTokenresult) res.status(500).json({ error: 'Sent Token consuming error' });
+    if (!sentTokenresult) res.status(403).json({ error: 'Sent Token consuming error' });
 
 
     const stream = await OpenAIStream(model, promptToSend, temperatureToUse, key, messagesToSend);
 
     const [stream1, stream2] = stream.tee();
     const responseTokenResult = consumeStreamOnServer(reqBody, stream2);
-    if (!responseTokenResult) res.status(500).json({ error: 'Response Token consuming error' });
+    if (!responseTokenResult) res.status(403).json({ error: 'Response Token consuming error' });
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Transfer-Encoding', 'chunked');

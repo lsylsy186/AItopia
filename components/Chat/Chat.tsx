@@ -31,8 +31,11 @@ import { ChatInput } from './ChatInput';
 import { ChatLoader } from './ChatLoader';
 import { ErrorMessageDiv } from './ErrorMessageDiv';
 import SigninButton from '../Buttons/SinginButton';
+import { textSecurity } from "@/lib/content";
 // import { SystemPrompt } from './SystemPrompt';
 // import { TemperatureSlider } from './Temperature';
+
+const messageComp = message;
 
 const RoleModal = dynamic(() => import('./RoleModal'), {
   loading: () => <div><Spinner size="16px" className="mx-auto" /></div>,
@@ -82,6 +85,14 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   const signedIn = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
   const balance = user?.account?.balance || 0;
+
+  const meta = getMeta(window.location.href || '');
+  const { title, env } = meta;
+
+  // 显示快捷工具标题
+  const showShortcutTool = env === ENVS.normal;
+  // 需要做文案审核
+  const needContentContraints = env === ENVS.normal;
 
   useEffect(() => {
     fetchUserInfoMethod(signedIn?.id);
@@ -154,10 +165,13 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           signal: controller.signal,
           body,
         });
+
         if (!response.ok) {
           homeDispatch({ field: 'loading', value: false });
           homeDispatch({ field: 'messageIsStreaming', value: false });
-          toast.error(response.statusText);
+          let toastMsg = response.statusText;
+          if (response.status === 403) toastMsg = '剩余算力不够，请充值';
+          toast.error(toastMsg);
           return;
         }
         const data = response.body;
@@ -225,9 +239,21 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
               value: updatedConversation,
             });
           }
+          fetchUserInfoMethod(signedIn?.id);
+          homeDispatch({ field: 'messageIsStreaming', value: false });
+
+          // 文本安全 TODO 节流
+          if (needContentContraints && !(await textSecurity(text))) {
+            const newConversation = updatedConversation.messages.slice(0, -1);
+            homeDispatch({
+              field: 'selectedConversation',
+              value: newConversation,
+            });
+            messageComp.warning('Contains sensitive keywords.');
+            return;
+          }
           saveConversation(updatedConversation);
           // 扣除balance后请求一次最新user
-          fetchUserInfoMethod(signedIn?.id);
 
           const updatedConversations: Conversation[] = conversations.map(
             (conversation) => {
@@ -242,7 +268,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           }
           homeDispatch({ field: 'conversations', value: updatedConversations });
           saveConversations(updatedConversations);
-          homeDispatch({ field: 'messageIsStreaming', value: false });
         }
         const handleWithPlugin = async () => {
           const { answer } = await response.json();
@@ -390,16 +415,11 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   const onRoleSelect = useCallback((prompt: string) => {
     console.log('status', status);
     if (status !== 'authenticated') {
-      message.warning('请登录后再发送信息');
+      messageComp.warning('请登录后再发送信息');
       return;
     }
     handleSend({ role: 'user', content: prompt, hide: true }, 0, null);
   }, [status, handleSend]);
-
-  const meta = getMeta(window.location.href || '');
-  const { title, env } = meta;
-
-  const showShortcutTool = env === ENVS.normal;
 
   return (
     <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">

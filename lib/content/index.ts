@@ -3,6 +3,7 @@ import { baiduTextSecurity } from "@/lib/content/baidu";
 import { TEXT_SECURITY } from '@/utils/app/const';
 
 export async function textSecurity(conversation: any) {
+  console.log('TEXT_SECURITY', TEXT_SECURITY);
   /* If the secure text TEXT_SECURITY is not set up.*/
   if (!TEXT_SECURITY) return true;
 

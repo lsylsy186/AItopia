@@ -31,7 +31,8 @@ import { ChatInput } from './ChatInput';
 import { ChatLoader } from './ChatLoader';
 import { ErrorMessageDiv } from './ErrorMessageDiv';
 import SigninButton from '../Buttons/SinginButton';
-import { textSecurity } from "@/lib/content";
+import useApiService from '@/services/useApiService';
+
 // import { SystemPrompt } from './SystemPrompt';
 // import { TemperatureSlider } from './Temperature';
 
@@ -82,6 +83,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
   const { fetchUserInfoMethod, user } = useModel('global');
+  const { getContentSecurity } = useApiService();
   const signedIn = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
   const balance = user?.account?.balance || 0;
@@ -244,7 +246,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
 
           // 文本安全 TODO 节流
           if (needContentContraints) {
-            const security = await textSecurity(text);
+            const security = await getContentSecurity({ text });
             if (!security) {
               const newConversation = updatedConversation.messages.slice(0, -1);
               homeDispatch({

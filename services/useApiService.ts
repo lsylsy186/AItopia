@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-
+import { IResponse } from '@/types/response';
 import { useFetch } from '@/hooks/useFetch';
 
 export interface GetModelsRequestProps {
@@ -38,8 +38,24 @@ const useApiService = () => {
     [fetchService],
   );
 
+  const getContentSecurity = useCallback(
+    (params: { text: string }, signal?: AbortSignal) => {
+
+      const { id, data } = params;
+      return fetchService.post<IResponse>(`/api/contentsecurity`, {
+        body: data,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal,
+      });
+    },
+    [fetchService],
+  );
+
   return {
     getModels,
+    getContentSecurity,
   };
 };
 

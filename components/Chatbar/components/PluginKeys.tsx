@@ -53,7 +53,7 @@ export const PluginKeys = () => {
   return (
     <>
       <SidebarButton
-        text={t('Plugin Keys')}
+        text='插件密钥'
         icon={<IconKey size={18} />}
         onClick={() => setIsChanging(true)}
       />

@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useFetch } from '@/hooks/useFetch';
 import { IResponse } from '@/types/response';
+import { accessToken } from '@/constants';
 
 export interface ISignUpRequestProps {
   email: string;
@@ -32,7 +33,23 @@ const useAuthService = () => {
       return fetchService.get<IResponse>(`/api/user/${id}`, {
         headers: {
           'Content-Type': 'application/json',
-          // authorization: 
+          'Authorization': `Bearer ${accessToken.token}`
+        },
+        signal,
+      });
+    },
+    [fetchService],
+  );
+
+  const updateUserAccount = useCallback(
+    (params: { id: string, data: any }, signal?: AbortSignal) => {
+
+      const { id, data } = params;
+      return fetchService.post<IResponse>(`/api/user/${id}/update`, {
+        body: data,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken.token}`
         },
         signal,
       });
@@ -42,7 +59,8 @@ const useAuthService = () => {
 
   return {
     signUp,
-    fetchUserInfo
+    fetchUserInfo,
+    updateUserAccount
   };
 };
 

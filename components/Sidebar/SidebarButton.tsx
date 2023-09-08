@@ -1,7 +1,7 @@
-import { FC } from 'react';
+import { FC, ReactElement } from 'react';
 
 interface Props {
-  text: string;
+  text: string | ReactElement;
   icon: JSX.Element;
   onClick: () => void;
 }

@@ -1,6 +1,8 @@
 import { IconClearAll, IconSettings } from '@tabler/icons-react';
 import message from 'antd/lib/message';
 import { useSession } from "next-auth/react";
+import { useModel } from '@/hooks';
+import useAuthService from '@/services/useAuthService';
 import {
   MutableRefObject,
   memo,
@@ -23,7 +25,7 @@ import dynamic from 'next/dynamic'
 import { ChatBody, Conversation, Message } from '@/types/chat';
 import { Plugin } from '@/types/plugin';
 import HomeContext from '@/pages/api/home/home.context';
-import { getMeta, ENVS } from '@/constants';
+import { getMeta, ENVS, accessToken } from '@/constants';
 import Spinner from '../Spinner';
 import { ChatInput } from './ChatInput';
 import { ChatLoader } from './ChatLoader';
@@ -75,7 +77,15 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     handleUpdateConversation,
     dispatch: homeDispatch,
   } = useContext(HomeContext);
-  const { status } = useSession();
+  const { status, data: session } = useSession();
+  const { fetchUserInfoMethod, user } = useModel('global');
+  const signedIn = session && session.user;
+  accessToken.token = signedIn?.accessToken?.token || '';
+  const balance = user?.account?.balance || 0;
+
+  useEffect(() => {
+    fetchUserInfoMethod(signedIn?.id);
+  }, [signedIn]);
 
   const [currentMessage, setCurrentMessage] = useState<Message>();
   const [autoScrollEnabled, setAutoScrollEnabled] = useState<boolean>(true);
@@ -116,8 +126,11 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           key: apiKey,
           prompt: updatedConversation.prompt,
           temperature: updatedConversation.temperature,
+          userId: signedIn?.id || '',
+          balance,
         };
         const endpoint = getEndpoint(plugin);
+
         let body;
         if (!plugin) {
           body = JSON.stringify(chatBody);
@@ -153,6 +166,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           homeDispatch({ field: 'messageIsStreaming', value: false });
           return;
         }
+        // 扣除balance后请求一次最新user
+        fetchUserInfoMethod(signedIn?.id);
         const handleWithoutPlugin = async () => {
           if (updatedConversation.messages.length === 1) {
             const { content } = message;
@@ -211,6 +226,9 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             });
           }
           saveConversation(updatedConversation);
+          // 扣除balance后请求一次最新user
+          fetchUserInfoMethod(signedIn?.id);
+
           const updatedConversations: Conversation[] = conversations.map(
             (conversation) => {
               if (conversation.id === selectedConversation.id) {
@@ -271,6 +289,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
       pluginKeys,
       selectedConversation,
       stopConversationRef,
+      signedIn,
+      balance,
     ],
   );
 
@@ -388,24 +408,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         <div className="mx-auto flex h-full w-[300px] flex-col justify-center space-y-6 sm:w-[600px]">
           <div className="text-center text-4xl font-bold text-black dark:text-white">
             Welcome to {title}
-          </div>
-          <div className="text-center text-gray-500 dark:text-gray-400">
-            <div className="mb-2">
-              {t(
-                'Please set your OpenAI API key in the bottom left of the sidebar.',
-              )}
-            </div>
-            <div>
-              {t("If you don't have an OpenAI API key, you can get one here: ")}
-              <a
-                href="https://platform.openai.com/account/api-keys"
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                openai.com
-              </a>
-            </div>
           </div>
         </div>
       ) : modelError ? (

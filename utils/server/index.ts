@@ -111,6 +111,5 @@ export const OpenAIStream = async (
       }
     },
   });
-
   return stream;
 };

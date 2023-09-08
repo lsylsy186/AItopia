@@ -13,10 +13,14 @@ import { SidebarButton } from '../../Sidebar/SidebarButton';
 import ChatbarContext from '../Chatbar.context';
 import { ClearConversations } from './ClearConversations';
 import { PluginKeys } from './PluginKeys';
+import { useModel } from '@/hooks';
+import { IconAlien } from '@tabler/icons-react';
 
 export const ChatbarSettings = () => {
   const { t } = useTranslation('sidebar');
   const [isSettingDialogOpen, setIsSettingDialog] = useState<boolean>(false);
+  const { user } = useModel('global');
+  const balance = user.account?.balance;
 
   const {
     state: {
@@ -36,8 +40,19 @@ export const ChatbarSettings = () => {
     handleApiKeyChange,
   } = useContext(ChatbarContext);
 
+  const BalanceComp = () => {
+    return <>
+      <span>剩余算力：<span className={`font-bold ${balance === 0 ? 'text-red-600' : ''}`}>{balance}</span></span>
+    </>
+  }
+
   return (
     <div className="flex flex-col items-center space-y-1 border-t border-white/20 pt-1 text-sm">
+      <SidebarButton
+        text={BalanceComp()}
+        icon={<IconAlien size={18} />}
+        onClick={() => { }}
+      />
       {conversations.length > 0 ? (
         <ClearConversations onClearConversations={handleClearConversations} />
       ) : null}
@@ -51,7 +66,7 @@ export const ChatbarSettings = () => {
       /> */}
 
       <SidebarButton
-        text={t('Settings')}
+        text='设置'
         icon={<IconSettings size={18} />}
         onClick={() => setIsSettingDialog(true)}
       />
@@ -60,8 +75,7 @@ export const ChatbarSettings = () => {
         <Key apiKey={apiKey} onApiKeyChange={handleApiKeyChange} />
       ) : null} */}
 
-      {!serverSidePluginKeysSet ? <PluginKeys /> : null}
-
+      {/* {!serverSidePluginKeysSet ? <PluginKeys /> : null} */}
       <SettingDialog
         open={isSettingDialogOpen}
         onClose={() => {

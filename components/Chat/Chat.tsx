@@ -94,7 +94,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   // 显示快捷工具标题
   const showShortcutTool = env === ENVS.normal;
   // 需要做文案审核
-  const needContentContraints = env === ENVS.normal;
+  const needContentContraints = env === ENVS.normal || env === ENVS.hebao;
 
   useEffect(() => {
     fetchUserInfoMethod(signedIn?.id);
@@ -247,14 +247,13 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           // 文本安全 TODO 节流
           if (needContentContraints) {
             const { data: security } = await getContentSecurity({ text });
-            console.log('security', security);
             if (!security) {
               const newConversation = updatedConversation.messages.slice(0, -1);
               homeDispatch({
                 field: 'selectedConversation',
                 value: newConversation,
               });
-              messageComp.warning('Contains sensitive keywords.');
+              messageComp.warning('生成内容文案审核不通过');
               return;
             }
           }

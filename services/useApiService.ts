@@ -40,10 +40,8 @@ const useApiService = () => {
 
   const getContentSecurity = useCallback(
     (params: { text: string }, signal?: AbortSignal) => {
-
-      const { id, data } = params;
       return fetchService.post<IResponse>(`/api/contentsecurity`, {
-        body: data,
+        body: params,
         headers: {
           'Content-Type': 'application/json',
         },

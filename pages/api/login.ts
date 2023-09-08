@@ -18,7 +18,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     });
     if (user && (await bcrypt.compare(body?.password, user.password))) {
       const { password, ...userWithoutPass } = user;
-      const accessToken = signJwtAccessToken(userWithoutPass);
+      const accessToken = await signJwtAccessToken(userWithoutPass);
+
       const result = {
         ...userWithoutPass,
         accessToken

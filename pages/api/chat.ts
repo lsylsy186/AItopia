@@ -1,28 +1,90 @@
 import { DEFAULT_SYSTEM_PROMPT, DEFAULT_TEMPERATURE } from '@/utils/app/const';
+import prisma from "@/lib/prismadb";
 import { OpenAIError, OpenAIStream } from '@/utils/server';
-
 import { ChatBody, Message } from '@/types/chat';
+import { get_encoding } from "@dqbd/tiktoken";
+import { NextApiRequest, NextApiResponse } from 'next';
 
-// @ts-expect-error
-import wasm from '../../node_modules/@dqbd/tiktoken/lite/tiktoken_bg.wasm?module';
+const updateBalance = async (tokenCount: number, userId: string, balance: number) => {
+  const newBalance = (balance || 0) - tokenCount;
 
-import tiktokenModel from '@dqbd/tiktoken/encoders/cl100k_base.json';
-import { Tiktoken, init } from '@dqbd/tiktoken/lite/init';
+  if (newBalance < 0) return false;
 
-export const config = {
-  runtime: 'edge',
-};
+  const result = await prisma.user.update({
+    where: { id: userId }, // 要更新的用户的查询条件
+    data: {
+      account: {
+        update: {
+          where: { accountId: userId },
+          data: { balance: newBalance }
+        }
+      }
+    },
+    include: { account: true }
+  });
 
-const handler = async (req: Request): Promise<Response> => {
+  if (result) return true;
+  else return false;
+}
+
+// 计算token长度，isSend=true，方法默认是计算发送token长度
+const calTokenLength = async (req: ChatBody, promptToSend: string, isSend = true) => {
+  const { model, messages } = req;
+  const encoding = get_encoding("cl100k_base");
+
+  const prompt_tokens = encoding.encode(promptToSend);
+  let tokenCount = isSend ? prompt_tokens.length : 0;
+  let messagesToSend: Message[] = [];
+
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    const tokens = encoding.encode(message.content);
+    if (tokenCount + tokens.length + 1000 > model.tokenLimit) {
+      break;
+    }
+    tokenCount += tokens.length;
+    messagesToSend = [message, ...messagesToSend];
+  }
+
+  encoding.free();
+  return {
+    tokenCount,
+    messagesToSend
+  };
+}
+
+const consumeStreamOnServer = async (reqBody: ChatBody, stream: ReadableStream<any>) => {
+  let done = false;
+  let text = '';
+  const decoder = new TextDecoder();
+  const reader = stream.getReader();
+  while (!done) {
+    const { value, done: doneReading } = await reader.read();
+    done = doneReading;
+    const chunkValue = decoder.decode(value);
+    text += chunkValue;
+  }
+
+  const { tokenCount } = await calTokenLength({ ...reqBody, messages: [{ content: text, role: 'assistant' }] }, '', false);
+  const user = await prisma.user.findFirst({
+    where: {
+      id: reqBody.userId
+    },
+    include: {
+      posts: true,
+      account: true,
+      profile: true,
+    }
+  });
+  const { account } = user || {};
+  const result = await updateBalance(tokenCount, reqBody.userId || '', account?.balance || 0);
+  return result;
+}
+
+const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   try {
-    const { model, messages, key, prompt, temperature } = (await req.json()) as ChatBody;
-
-    await init((imports) => WebAssembly.instantiate(wasm, imports));
-    const encoding = new Tiktoken(
-      tiktokenModel.bpe_ranks,
-      tiktokenModel.special_tokens,
-      tiktokenModel.pat_str,
-    );
+    const reqBody = (await req.body) as ChatBody;
+    const { model, key, prompt, temperature, userId, balance } = reqBody;
 
     let promptToSend = prompt;
     if (!promptToSend) {
@@ -34,33 +96,44 @@ const handler = async (req: Request): Promise<Response> => {
       temperatureToUse = DEFAULT_TEMPERATURE;
     }
 
-    const prompt_tokens = encoding.encode(promptToSend);
+    const { tokenCount, messagesToSend } = await calTokenLength(reqBody, promptToSend);
+    const sentTokenresult = await updateBalance(tokenCount, userId || '', balance);
+    if (!sentTokenresult) res.status(500).json({ error: 'Sent Token consuming error' });
 
-    let tokenCount = prompt_tokens.length;
-    let messagesToSend: Message[] = [];
-
-    for (let i = messages.length - 1; i >= 0; i--) {
-      const message = messages[i];
-      const tokens = encoding.encode(message.content);
-
-      if (tokenCount + tokens.length + 1000 > model.tokenLimit) {
-        break;
-      }
-      tokenCount += tokens.length;
-      messagesToSend = [message, ...messagesToSend];
-    }
-
-    encoding.free();
 
     const stream = await OpenAIStream(model, promptToSend, temperatureToUse, key, messagesToSend);
 
-    return new Response(stream);
+    const [stream1, stream2] = stream.tee();
+    const responseTokenResult = consumeStreamOnServer(reqBody, stream2);
+    if (!responseTokenResult) res.status(500).json({ error: 'Response Token consuming error' });
+
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Transfer-Encoding', 'chunked');
+
+    const reader = stream1.getReader();
+    const processStream = async () => {
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            break;
+          }
+          res.write(value);
+        }
+      } catch (error) {
+        console.error('Error reading stream:', error);
+        res.status(500);
+      } finally {
+        res.end();
+      }
+    };
+    await processStream();
   } catch (error) {
     console.error(error);
     if (error instanceof OpenAIError) {
-      return new Response('Error', { status: 500, statusText: error.message });
+      res.status(500).json({ error: error.message });
     } else {
-      return new Response('Error', { status: 500 });
+      res.status(500).json({ error: 'Error' });
     }
   }
 };

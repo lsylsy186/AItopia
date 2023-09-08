@@ -16,6 +16,8 @@ interface IMetaData {
   mask: any;
   defautMessage?: string;
   env: ENVS;
+  qrcode?: string;
+  wechat?: string;
 }
 
 interface IMeta {
@@ -27,6 +29,8 @@ export const metaConfig: IMeta = {
     env: ENVS.local,
     title: 'Chatbot UI',
     description: 'Build your own AI assistant.',
+    wechat: 'LzerO12345678',
+    qrcode: '/images/qrcode1.jpg',
     mask: [
       'translator',
       'travelor',
@@ -41,6 +45,8 @@ export const metaConfig: IMeta = {
     env: ENVS.normal,
     title: 'Chatbot UI',
     description: 'Build your own AI assistant.',
+    wechat: 'LzerO12345678',
+    qrcode: '/images/qrcode1.jpg',
     mask: [
       'translator',
       'travelor',

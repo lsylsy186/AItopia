@@ -243,14 +243,17 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           homeDispatch({ field: 'messageIsStreaming', value: false });
 
           // 文本安全 TODO 节流
-          if (needContentContraints && !(await textSecurity(text))) {
-            const newConversation = updatedConversation.messages.slice(0, -1);
-            homeDispatch({
-              field: 'selectedConversation',
-              value: newConversation,
-            });
-            messageComp.warning('Contains sensitive keywords.');
-            return;
+          if (needContentContraints) {
+            const security = await textSecurity(text);
+            if (!security) {
+              const newConversation = updatedConversation.messages.slice(0, -1);
+              homeDispatch({
+                field: 'selectedConversation',
+                value: newConversation,
+              });
+              messageComp.warning('Contains sensitive keywords.');
+              return;
+            }
           }
           saveConversation(updatedConversation);
           // 扣除balance后请求一次最新user

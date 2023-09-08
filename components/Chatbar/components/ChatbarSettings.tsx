@@ -15,11 +15,13 @@ import { ClearConversations } from './ClearConversations';
 import { PluginKeys } from './PluginKeys';
 import { useModel } from '@/hooks';
 import { IconAlien } from '@tabler/icons-react';
+import { useRouter } from 'next/router';
 
 export const ChatbarSettings = () => {
   const { t } = useTranslation('sidebar');
   const [isSettingDialogOpen, setIsSettingDialog] = useState<boolean>(false);
   const { user } = useModel('global');
+  const router = useRouter();
   const balance = user.account?.balance;
 
   const {
@@ -51,7 +53,7 @@ export const ChatbarSettings = () => {
       <SidebarButton
         text={BalanceComp()}
         icon={<IconAlien size={18} />}
-        onClick={() => { }}
+        onClick={() => { router.push('/other/contact') }}
       />
       {conversations.length > 0 ? (
         <ClearConversations onClearConversations={handleClearConversations} />

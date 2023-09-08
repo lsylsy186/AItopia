@@ -6,7 +6,8 @@ import { get_encoding } from "@dqbd/tiktoken";
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const updateBalance = async (tokenCount: number, userId: string, balance: number) => {
-  const newBalance = (balance || 0) - tokenCount;
+  const remainBalance = Math.round(tokenCount / 10);
+  const newBalance = (balance || 0) - remainBalance;
 
   if (newBalance < 0) return false;
 
@@ -35,7 +36,6 @@ const calTokenLength = async (req: ChatBody, promptToSend: string, isSend = true
   const prompt_tokens = encoding.encode(promptToSend);
   let tokenCount = isSend ? prompt_tokens.length : 0;
   let messagesToSend: Message[] = [];
-
   for (let i = messages.length - 1; i >= 0; i--) {
     const message = messages[i];
     const tokens = encoding.encode(message.content);

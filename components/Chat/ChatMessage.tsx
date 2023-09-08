@@ -6,7 +6,7 @@ import {
   IconTrash,
   IconUser,
 } from '@tabler/icons-react';
-import { FC, memo, useContext, useEffect, useRef, useState } from 'react';
+import { FC, memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useTranslation } from 'next-i18next';
 
@@ -125,12 +125,13 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [isEditing]);
+  const { env } = getMeta(window.location.href || '');
+  const showHebao = env === ENVS.hebao;
 
-  const RobotIcon = () => {
-    const { env } = getMeta(window.location.href || '');
-    if (env === ENVS.hebao) return <Image priority src='/images/hebao.jpeg' alt='hebao' width={30} height={30} />
+  const RobotIcon = useMemo(() => {
+    if (showHebao) return <Image priority src='/images/hebao.jpeg' alt='hebao' width={30} height={30} />
     return <IconRobot size={30} />
-  }
+  }, []);
 
   if (message.hide) return (<></>);
 
@@ -144,9 +145,7 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
     >
       <div className="relative m-auto flex p-4 text-base md:max-w-2xl md:gap-6 md:py-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
         <div className="min-w-[40px] text-right font-bold">
-          {message.role === 'assistant' ? (
-            <RobotIcon />
-          ) : (
+          {message.role === 'assistant' ? <>{RobotIcon}</> : (
             <IconUser size={30} />
           )}
         </div>

@@ -29,14 +29,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  Admin
+  Mod
+  Sell
+  User
+}
+
+enum ProductLine {
+  Normal
+  Hebao
+}
+
 model User {
-  id       String   @id @default(uuid())
-  email    String   @unique
-  name     String?
-  password String
-  posts    Post[]
-  profile  Profile?
-  account  Account?
+  id          String      @id @default(uuid())
+  email       String      @unique
+  name        String?
+  password    String
+  role        Role        @default(User)
+  productLine ProductLine @default(Normal)
+  posts       Post[]
+  profile     Profile?
+  account     Account?
 
   createdAt DateTime @default(now()) @db.Timestamp(6) // 注册时间
 }

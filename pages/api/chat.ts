@@ -1,9 +1,21 @@
 import { DEFAULT_SYSTEM_PROMPT, DEFAULT_TEMPERATURE } from '@/utils/app/const';
 import prisma from "@/lib/prismadb";
-import { OpenAIError, OpenAIStream } from '@/utils/server';
+// import { OpenAIError, OpenAIStream } from '@/utils/server';
+import { OpenAIError } from '@/utils/server';
 import { ChatBody, Message } from '@/types/chat';
 import { get_encoding } from "@dqbd/tiktoken";
 import { NextApiRequest, NextApiResponse } from 'next';
+import { OPENAI_API_HOST } from '@/utils/app/const';
+
+
+import OpenAI from 'openai'
+// import OpenAI from 'openai/configuration'
+import { OpenAIStream, streamToResponse } from 'ai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: `${OPENAI_API_HOST}/v1`,
+})
 
 const updateBalance = async (tokenCount: number, userId: string, balance: number) => {
   const remainBalance = Math.round(tokenCount / 10);
@@ -100,34 +112,51 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     const sentTokenresult = await updateBalance(tokenCount, userId || '', balance);
     if (!sentTokenresult) res.status(403).json({ error: 'Sent Token consuming error' });
 
+    const aiResponse = await openai.chat.completions.create({
+      model: model.id,
+      stream: true,
+      messages: [
+        {
+          role: 'system',
+          content: promptToSend,
+        },
+        ...messagesToSend,
+      ],
+    });
 
-    const stream = await OpenAIStream(model, promptToSend, temperatureToUse, key, messagesToSend);
+    // Transform the response into a readable stream
+    const stream = OpenAIStream(aiResponse)
+
+    // const stream = await OpenAIStream(model, promptToSend, temperatureToUse, key, messagesToSend);
 
     const [stream1, stream2] = stream.tee();
     const responseTokenResult = consumeStreamOnServer(reqBody, stream2);
     if (!responseTokenResult) res.status(403).json({ error: 'Response Token consuming error' });
 
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Transfer-Encoding', 'chunked');
+    // Pipe the stream to the response
+    streamToResponse(stream1, res)
 
-    const reader = stream1.getReader();
-    const processStream = async () => {
-      try {
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) {
-            break;
-          }
-          res.write(value);
-        }
-      } catch (error) {
-        console.error('Error reading stream:', error);
-        res.status(500);
-      } finally {
-        res.end();
-      }
-    };
-    await processStream();
+    // res.setHeader('Content-Type', 'application/json');
+    // res.setHeader('Transfer-Encoding', 'chunked');
+
+    // const reader = stream1.getReader();
+    // const processStream = async () => {
+    //   try {
+    //     while (true) {
+    //       const { value, done } = await reader.read();
+    //       if (done) {
+    //         break;
+    //       }
+    //       res.write(value);
+    //     }
+    //   } catch (error) {
+    //     console.error('Error reading stream:', error);
+    //     res.status(500);
+    //   } finally {
+    //     res.end();
+    //   }
+    // };
+    // await processStream();
   } catch (error) {
     console.error(error);
     if (error instanceof OpenAIError) {

@@ -25,6 +25,9 @@ export async function middleware(req: NextRequest) {
 
   const response = NextResponse.next();
 
+  if (req.nextUrl.pathname === '/api/user') {
+    return response;
+  }
   if (
     !token &&
     (req.nextUrl.pathname.startsWith("/api/users") ||

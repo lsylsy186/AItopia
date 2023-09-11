@@ -32,6 +32,8 @@ import { ChatLoader } from './ChatLoader';
 import { ErrorMessageDiv } from './ErrorMessageDiv';
 import SigninButton from '../Buttons/SinginButton';
 import useApiService from '@/services/useApiService';
+import { calTokenLength } from '@/utils/tiktoken';
+import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
 
 // import { SystemPrompt } from './SystemPrompt';
 // import { TemperatureSlider } from './Temperature';
@@ -82,7 +84,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     dispatch: homeDispatch,
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
-  const { fetchUserInfoMethod, user } = useModel('global');
+  const { fetchUserInfoMethod, user, requestUpdateUserAccount } = useModel('global');
   const { getContentSecurity } = useApiService();
   const signedIn = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
@@ -142,6 +144,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           userId: signedIn?.id || '',
           balance,
         };
+        console.log('chatBody', chatBody);
         const endpoint = getEndpoint(plugin);
 
         let body;
@@ -159,6 +162,18 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           });
         }
         const controller = new AbortController();
+
+        const { tokenCount: sentTokenCount } = await calTokenLength(chatBody);
+        const subBalance = Math.round(sentTokenCount / 10);
+        const newBalance = (balance || 0) - subBalance;
+
+        if (newBalance < 0) {
+          homeDispatch({ field: 'loading', value: false });
+          homeDispatch({ field: 'messageIsStreaming', value: false });
+          toast.error('剩余算力不够，请充值');
+          return;
+        }
+
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
@@ -167,6 +182,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           signal: controller.signal,
           body,
         });
+        let promptToSend = chatBody.prompt;
+        if (!promptToSend) {
+          promptToSend = DEFAULT_SYSTEM_PROMPT;
+        }
 
         if (!response.ok) {
           homeDispatch({ field: 'loading', value: false });
@@ -176,6 +195,17 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           toast.error(toastMsg);
           return;
         }
+        // 更新发送token的算力消耗
+        const res = await requestUpdateUserAccount(signedIn?.id, { tokenCount: sentTokenCount });
+        console.log('res', res);
+        if (!res.success) {
+          homeDispatch({ field: 'loading', value: false });
+          homeDispatch({ field: 'messageIsStreaming', value: false });
+          let toastMsg = res.statusText;
+          if (res.status === 403) toastMsg = '剩余算力不够，请充值';
+          toast.error(toastMsg);
+        }
+
         const data = response.body;
         if (!data) {
           homeDispatch({ field: 'loading', value: false });
@@ -243,6 +273,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           }
           fetchUserInfoMethod(signedIn?.id);
           homeDispatch({ field: 'messageIsStreaming', value: false });
+
+          // 更新回复token的算力消耗
+          const { tokenCount: responseTokenCount } = await calTokenLength({ ...chatBody, messages: [{ content: text, role: 'assistant' }] }, false);
+          await requestUpdateUserAccount(signedIn?.id, { tokenCount: responseTokenCount, isSend: false });
 
           // 文本安全 TODO 节流
           if (needContentContraints) {

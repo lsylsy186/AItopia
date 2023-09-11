@@ -45,7 +45,7 @@ const useAuthService = () => {
     (params: { id: string, data: any }, signal?: AbortSignal) => {
 
       const { id, data } = params;
-      return fetchService.post<IResponse>(`/api/user/${id}/update`, {
+      return fetchService.post<IResponse>(`/api/user/${id}/account/updateBalance`, {
         body: data,
         headers: {
           'Content-Type': 'application/json',

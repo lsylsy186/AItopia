@@ -10,7 +10,7 @@ export const useGlobal = () => {
   const [currentRole, setCurrentRole] = useState({});
   const [user, setUser] = useState<any>({ account: defaultAccount });
 
-  const { fetchUserInfo } = useAuthService();
+  const { fetchUserInfo, updateUserAccount } = useAuthService();
 
   const fetchUserInfoMethod = async (id: string) => {
     if (!id) return;
@@ -18,6 +18,17 @@ export const useGlobal = () => {
     if (res.success && res.data) {
       setUser(res.data);
     }
+  }
+
+  const requestUpdateUserAccount = async (id: string, data: any) => {
+    if (!id) return;
+    const tokenCount = data.tokenCount;
+    const subBalance = Math.round(tokenCount / 10);
+    const res = await updateUserAccount({ id, data: { ...data, subBalance } });
+    if (res.success && res.data) {
+      setUser(res.data);
+    }
+    return res;
   }
 
   return {
@@ -28,5 +39,6 @@ export const useGlobal = () => {
     setRoleModalOpen,
     setCurrentRole,
     fetchUserInfoMethod,
+    requestUpdateUserAccount,
   };
 };

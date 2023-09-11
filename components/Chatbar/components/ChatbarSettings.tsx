@@ -45,7 +45,7 @@ export const ChatbarSettings = () => {
 
   const BalanceComp = () => {
     return <>
-      <span>剩余算力：<span className={`font-bold ${balance === 0 ? 'text-red-600' : ''}`}>{balance}</span></span>
+      <span>剩余算力：<span className={`font-bold ${balance <= 0 ? 'text-red-600' : ''}`}>{balance}</span></span>
     </>
   }
 

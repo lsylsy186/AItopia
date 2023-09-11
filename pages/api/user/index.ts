@@ -17,7 +17,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     data: {
       name: body?.name,
       email: body?.email,
-      password: await bcrypt.hash(body?.password, 10)
+      password: await bcrypt.hash(body?.password, 10),
+      account: {
+        create: {
+          balance: 5
+        }
+      }
     }
   });
   const { password, ...result } = user;

@@ -144,7 +144,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           userId: signedIn?.id || '',
           balance,
         };
-        console.log('chatBody', chatBody);
         const endpoint = getEndpoint(plugin);
 
         let body;
@@ -197,7 +196,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         }
         // 更新发送token的算力消耗
         const res = await requestUpdateUserAccount(signedIn?.id, { tokenCount: sentTokenCount });
-        console.log('res', res);
         if (!res.success) {
           homeDispatch({ field: 'loading', value: false });
           homeDispatch({ field: 'messageIsStreaming', value: false });

@@ -280,10 +280,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           if (needContentContraints) {
             const { data: security } = await getContentSecurity({ text });
             if (!security) {
-              const newConversation = updatedConversation.messages.slice(0, -1);
+              updatedConversation.messages = updatedConversation.messages.slice(0, -1);
               homeDispatch({
                 field: 'selectedConversation',
-                value: newConversation,
+                value: updatedConversation,
               });
               messageComp.warning('生成内容文案审核不通过');
               return;

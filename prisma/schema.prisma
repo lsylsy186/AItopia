@@ -30,6 +30,7 @@ datasource db {
 }
 
 enum Role {
+  Super
   Admin
   Mod
   Sell

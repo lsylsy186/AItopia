@@ -5,8 +5,9 @@ import { learnfaster } from './learnfaster';
 import { petBehaviorist } from './petBehaviorist';
 import { imageRecognizer } from './imageRecognizer';
 import { xiaohongshu } from './xiaohongshu';
-import { hebaoxiaohongshu, hebaoVideoScript } from './hebao';
 import { gov } from './gov';
+import { hebaoxiaohongshu, hebaoVideoScript, hebaozixun, hebaozhaiyao } from './hebao';
+import { furnVideoScript, furnxiaohongshu } from './furniture';
 export {
   formType,
   language
@@ -24,6 +25,10 @@ export const defaultRoleList: IRole[] = [
   gov,
   petBehaviorist,
   learnfaster,
+  hebaozixun,
+  hebaozhaiyao,
+  furnVideoScript,
+  furnxiaohongshu
 ].map((elem, index) => {
   elem.index = index;
   return elem;

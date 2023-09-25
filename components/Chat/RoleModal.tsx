@@ -10,10 +10,11 @@ import { FC, useCallback, useEffect, useState, useRef } from 'react';
 import va from '@vercel/analytics';
 import { replaceAtPosition } from '@/utils/app/replaceAttr';
 import { PromptSelector } from '../Prompt/PromptSelector';
+import { IApiType } from '@/constants/role/type'
 
 const ImageUploader = dynamic(() => import('./ImageUploader'))
 interface Props {
-  onSelect: (params: string) => void;
+  onSelect: (params: string, options: {}) => void;
 }
 
 const RoleModal: FC<Props> = ({ onSelect }) => {
@@ -66,7 +67,7 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
   const onFinish = (values: any) => {
     const prompt = fetchPrompt(currentRole.prompt, values);
     va.track(currentRole.imgAlt, { eventType: 'submit', prompt });
-    onSelect(prompt);
+    onSelect(prompt, { apiType: currentRole.api ?? IApiType.openai });
     onCancelModal();
   };
 

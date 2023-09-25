@@ -44,7 +44,9 @@ export const metaConfig: IMeta = {
       'petBehaviorist',
       'learnfaster',
       'furnVideoScript',
-      'furnxiaohongshu'
+      'furnxiaohongshu',
+      'restVideoScript',
+      'restxiaohongshu'
     ],
   },
   [ENVS.normal]: {
@@ -71,13 +73,24 @@ export const metaConfig: IMeta = {
   },
   [ENVS.furniture]: {
     env: ENVS.normal,
-    title: 'Chatbot UI',
+    title: '新媒体运营助手',
     description: 'Build your own AI assistant.',
     wechat: 'LzerO12345678',
     qrcode: '/images/qrcode1.jpg',
     mask: [
       'furnVideoScript',
       'furnxiaohongshu'
+    ],
+  },
+  [ENVS.restaurant]: {
+    env: ENVS.normal,
+    title: '新媒体运营助手',
+    description: 'Build your own AI assistant.',
+    wechat: 'LzerO12345678',
+    qrcode: '/images/qrcode1.jpg',
+    mask: [
+      'restVideoScript',
+      'restxiaohongshu'
     ],
   }
 };

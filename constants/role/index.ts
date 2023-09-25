@@ -8,6 +8,7 @@ import { xiaohongshu } from './xiaohongshu';
 import { gov } from './gov';
 import { hebaoxiaohongshu, hebaoVideoScript, hebaozixun, hebaozhaiyao } from './hebao';
 import { furnVideoScript, furnxiaohongshu } from './furniture';
+import { restVideoScript, restxiaohongshu } from './restuarant';
 export {
   formType,
   language
@@ -28,7 +29,9 @@ export const defaultRoleList: IRole[] = [
   hebaozixun,
   hebaozhaiyao,
   furnVideoScript,
-  furnxiaohongshu
+  furnxiaohongshu,
+  restVideoScript,
+  restxiaohongshu
 ].map((elem, index) => {
   elem.index = index;
   return elem;

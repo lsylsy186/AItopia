@@ -307,6 +307,13 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           saveConversations(updatedConversations);
         }
         const handleWithPlugin = async () => {
+          // Flowise
+          // const data = await queryFlowise({ "question": message.content });
+
+          // const updatedMessages: Message[] = [
+          //   ...updatedConversation.messages,
+          //   { role: 'assistant', content: data },
+          // ];
           const { answer } = await response.json();
           const updatedMessages: Message[] = [
             ...updatedConversation.messages,

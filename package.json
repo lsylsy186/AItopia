@@ -24,6 +24,7 @@
     "@vercel/analytics": "^1.0.1",
     "ai": "^2.2.12",
     "antd": "^5.7.2",
+    "axios": "^1.5.0",
     "bcrypt": "^5.1.0",
     "eventsource-parser": "^0.1.0",
     "i18next": "^22.4.13",

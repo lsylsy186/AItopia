@@ -16,6 +16,7 @@ export interface ChatBody {
   temperature: number;
   userId?: string;
   balance: number;
+  options?: {};
 }
 
 export interface Conversation {

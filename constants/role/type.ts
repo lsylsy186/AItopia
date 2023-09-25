@@ -1,3 +1,10 @@
+export enum IApiType {
+  openai,
+  fastgpt,
+  vectorvein,
+  flowise
+}
+
 export interface IRole {
   img: string;
   imgAlt: string;
@@ -7,8 +14,8 @@ export interface IRole {
   prompt: string;
   options?: IRoleOption[];
   example?: string;
+  api?: IApiType;
 }
-
 export interface IOption {
   label: any;
   value: any;

@@ -2,12 +2,16 @@ export enum ENVS {
   local = 'local',
   normal = 'normal',
   hebao = 'hebao',
+  furniture = 'furniture',
+  restaurant = 'resturant',
 }
 
 export const domains = {
   [ENVS.local]: 'localhost',
   [ENVS.normal]: 'chat.goodae.top',
   [ENVS.hebao]: 'hebao.goodae.top',
+  [ENVS.furniture]: 'furn.goodae.top',
+  [ENVS.restaurant]: 'rest.goodae.top',
 };
 
 interface IMetaData {
@@ -39,6 +43,8 @@ export const metaConfig: IMeta = {
       'gov',
       'petBehaviorist',
       'learnfaster',
+      'furnVideoScript',
+      'furnxiaohongshu'
     ],
   },
   [ENVS.normal]: {
@@ -62,6 +68,17 @@ export const metaConfig: IMeta = {
     title: '禾宝传媒',
     description: 'Build your own AI assistant',
     mask: ['hebaoxiaohongshu', 'hebaoVideoScript'],
+  },
+  [ENVS.furniture]: {
+    env: ENVS.normal,
+    title: 'Chatbot UI',
+    description: 'Build your own AI assistant.',
+    wechat: 'LzerO12345678',
+    qrcode: '/images/qrcode1.jpg',
+    mask: [
+      'furnVideoScript',
+      'furnxiaohongshu'
+    ],
   }
 };
 

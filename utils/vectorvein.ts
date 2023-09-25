@@ -38,7 +38,7 @@ export const vectorveinRequest = () => {
       axios.post(url, payload, {
         headers: headers
       })
-        .then((response) => {
+        .then((response: any) => {
           let result = response.data;
           console.log(response.status);
           console.log(result);
@@ -47,26 +47,26 @@ export const vectorveinRequest = () => {
             axios.post(url, payload, {
               headers: headers
             })
-              .then((response) => {
+              .then((response: any) => {
                 result = response.data;
                 console.log(response.status);
                 console.log(result);
               })
-              .catch((error) => {
+              .catch((error: any) => {
                 console.error(error);
               });
           }
         })
-        .catch((error) => {
+        .catch((error: any) => {
           console.error(error);
         });
     })
-    .catch((error) => {
+    .catch((error: any) => {
       console.error(error);
     });
 }
 
-function sleep(seconds) {
+function sleep(seconds: number) {
   const waitUntil = new Date().getTime() + seconds * 1000;
   while (new Date().getTime() < waitUntil) { }
 }

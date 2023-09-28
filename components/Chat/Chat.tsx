@@ -1,4 +1,3 @@
-import { IconClearAll, IconSettings } from '@tabler/icons-react';
 import message from 'antd/lib/message';
 import { useSession } from "next-auth/react";
 import { useModel } from '@/hooks';
@@ -34,6 +33,10 @@ import SigninButton from '../Buttons/SinginButton';
 import useApiService from '@/services/useApiService';
 import { calTokenLength } from '@/utils/tiktoken';
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
+
+import { SidebarButton } from '@/components/Sidebar/SidebarButton';
+import { IconAlien } from '@tabler/icons-react';
+import { useRouter } from 'next/router';
 
 // import { SystemPrompt } from './SystemPrompt';
 // import { TemperatureSlider } from './Temperature';
@@ -465,6 +468,16 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     handleSend({ role: 'user', content: prompt, hide: true }, 0, null);
   }, [status, handleSend]);
 
+  const router = useRouter();
+  const BalanceComp = () => {
+    return <>
+      <span>剩余算力：<span className={`text-sm ${balance <= 0 ? 'text-red-600' : ''}`}>{balance}</span></span>
+    </>
+  }
+
+  // 支持联系方式
+  const ableContact = env === ENVS.normal || ENVS.local;
+
   return (
     <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">
       <RoleModal onSelect={onRoleSelect} />
@@ -550,6 +563,15 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                   >
                     <IconClearAll size={18} />
                   </button> */}
+                  <button
+                    className="cursor-pointer select-none gap-3 rounded-md px-3 text-[14px] leading-3 transition-colors duration-200 hover:bg-gray-500/10"
+                    onClick={() => {
+                      if (!ableContact) return;
+                      router.push('/other/contact')
+                    }}
+                  >
+                    <span>{BalanceComp()}</span>
+                  </button>
                   <SigninButton />
                 </div>
                 {showSettings && (

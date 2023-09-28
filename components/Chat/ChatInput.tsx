@@ -6,10 +6,10 @@ import {
   IconRepeat,
   IconSend,
   IconPlayerTrackNext,
-  IconRepeatOff
+  IconRepeatOff,
+  IconKeyboard
 } from '@tabler/icons-react';
 import {
-  KeyboardEvent,
   MutableRefObject,
   useCallback,
   useContext,
@@ -18,18 +18,17 @@ import {
   useState,
 } from 'react';
 import { getMeta, ENVS } from '@/constants';
-
 import { useTranslation } from 'next-i18next';
-
 import { Message } from '@/types/chat';
 import { Plugin } from '@/types/plugin';
 import { Prompt } from '@/types/prompt';
 
 import HomeContext from '@/pages/api/home/home.context';
 
-import { PluginSelect } from './PluginSelect';
 import { PromptList } from './PromptList';
 import { VariableModal } from './VariableModal';
+
+import { MessageInput } from '@/components/Message/MessageInput';
 
 interface Props {
   onSend: (message: Message, plugin: Plugin | null) => void;
@@ -60,7 +59,7 @@ export const ChatInput = ({
     dispatch: homeDispatch,
   } = useContext(HomeContext);
 
-  const [content, setContent] = useState<string>();
+  const [content, setContent] = useState<string>('');
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [showPromptList, setShowPromptList] = useState(false);
   const [activePromptIndex, setActivePromptIndex] = useState(0);
@@ -70,14 +69,36 @@ export const ChatInput = ({
   const [showPluginSelect, setShowPluginSelect] = useState(false);
   const [plugin, setPlugin] = useState<Plugin | null>(null);
 
+  const [text, setText] = useState('');
+  const [isTextInput, setIsTextInput] = useState(true);
+  const [isTalking, setIsTalking] = useState(false);
+
+  function handleOnEnter() {
+    if (text) {
+      // stopAudioPlayback();
+      // appendUserChat(text);
+      // sendOverSocket(text);
+    }
+  }
+
+  function startTalk() {
+    setIsTalking(true);
+    // startRecording();
+  }
+
+  function stopTalk() {
+    setIsTalking(false);
+    // stopRecording();
+  }
+
   const promptListRef = useRef<HTMLUListElement | null>(null);
 
   const filteredPrompts = prompts.filter((prompt) =>
     prompt.name.toLowerCase().includes(promptInputValue.toLowerCase()),
   );
+  console.log('content', content);
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
+  const handleChange = (value: any) => {
     const maxLength = selectedConversation?.model.maxLength;
 
     if (maxLength && value.length > maxLength) {
@@ -143,37 +164,38 @@ export const ChatInput = ({
     setShowPromptList(false);
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (event: any) => {
+    console.log('showPromptList', showPromptList);
     if (showPromptList) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
         setActivePromptIndex((prevIndex) =>
           prevIndex < prompts.length - 1 ? prevIndex + 1 : prevIndex,
         );
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
         setActivePromptIndex((prevIndex) =>
           prevIndex > 0 ? prevIndex - 1 : prevIndex,
         );
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
+      } else if (event.key === 'Tab') {
+        event.preventDefault();
         setActivePromptIndex((prevIndex) =>
           prevIndex < prompts.length - 1 ? prevIndex + 1 : 0,
         );
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
         handleInitModal();
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
         setShowPromptList(false);
       } else {
         setActivePromptIndex(0);
       }
-    } else if (e.key === 'Enter' && !isTyping && !isMobile() && !e.shiftKey) {
-      e.preventDefault();
+    } else if (event.key === 'Enter' && !isTyping && !isMobile() && !event.shiftKey) {
+      event.preventDefault();
       handleSend();
-    } else if (e.key === '/' && e.metaKey) {
-      e.preventDefault();
+    } else if (event.key === '/' && event.metaKey) {
+      event.preventDefault();
       setShowPluginSelect(!showPluginSelect);
     }
   };
@@ -236,14 +258,14 @@ export const ChatInput = ({
     }
   }, [activePromptIndex]);
 
-  useEffect(() => {
-    if (textareaRef && textareaRef.current) {
-      textareaRef.current.style.height = 'inherit';
-      textareaRef.current.style.height = `${textareaRef.current?.scrollHeight}px`;
-      textareaRef.current.style.overflow = `${textareaRef?.current?.scrollHeight > 400 ? 'auto' : 'hidden'
-        }`;
-    }
-  }, [content]);
+  // useEffect(() => {
+  //   if (textareaRef && textareaRef.current) {
+  //     textareaRef.current.style.height = 'inherit';
+  //     textareaRef.current.style.height = `${textareaRef.current?.scrollHeight}px`;
+  //     textareaRef.current.style.overflow = `${textareaRef?.current?.scrollHeight > 400 ? 'auto' : 'hidden'
+  //       }`;
+  //   }
+  // }, [content]);
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -266,6 +288,166 @@ export const ChatInput = ({
   const hideRegenerate = env === ENVS.hebao;
   const showContinue = env === ENVS.hebao;
 
+  // const onFileInputChange = async (e) => {
+  //   if (e.currentTarget.files && e.currentTarget.files.length > 0) {
+  // const fileMessageParams = {};
+  // fileMessageParams.file = e.currentTarget.files[0];
+  // currentlyJoinedChannel.sendFileMessage(fileMessageParams).onSucceeded((message) => {
+  //     const updatedMessages = [...messages, message];
+  //     updateState({ ...state, messages: updatedMessages, messageInputValue: "", file: null });
+  // }).onFailed((error) => {
+  //     console.log(error)
+  //     console.log("failed")
+  // });
+  //   }
+  // }
+
+  // 原始input
+  //   <button
+  //     className="absolute lg:leading-11 lg:h-11 left-2 leading-9 h-9 rounded-sm p-1 text-neutral-800 opacity-60 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-opacity-50 dark:text-neutral-100 dark:hover:text-neutral-200"
+  //     onClick={() => setShowPluginSelect(!showPluginSelect)}
+  //     onKeyDown={(e) => { }}
+  //   >
+  //     {plugin ? <IconBrandGoogle size={20} /> : <IconBolt size={20} />}
+  //   </button>
+
+  //   {showPluginSelect && (
+  //     <div className="absolute lg:leading-11 lg:h-11  leading-9 h-9 left-0 bottom-14 rounded bg-white dark:bg-[#343541]">
+  //       <PluginSelect
+  //         plugin={plugin}
+  //         onKeyDown={(e: any) => {
+  //           if (e.key === 'Escape') {
+  //             e.preventDefault();
+  //             setShowPluginSelect(false);
+  //             textareaRef.current?.focus();
+  //           }
+  //         }}
+  //         onPluginChange={(plugin: Plugin) => {
+  //           setPlugin(plugin);
+  //           setShowPluginSelect(false);
+
+  //           if (textareaRef && textareaRef.current) {
+  //             textareaRef.current.focus();
+  //           }
+  //         }}
+  //       />
+  //     </div>
+  //   )}
+  //   {isTextInput && (
+  //     <div className="flex flex-row justify-center gap-4 w-full pb-10 pt-4">
+  //       <Tooltip title="Talk">
+  //         <div
+  //           onClick={() =>
+  //             setIsTextInput(false)
+  //           }
+  //         >
+  //           <Image
+  //             priority
+  //             width={50}
+  //             height={50}
+  //             src='/images/talk.svg'
+  //             alt="talk button"
+  //           />
+  //         </div>
+  //       </Tooltip>
+  //       <InputEmoji
+  //         ref={textareaRef}
+  //         value={content}
+  //         cleanOnEnter
+  //         onEnter={handleOnEnter}
+  //         placeholder={
+  //           t('Type a message or type "/" to select a prompt...') || ''
+  //         }
+  //         fontSize={18}
+  //         fontFamily=""
+  //         // onCompositionStart={() => setIsTyping(true)}
+  //         // onCompositionEnd={() => setIsTyping(false)}
+  //         onChange={handleChange}
+  //         onKeyDown={handleKeyDown}
+  //       />
+  //       <div className="message-input-buttons">
+  //         <div
+  //           className="bg-real-navy px-2 min-w-fit sm:min-w-16 sm:px-4 hidden md:flex"
+  //           onClick={handleOnEnter}
+  //         >
+  //           <IconSend size="1.5em" />
+  //           <span className="hidden lg:inline">Send</span>
+  //         </div>
+  //         <label className="file-upload-label" htmlFor="upload" >Select File</label>
+  //         <input
+  //           id="upload"
+  //           className="file-upload-button"
+  //           type='file'
+  //           hidden={true}
+  //           onChange={onFileInputChange}
+  //           onClick={() => { }}
+  //         />
+  //       </div>
+  //     </div>
+  //   )}
+  //   {!isTextInput && !isTalking && (
+  //     <div className="flex flex-row items-center">
+  //       <Tooltip title="Text">
+  //         <Button
+  //           onClick={() =>
+  //             setIsTextInput(true)
+  //           }
+  //           className="-ml-16 md:-ml-24"
+  //         >
+  //           <IconKeyboard />
+  //         </Button>
+  //       </Tooltip>
+  //       <div className="text-center ml-8 md:ml-12">
+  //         <div
+  //           className="bg-real-navy w-24 h-24 mb-4"
+  //           onClick={startTalk}
+  //         >
+  //           <Image
+  //             priority
+  //             width={50}
+  //             height={50}
+  //             src='/images/microphone.svg'
+  //             alt="microphone button"
+  //             className="w-6"
+  //           />
+  //         </div>
+  //         {/* <p className="font-light">Click and start talking</p> */}
+  //       </div>
+  //     </div>
+  //   )}
+  //   {!isTextInput && isTalking && (
+  //     <div className="text-center">
+  //       {/* <p className="font-light mb-10">You <span className="text-white/50">are speaking...</span></p> */}
+  //       <div className="mb-4">
+  //         <span className="animate-ping absolute w-24 h-24 bg-real-navy opacity-50 rounded-full"></span>
+  //         <Button
+  //           onClick={stopTalk}
+  //           className="bg-real-navy w-24 h-24"
+  //         >
+  //           <Image
+  //             priority
+  //             width={50}
+  //             height={50}
+  //             src='/images/pause.svg'
+  //             alt="pause button"
+  //           />
+  //         </Button>
+  //       </div>
+  //       {/* <p className="font-light">Click and stop talking</p> */}
+  //     </div>
+  //   )}
+  //   <button
+  //     className="absolute lg:leading-11 lg:h-11 leading-9 h-9 right-2 rounded-sm p-1 text-neutral-800 opacity-60 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-opacity-50 dark:text-neutral-100 dark:hover:text-neutral-200"
+  //     onClick={handleSend}
+  //   >
+  //     {messageIsStreaming ? (
+  //       <div className="h-4 w-4 animate-spin rounded-full border-t-2 border-neutral-800 opacity-60 dark:border-neutral-100"></div>
+  //     ) : (
+  //       <IconSend size={18} />
+  //     )}
+  //   </button>
+  // </>
+
   return (
     <div className="absolute bottom-0 left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 dark:border-white/20 dark:via-[#343541] dark:to-[#343541] md:pt-2">
       <div className="stretch mx-2 mt-4 flex flex-row gap-3 last:mb-2 md:mx-4 md:mt-[52px] md:last:mb-6 lg:mx-auto lg:max-w-3xl">
@@ -281,23 +463,23 @@ export const ChatInput = ({
         {!messageIsStreaming &&
           selectedConversation &&
           selectedConversation.messages.length > 0 && (
-            <div className='absolute top-0 left-0 right-0 mx-auto gap-3 flex py-2 px-4 justify-center'>
+            <div className='absolute -top-3 md:top-0 left-0 right-0 mx-auto md:gap-3 gap-1 flex py-2 px-4 justify-center'>
               {
                 hideRegenerate ? <></> : <button
-                  className="flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+                  className="flex w-fit items-center gap-2 rounded border border-neutral-200 bg-white py-2 px-3 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
                   onClick={onRegenerate}
-                > <IconRepeatOff size={16} /> {t('Regenerate response')}
+                > <IconRepeatOff size={16} /> 重新生成
                 </button>
               }
               <button
-                className="flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+                className="flex w-fit items-center gap-2 rounded border border-neutral-200 bg-white py-2 px-3 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
                 onClick={onRepeat}
               >
                 <IconRepeat size={16} /> 再来一次
               </button>
               {
                 showContinue ? <></> : <button
-                  className="flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+                  className="flex w-fit  items-center gap-2 rounded border border-neutral-200 bg-white py-2 px-3 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
                   onClick={onContinue}
                 > <IconPlayerTrackNext size={16} /> 继续
                 </button>
@@ -306,73 +488,20 @@ export const ChatInput = ({
           )}
 
         <div className="relative mx-2 flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:mx-4">
-          <button
-            className="absolute lg:leading-11 lg:h-11 left-2 leading-9 h-9 rounded-sm p-1 text-neutral-800 opacity-60 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-opacity-50 dark:text-neutral-100 dark:hover:text-neutral-200"
-            onClick={() => setShowPluginSelect(!showPluginSelect)}
-            onKeyDown={(e) => { }}
-          >
-            {plugin ? <IconBrandGoogle size={20} /> : <IconBolt size={20} />}
-          </button>
 
-          {showPluginSelect && (
-            <div className="absolute lg:leading-11 lg:h-11  leading-9 h-9 left-0 bottom-14 rounded bg-white dark:bg-[#343541]">
-              <PluginSelect
-                plugin={plugin}
-                onKeyDown={(e: any) => {
-                  if (e.key === 'Escape') {
-                    e.preventDefault();
-                    setShowPluginSelect(false);
-                    textareaRef.current?.focus();
-                  }
-                }}
-                onPluginChange={(plugin: Plugin) => {
-                  setPlugin(plugin);
-                  setShowPluginSelect(false);
-
-                  if (textareaRef && textareaRef.current) {
-                    textareaRef.current.focus();
-                  }
-                }}
-              />
-            </div>
-          )}
-
-          <textarea
-            ref={textareaRef}
-            className="m-0 w-full resize-none border-0 bg-transparent p-0 py-2 pr-8 pl-10 text-black dark:bg-transparent dark:text-white md:py-3 md:pl-10"
-            style={{
-              resize: 'none',
-              bottom: `${textareaRef?.current?.scrollHeight}px`,
-              maxHeight: '400px',
-              overflow: `${textareaRef.current && textareaRef.current.scrollHeight > 400
-                ? 'auto'
-                : 'hidden'
-                }`,
-            }}
-            placeholder={
-              t('Type a message or type "/" to select a prompt...') || ''
-            }
-            value={content}
-            rows={1}
-            onCompositionStart={() => setIsTyping(true)}
-            onCompositionEnd={() => setIsTyping(false)}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
+          <MessageInput
+            content={content}
+            selectedConversation={selectedConversation}
+            setContent={setContent}
+            handleKeyDown={handleKeyDown}
+            updatePromptListVisibility={updatePromptListVisibility}
+            handleSend={handleSend}
+            messageIsStreaming={messageIsStreaming}
+            fileUpload="image"
           />
 
-          <button
-            className="absolute lg:leading-11 lg:h-11 leading-9 h-9 right-2 rounded-sm p-1 text-neutral-800 opacity-60 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-opacity-50 dark:text-neutral-100 dark:hover:text-neutral-200"
-            onClick={handleSend}
-          >
-            {messageIsStreaming ? (
-              <div className="h-4 w-4 animate-spin rounded-full border-t-2 border-neutral-800 opacity-60 dark:border-neutral-100"></div>
-            ) : (
-              <IconSend size={18} />
-            )}
-          </button>
-
           {showScrollDownButton && (
-            <div className="absolute bottom-12 right-0 lg:bottom-0 lg:-right-10">
+            <div className="absolute bottom-16 -right-1 lg:bottom-2 lg:-right-10">
               <button
                 className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-300 text-gray-800 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-neutral-200"
                 onClick={onScrollDownClick}

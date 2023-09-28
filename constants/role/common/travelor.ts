@@ -1,4 +1,4 @@
-import { formType, IRole } from './type';
+import { formType, IRole } from '../type';
 
 export const travelor: IRole = {
   index: 1,

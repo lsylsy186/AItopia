@@ -1,11 +1,5 @@
 import { IRole, formType, language } from './type';
-import { translator } from './translator';
-import { travelor } from './travelor';
-import { learnfaster } from './learnfaster';
-import { petBehaviorist } from './petBehaviorist';
-import { imageRecognizer } from './imageRecognizer';
-import { xiaohongshu } from './xiaohongshu';
-import { gov } from './gov';
+import { weeklyReport, translator, travelor, learnfaster, petBehaviorist, imageRecognizer, xiaohongshu, gov, promptOpt } from './common';
 import { hebaoxiaohongshu, hebaoVideoScript, hebaozixun, hebaozhaiyao } from './hebao';
 import { furnVideoScript, furnxiaohongshu } from './furniture';
 import { restVideoScript, restxiaohongshu } from './restuarant';
@@ -31,7 +25,9 @@ export const defaultRoleList: IRole[] = [
   furnVideoScript,
   furnxiaohongshu,
   restVideoScript,
-  restxiaohongshu
+  restxiaohongshu,
+  weeklyReport,
+  promptOpt
 ].map((elem, index) => {
   elem.index = index;
   return elem;

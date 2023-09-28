@@ -1,0 +1,98 @@
+.pn-msg-input {
+  background: #f0f3f7;
+  padding: 8px 7px;
+}
+
+.pnMsgInputWrapper {
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
+.pnMsgInputTextarea {
+  background: #e4e9f0;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: #585858;
+  font-family: inherit;
+  font-size: 13px;
+  height: 32px;
+  line-height: 18px;
+  margin: 0 9px;
+  outline: none;
+  overflow: hidden;
+  padding: 6px 14px 8px;
+  resize: none;
+  width: 100%;
+}
+
+.pnMsgInputTextarea:focus-within {
+  outline: none;
+  border: 1px solid transparent;
+}
+
+.pnMsgInputTextarea::placeholder {
+  color:#999999;
+}
+
+.pnMsgInputSend {
+  background: transparent;
+  border-radius: 5px;
+  border: none;
+  color: #999999;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: bold;
+  margin: 0 9px;
+  min-width: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.pnMsgInputSend--active {
+  color: var(--chat--light__hover--1);
+}
+
+.pnMsgInputEmojiPicker {
+  bottom: 46px;
+  left: 0;
+  right: 95px;
+  position: absolute;
+}
+
+.pnMsgInputIcons {
+  align-items: center;
+  display: flex;
+}
+
+.pnMsgInputIcons button {
+  background: none;
+  border: none;
+  color: #999999;
+  cursor: pointer;
+  font-size: 13px;
+  margin: 0 9px;
+  padding: 0;
+}
+
+.pnMsgInputFileLabel {
+  cursor: pointer;
+}
+
+.pnMsgInputFileInput {
+  display: none;
+}
+
+.pnMsgInputDisabled .pnMsgInputTextarea {
+  background: var(--chat--light__background--3);
+  border: 1px solid transparent;
+  cursor: not-allowed;
+}
+
+.pnMsgInputDisabled .pnMsgInputTextarea::placeholder {
+  color: rgba(153,153,153, 0.5);
+}

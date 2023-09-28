@@ -142,9 +142,9 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
       }
       onChange && onChange(event);
       setContent(newText);
-      updatePromptListVisibility(value);
+      updatePromptListVisibility(newText);
     } catch (e) {
-      onError(e);
+      onError(e as any);
     }
   };
 
@@ -152,9 +152,9 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     try {
       const file = event?.target?.files?.[0];
       setFile(file);
-      setContent(file.name);
+      setContent(file?.name);
     } catch (e) {
-      onError(e);
+      onError(e as any);
     }
   };
 
@@ -166,7 +166,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
         setEmojiPickerShown(false);
         if (inputRef.current) inputRef.current.focus();
       } catch (e) {
-        onError(e);
+        onError(e as any);
       }
     },
     [onError, content, setContent]

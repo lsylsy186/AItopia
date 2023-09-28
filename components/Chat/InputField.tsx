@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
-import InputEmoji from 'react-input-emoji';
 import { IconKeyboard, IconSend } from '@tabler/icons-react';
 import Image from 'next/image';
 
@@ -50,7 +49,7 @@ export default function InputField() {
               />
             </Button>
           </Tooltip>
-          <InputEmoji
+          {/* <InputEmoji
             value={text}
             onChange={setText}
             cleanOnEnter
@@ -58,7 +57,7 @@ export default function InputField() {
             placeholder="Your turn"
             fontSize={18}
             fontFamily=""
-          />
+          /> */}
           <Button
             className="bg-real-navy px-2 min-w-fit sm:min-w-16 sm:px-4 hidden md:flex"
             onClick={handleOnEnter}

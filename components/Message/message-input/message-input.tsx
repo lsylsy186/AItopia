@@ -81,7 +81,7 @@ export const useMessageInputCore = (props: CommonMessageInputProps) => {
       // if (typingIndicator) stopTypingIndicator();
       // clearInput();
     } catch (e) {
-      onError(e);
+      onError(e as any);
     } finally {
       setLoader(false);
     }
@@ -93,7 +93,7 @@ export const useMessageInputCore = (props: CommonMessageInputProps) => {
       setTypingIndicatorSent(true);
       const message = { message: { type: "typing_on" }, channel };
     } catch (e) {
-      onError(e);
+      onError(e as any);
     }
   };
 
@@ -103,7 +103,7 @@ export const useMessageInputCore = (props: CommonMessageInputProps) => {
       setTypingIndicatorSent(false);
       const message = { message: { type: "typing_off" }, channel };
     } catch (e) {
-      onError(e);
+      onError(e as any);
     }
   };
 

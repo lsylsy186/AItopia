@@ -11,7 +11,7 @@ export const useOuterClick = (
   });
 
   useEffect(() => {
-    const handleClick = (e) => {
+    const handleClick = (e: any) => {
       if (innerRef.current && callbackRef.current && !innerRef.current.contains(e.target))
         callbackRef.current(e);
     };
@@ -30,7 +30,7 @@ export const useIntersectionObserver = (
   elementRef: MutableRefObject<Element>,
   observerParams?: IntersectionObserverInit
 ): IntersectionObserverEntry | null => {
-  const [entry, setEntry] = useState<IntersectionObserverEntry>(null);
+  const [entry, setEntry] = useState<IntersectionObserverEntry>(null as any);
 
   const updateEntry = ([entry]: IntersectionObserverEntry[]): void => {
     setEntry(entry);

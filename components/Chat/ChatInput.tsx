@@ -10,7 +10,6 @@ import {
   IconKeyboard
 } from '@tabler/icons-react';
 import {
-  KeyboardEvent,
   MutableRefObject,
   useCallback,
   useContext,
@@ -30,14 +29,9 @@ import { Prompt } from '@/types/prompt';
 
 import HomeContext from '@/pages/api/home/home.context';
 
-import { PluginSelect } from './PluginSelect';
 import { PromptList } from './PromptList';
 import { VariableModal } from './VariableModal';
 
-import Button from 'antd/lib/button';
-import Tooltip from 'antd/lib/tooltip';
-import InputEmoji from 'react-input-emoji';
-import Image from 'next/image';
 import { MessageInput } from '@/components/Message/MessageInput';
 
 interface Props {

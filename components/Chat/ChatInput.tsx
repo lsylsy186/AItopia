@@ -292,19 +292,19 @@ export const ChatInput = ({
   const hideRegenerate = env === ENVS.hebao;
   const showContinue = env === ENVS.hebao;
 
-  const onFileInputChange = async (e) => {
-    if (e.currentTarget.files && e.currentTarget.files.length > 0) {
-      // const fileMessageParams = {};
-      // fileMessageParams.file = e.currentTarget.files[0];
-      // currentlyJoinedChannel.sendFileMessage(fileMessageParams).onSucceeded((message) => {
-      //     const updatedMessages = [...messages, message];
-      //     updateState({ ...state, messages: updatedMessages, messageInputValue: "", file: null });
-      // }).onFailed((error) => {
-      //     console.log(error)
-      //     console.log("failed")
-      // });
-    }
-  }
+  // const onFileInputChange = async (e) => {
+  //   if (e.currentTarget.files && e.currentTarget.files.length > 0) {
+  // const fileMessageParams = {};
+  // fileMessageParams.file = e.currentTarget.files[0];
+  // currentlyJoinedChannel.sendFileMessage(fileMessageParams).onSucceeded((message) => {
+  //     const updatedMessages = [...messages, message];
+  //     updateState({ ...state, messages: updatedMessages, messageInputValue: "", file: null });
+  // }).onFailed((error) => {
+  //     console.log(error)
+  //     console.log("failed")
+  // });
+  //   }
+  // }
 
   // 原始input
   //   <button

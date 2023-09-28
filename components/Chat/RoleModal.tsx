@@ -78,6 +78,12 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
 
   const formRender = useCallback(() => {
     const { options } = currentRole;
+
+    if (!options?.length) {
+      return (
+        <div>请点击“提交”按钮开始</div>
+      );
+    }
     return (
       options?.map((item: IRoleOption) => {
         const { type, label, option, key, width } = item;

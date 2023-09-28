@@ -46,7 +46,8 @@ export const metaConfig: IMeta = {
       'furnVideoScript',
       'furnxiaohongshu',
       'restVideoScript',
-      'restxiaohongshu'
+      'restxiaohongshu',
+      'weeklyReport'
     ],
   },
   [ENVS.normal]: {
@@ -63,6 +64,7 @@ export const metaConfig: IMeta = {
       'gov',
       'petBehaviorist',
       'learnfaster',
+      'weeklyReport',
     ],
   },
   [ENVS.hebao]: {

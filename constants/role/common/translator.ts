@@ -1,4 +1,4 @@
-import { language, formType, IRole } from './type';
+import { language, formType, IRole } from '../type';
 
 export const translator: IRole = {
   index: 0,

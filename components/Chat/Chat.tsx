@@ -38,7 +38,6 @@ import { SidebarButton } from '@/components/Sidebar/SidebarButton';
 import { IconAlien } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 
-
 // import { SystemPrompt } from './SystemPrompt';
 // import { TemperatureSlider } from './Temperature';
 

@@ -1,5 +1,5 @@
 import { IRole, formType, language } from './type';
-import { weeklyReport, translator, travelor, learnfaster, petBehaviorist, imageRecognizer, xiaohongshu, gov } from './common';
+import { weeklyReport, translator, travelor, learnfaster, petBehaviorist, imageRecognizer, xiaohongshu, gov, promptOpt } from './common';
 import { hebaoxiaohongshu, hebaoVideoScript, hebaozixun, hebaozhaiyao } from './hebao';
 import { furnVideoScript, furnxiaohongshu } from './furniture';
 import { restVideoScript, restxiaohongshu } from './restuarant';
@@ -26,7 +26,8 @@ export const defaultRoleList: IRole[] = [
   furnxiaohongshu,
   restVideoScript,
   restxiaohongshu,
-  weeklyReport
+  weeklyReport,
+  promptOpt
 ].map((elem, index) => {
   elem.index = index;
   return elem;

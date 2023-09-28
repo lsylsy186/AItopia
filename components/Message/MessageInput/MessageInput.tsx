@@ -12,8 +12,13 @@ import React, {
 } from "react";
 import { CommonMessageInputProps, useMessageInputCore } from "../message-input";
 import { useTranslation } from 'next-i18next';
-import { EmojiPickerElementProps } from "../types";
 import { useOuterClick, useResizeObserver } from "../helpers";
+import EmojiPicker, {
+  EmojiStyle,
+  EmojiClickData,
+  Categories,
+  SuggestionMode,
+} from "emoji-picker-react";
 import {
   IconFileUpload,
   IconSend,
@@ -26,8 +31,6 @@ import styles from './styles.module.css'
 export type MessageInputProps = CommonMessageInputProps & {
   /** Option to hide the Send button. */
   hideSendButton?: boolean;
-  /** Option to pass in an emoji picker if you want it to be rendered in the input. For more details, refer to the Emoji Pickers section in the docs. */
-  emojiPicker?: ReactElement<EmojiPickerElementProps>;
   /** Callback to handle an event when the text value changes. */
   onChange?: (event: ChangeEvent<HTMLTextAreaElement>) => void;
   /** Callback to handle an event when the key is pressed in textarea. */
@@ -60,7 +63,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     actionsAfterInput,
     disabled,
     draftMessage,
-    emojiPicker,
     extraActionsRenderer,
     fileUpload,
     hideSendButton,
@@ -159,10 +161,10 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
   };
 
   const handleEmojiInsertion = useCallback(
-    (emoji: { native: string }) => {
+    (emoji: EmojiClickData, event: MouseEvent) => {
       try {
-        if (!("native" in emoji)) return;
-        setContent(content + emoji.native);
+        if (!emoji?.emoji) return;
+        setContent(content + emoji.emoji);
         setEmojiPickerShown(false);
         if (inputRef.current) inputRef.current.focus();
       } catch (e) {
@@ -214,7 +216,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
       </>
     );
   };
-  console.log('emojiPickerShown', emojiPickerShown);
   const renderEmojiPicker = () => {
     const title = "Add an emoji";
     return (
@@ -225,11 +226,35 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
 
         {emojiPickerShown && (
           <div
-            className={styles["pnMsgInputEmojiPicker"]}
             ref={pickerRef}
+            className={styles["pnMsgInputEmojiPicker"]}
             style={actionsAfterInput ? { left: "unset" } : { right: "unset" }}
           >
-            {React.cloneElement((emojiPicker as any), { onEmojiSelect: handleEmojiInsertion })}
+            <EmojiPicker
+              height={350}
+              onEmojiClick={handleEmojiInsertion}
+              emojiStyle={EmojiStyle.NATIVE}
+              lazyLoadEmojis={true}
+              suggestedEmojisMode={SuggestionMode.FREQUENT}
+              categories={[
+                {
+                  name: "Smiles & Emotions",
+                  category: Categories.SMILEYS_PEOPLE
+                },
+                {
+                  name: "Fun and Games",
+                  category: Categories.ACTIVITIES
+                },
+                {
+                  name: "Flags",
+                  category: Categories.FLAGS
+                },
+                {
+                  name: "Yum Yum",
+                  category: Categories.FOOD_DRINK
+                }
+              ]}
+            />
           </div>
         )}
       </>
@@ -239,7 +264,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
   const renderActions = () => (
     <div className={styles["pnMsgInputIcons"]}>
       <div className="flex pn-msg-input__emoji-toggle">
-        {!disabled && emojiPicker && renderEmojiPicker()}
+        {!disabled && renderEmojiPicker()}
       </div>
       {!disabled && fileUpload && renderFileUpload()}
       {extraActionsRenderer && extraActionsRenderer()}

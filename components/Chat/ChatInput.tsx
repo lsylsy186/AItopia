@@ -18,11 +18,7 @@ import {
   useState,
 } from 'react';
 import { getMeta, ENVS } from '@/constants';
-
 import { useTranslation } from 'next-i18next';
-import pickerData from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
-
 import { Message } from '@/types/chat';
 import { Plugin } from '@/types/plugin';
 import { Prompt } from '@/types/prompt';
@@ -502,7 +498,6 @@ export const ChatInput = ({
             handleSend={handleSend}
             messageIsStreaming={messageIsStreaming}
             fileUpload="image"
-            emojiPicker={<Picker data={pickerData} theme='light' />}
           />
 
           {showScrollDownButton && (

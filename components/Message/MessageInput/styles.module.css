@@ -58,8 +58,8 @@
 }
 
 .pnMsgInputEmojiPicker {
-  bottom: 16px;
-  left: 16px;
+  bottom: 46px;
+  left: 0;
   right: 95px;
   position: absolute;
 }

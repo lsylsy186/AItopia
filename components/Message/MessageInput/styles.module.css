@@ -1,4 +1,4 @@
-.pn-msg-input {
+.msgInput {
   background: #f0f3f7;
   padding: 8px 7px;
 }
@@ -10,6 +10,16 @@
 }
 
 .pnMsgInputTextarea {
+  line-height: 18px;
+  resize: none;
+  width: 100%;
+  position: relative;
+  background: #e4e9f0;
+}
+
+.textContainer {
+  padding: 6px 14px 8px;
+  height: 32px;
   background: #e4e9f0;
   border-radius: 20px;
   border: 1px solid transparent;
@@ -18,14 +28,18 @@
   color: #585858;
   font-family: inherit;
   font-size: 13px;
-  height: 32px;
-  line-height: 18px;
   margin: 0 9px;
   outline: none;
   overflow: hidden;
-  padding: 6px 14px 8px;
-  resize: none;
   width: 100%;
+  position: relative;
+}
+
+.textContainer textarea:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: none;
+  border:none;
 }
 
 .pnMsgInputTextarea:focus-within {
@@ -62,6 +76,60 @@
   left: 0;
   right: 95px;
   position: absolute;
+}
+
+.keyboard {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  /* background-color: transparent; */
+  border-radius: 9999px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  color: #28293d;
+  display: flex;
+  border:#28293d 2px solid;
+  margin-top: 18px;
+}
+
+.microPhone {
+  color: #999999;
+  background: none;
+  position: absolute;
+  right: 4px;
+  top: 4px;
+}
+
+.talk {
+  color: #e4e9f0;
+  background: none;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  align-items: center;
+  justify-content: center;
+  display: inline-flex;
+  position: relative;
+  background-color: #28293d;
+  border-radius: 9999px;
+}
+
+.ping {
+  background-color: rgb(103 133 211/1);
+}
+
+.stopTalk {
+  color: #e4e9f0;
+  background: none;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  align-items: center;
+  justify-content: center;
+  display: inline-flex;
+  position: relative;
+  background-color: #28293d;
+  border-radius: 9999px;
 }
 
 .pnMsgInputIcons {

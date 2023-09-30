@@ -7,6 +7,7 @@ import {
   IconUser,
 } from '@tabler/icons-react';
 import { FC, memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useModel } from '@/hooks';
 
 import { useTranslation } from 'next-i18next';
 
@@ -35,9 +36,11 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
   const { t } = useTranslation('chat');
 
   const {
-    state: { selectedConversation, conversations, currentMessage, messageIsStreaming },
+    state: { selectedConversation, conversations, currentMessage },
     dispatch: homeDispatch,
   } = useContext(HomeContext);
+
+  const { messageIsStreaming } = useModel('global');
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);

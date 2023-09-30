@@ -78,7 +78,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
       apiKey,
       pluginKeys,
       serverSideApiKeyIsSet,
-      messageIsStreaming,
       modelError,
       loading,
       prompts,
@@ -87,7 +86,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     dispatch: homeDispatch,
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
-  const { fetchUserInfoMethod, user, requestUpdateUserAccount } = useModel('global');
+  const { fetchUserInfoMethod, user, requestUpdateUserAccount, messageIsStreaming, setMessageIsStreaming } = useModel('global');
   const { getContentSecurity } = useApiService();
   const signedIn = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
@@ -136,7 +135,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           value: updatedConversation,
         });
         homeDispatch({ field: 'loading', value: true });
-        homeDispatch({ field: 'messageIsStreaming', value: true });
+        setMessageIsStreaming(true);
 
         const chatBody: ChatBody = {
           model: updatedConversation.model,
@@ -171,7 +170,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
 
         if (newBalance < 0) {
           homeDispatch({ field: 'loading', value: false });
-          homeDispatch({ field: 'messageIsStreaming', value: false });
+          setMessageIsStreaming(false);
           toast.error('剩余算力不够，请充值');
           return;
         }
@@ -191,26 +190,27 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
 
         if (!response.ok) {
           homeDispatch({ field: 'loading', value: false });
-          homeDispatch({ field: 'messageIsStreaming', value: false });
+          setMessageIsStreaming(false);
           let toastMsg = response.statusText;
           if (response.status === 403) toastMsg = '剩余算力不够，请充值';
           toast.error(toastMsg);
           return;
         }
         // 更新发送token的算力消耗
-        const res = await requestUpdateUserAccount(signedIn?.id, { tokenCount: sentTokenCount });
-        if (!res.success) {
-          homeDispatch({ field: 'loading', value: false });
-          homeDispatch({ field: 'messageIsStreaming', value: false });
-          let toastMsg = res.statusText;
-          if (res.status === 403) toastMsg = '剩余算力不够，请充值';
-          toast.error(toastMsg);
-        }
+        requestUpdateUserAccount(signedIn?.id, { tokenCount: sentTokenCount }).then((res: any) => {
+          if (!res.success) {
+            homeDispatch({ field: 'loading', value: false });
+            setMessageIsStreaming(false);
+            let toastMsg = res.statusText;
+            if (res.status === 403) toastMsg = '剩余算力不够，请充值';
+            toast.error(toastMsg);
+          }
+        });
 
         const data = response.body;
         if (!data) {
           homeDispatch({ field: 'loading', value: false });
-          homeDispatch({ field: 'messageIsStreaming', value: false });
+          setMessageIsStreaming(false);
           return;
         }
         // 扣除balance后请求一次最新user
@@ -273,7 +273,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             });
           }
           fetchUserInfoMethod(signedIn?.id);
-          homeDispatch({ field: 'messageIsStreaming', value: false });
+          setMessageIsStreaming(false);
 
           // 更新回复token的算力消耗
           const { tokenCount: responseTokenCount } = await calTokenLength({ ...chatBody, messages: [{ content: text, role: 'assistant' }] }, false);
@@ -345,7 +345,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           homeDispatch({ field: 'conversations', value: updatedConversations });
           saveConversations(updatedConversations);
           homeDispatch({ field: 'loading', value: false });
-          homeDispatch({ field: 'messageIsStreaming', value: false });
+          setMessageIsStreaming(false);
         }
 
         if (!plugin) {

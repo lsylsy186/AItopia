@@ -9,6 +9,7 @@ import {
   IconRepeatOff,
   IconKeyboard
 } from '@tabler/icons-react';
+import { useModel } from '@/hooks';
 import {
   MutableRefObject,
   useCallback,
@@ -54,7 +55,7 @@ export const ChatInput = ({
   const { t } = useTranslation('chat');
 
   const {
-    state: { selectedConversation, messageIsStreaming, prompts },
+    state: { selectedConversation, prompts },
 
     dispatch: homeDispatch,
   } = useContext(HomeContext);
@@ -71,7 +72,7 @@ export const ChatInput = ({
 
   const [text, setText] = useState('');
   const [isTextInput, setIsTextInput] = useState(true);
-  const [isTalking, setIsTalking] = useState(false);
+  const { messageIsStreaming } = useModel('global');
 
   function handleOnEnter() {
     if (text) {
@@ -79,16 +80,6 @@ export const ChatInput = ({
       // appendUserChat(text);
       // sendOverSocket(text);
     }
-  }
-
-  function startTalk() {
-    setIsTalking(true);
-    // startRecording();
-  }
-
-  function stopTalk() {
-    setIsTalking(false);
-    // stopRecording();
   }
 
   const promptListRef = useRef<HTMLUListElement | null>(null);
@@ -115,17 +106,19 @@ export const ChatInput = ({
     updatePromptListVisibility(value);
   };
 
-  const handleSend = () => {
+  const handleSend = (customContent?: string) => {
     if (messageIsStreaming) {
       return;
     }
 
-    if (!content) {
+    const newContent = content || customContent;
+
+    if (!newContent) {
       alert(t('Please enter a message'));
       return;
     }
 
-    onSend({ role: 'user', content }, plugin);
+    onSend({ role: 'user', content: newContent }, plugin);
     setContent('');
     setPlugin(null);
 
@@ -335,21 +328,6 @@ export const ChatInput = ({
   //   )}
   //   {isTextInput && (
   //     <div className="flex flex-row justify-center gap-4 w-full pb-10 pt-4">
-  //       <Tooltip title="Talk">
-  //         <div
-  //           onClick={() =>
-  //             setIsTextInput(false)
-  //           }
-  //         >
-  //           <Image
-  //             priority
-  //             width={50}
-  //             height={50}
-  //             src='/images/talk.svg'
-  //             alt="talk button"
-  //           />
-  //         </div>
-  //       </Tooltip>
   //       <InputEmoji
   //         ref={textareaRef}
   //         value={content}
@@ -383,57 +361,6 @@ export const ChatInput = ({
   //           onClick={() => { }}
   //         />
   //       </div>
-  //     </div>
-  //   )}
-  //   {!isTextInput && !isTalking && (
-  //     <div className="flex flex-row items-center">
-  //       <Tooltip title="Text">
-  //         <Button
-  //           onClick={() =>
-  //             setIsTextInput(true)
-  //           }
-  //           className="-ml-16 md:-ml-24"
-  //         >
-  //           <IconKeyboard />
-  //         </Button>
-  //       </Tooltip>
-  //       <div className="text-center ml-8 md:ml-12">
-  //         <div
-  //           className="bg-real-navy w-24 h-24 mb-4"
-  //           onClick={startTalk}
-  //         >
-  //           <Image
-  //             priority
-  //             width={50}
-  //             height={50}
-  //             src='/images/microphone.svg'
-  //             alt="microphone button"
-  //             className="w-6"
-  //           />
-  //         </div>
-  //         {/* <p className="font-light">Click and start talking</p> */}
-  //       </div>
-  //     </div>
-  //   )}
-  //   {!isTextInput && isTalking && (
-  //     <div className="text-center">
-  //       {/* <p className="font-light mb-10">You <span className="text-white/50">are speaking...</span></p> */}
-  //       <div className="mb-4">
-  //         <span className="animate-ping absolute w-24 h-24 bg-real-navy opacity-50 rounded-full"></span>
-  //         <Button
-  //           onClick={stopTalk}
-  //           className="bg-real-navy w-24 h-24"
-  //         >
-  //           <Image
-  //             priority
-  //             width={50}
-  //             height={50}
-  //             src='/images/pause.svg'
-  //             alt="pause button"
-  //           />
-  //         </Button>
-  //       </div>
-  //       {/* <p className="font-light">Click and stop talking</p> */}
   //     </div>
   //   )}
   //   <button
@@ -487,8 +414,7 @@ export const ChatInput = ({
             </div>
           )}
 
-        <div className="relative mx-2 flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:mx-4">
-
+        <div className="relative flex w-full">
           <MessageInput
             content={content}
             selectedConversation={selectedConversation}

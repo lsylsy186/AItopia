@@ -5,6 +5,7 @@ import {
   IconTrash,
   IconX,
 } from '@tabler/icons-react';
+import { useModel } from '@/hooks';
 import {
   DragEvent,
   KeyboardEvent,
@@ -27,7 +28,7 @@ interface Props {
 
 export const ConversationComponent = ({ conversation }: Props) => {
   const {
-    state: { selectedConversation, messageIsStreaming },
+    state: { selectedConversation },
     handleSelectConversation,
     handleUpdateConversation,
   } = useContext(HomeContext);
@@ -37,6 +38,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState('');
+  const { messageIsStreaming } = useModel('global');
 
   const handleEnterDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
@@ -116,13 +118,11 @@ export const ConversationComponent = ({ conversation }: Props) => {
         </div>
       ) : (
         <button
-          className={`flex w-full cursor-pointer items-center gap-3 rounded-lg p-3 text-sm transition-colors duration-200 hover:bg-[#343541]/90 ${
-            messageIsStreaming ? 'disabled:cursor-not-allowed' : ''
-          } ${
-            selectedConversation?.id === conversation.id
+          className={`flex w-full cursor-pointer items-center gap-3 rounded-lg p-3 text-sm transition-colors duration-200 hover:bg-[#343541]/90 ${messageIsStreaming ? 'disabled:cursor-not-allowed' : ''
+            } ${selectedConversation?.id === conversation.id
               ? 'bg-[#343541]/90'
               : ''
-          }`}
+            }`}
           onClick={() => handleSelectConversation(conversation)}
           disabled={messageIsStreaming}
           draggable="true"
@@ -130,9 +130,8 @@ export const ConversationComponent = ({ conversation }: Props) => {
         >
           <IconMessage size={18} />
           <div
-            className={`relative max-h-5 flex-1 overflow-hidden text-ellipsis whitespace-nowrap break-all text-left text-[12.5px] leading-3 ${
-              selectedConversation?.id === conversation.id ? 'pr-12' : 'pr-1'
-            }`}
+            className={`relative max-h-5 flex-1 overflow-hidden text-ellipsis whitespace-nowrap break-all text-left text-[12.5px] leading-3 ${selectedConversation?.id === conversation.id ? 'pr-12' : 'pr-1'
+              }`}
           >
             {conversation.name}
           </div>

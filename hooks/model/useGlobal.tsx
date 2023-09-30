@@ -8,6 +8,7 @@ const defaultAccount = {
 export const useGlobal = () => {
   const [roleModalOpen, setRoleModalOpen] = useState(false);
   const [currentRole, setCurrentRole] = useState({});
+  const [messageIsStreaming, setMessageIsStreaming] = useState(false);
   const [user, setUser] = useState<any>({ account: defaultAccount });
 
   const { fetchUserInfo, updateUserAccount } = useAuthService();
@@ -35,6 +36,8 @@ export const useGlobal = () => {
     roleModalOpen,
     currentRole,
     user,
+    messageIsStreaming,
+    setMessageIsStreaming,
     setUser,
     setRoleModalOpen,
     setCurrentRole,

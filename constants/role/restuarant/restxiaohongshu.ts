@@ -1,7 +1,7 @@
 import { formType, IRole } from '../type';
 
 export const restxiaohongshu: IRole = {
-  index: 4,
+  index: 14,
   img: '/images/commonxiaohongshu.jpg',
   imgAlt: 'restxiaohongshu',
   title: '软文助手',

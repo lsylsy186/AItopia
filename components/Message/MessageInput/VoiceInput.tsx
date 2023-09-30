@@ -2,6 +2,7 @@ import React, {
   ChangeEvent,
   FC,
   KeyboardEvent,
+  ReactElement,
   useCallback,
   useEffect,
   useRef,
@@ -9,6 +10,7 @@ import React, {
   DetailedHTMLProps,
   TextareaHTMLAttributes,
 } from "react";
+import { useModel } from '@/hooks';
 import message from 'antd/lib/message';
 import { CommonMessageInputProps, useMessageInputCore } from "../message-input";
 import { useTranslation } from 'next-i18next';
@@ -66,7 +68,7 @@ export type MessageInputProps = CommonMessageInputProps & {
  * Allows users to compose messages using text and emojis
  * and automatically publish them on PubNub channels upon sending.
  */
-export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) => {
+export const VoiceInput: FC<MessageInputProps> = (props: MessageInputProps) => {
   const {
     actionsAfterInput,
     disabled,
@@ -96,11 +98,45 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     file,
     setFile,
     isValidInputText,
+    loader,
     onError,
+    sendMessage,
     startTypingIndicator,
     stopTypingIndicator,
   } = useMessageInputCore({ draftMessage, senderInfo, onSend, onBeforeSend, typingIndicator });
   const [isTextInput, setIsTextInput] = useState(true);
+  const [isTalking, setIsTalking] = useState(false);
+  const {
+    isConnecting,
+    closeSocket,
+    startRecording,
+    stopRecording,
+    isConnected,
+    connectMicrophone,
+    socketRef,
+    mediaRecorder,
+    setIsRecording,
+    callActive,
+    send,
+    audioSent,
+    audioPlayer,
+    connectPeer, } = useModel('media');
+  const { connectSocket } = Connect({
+    isConnected,
+    connectMicrophone,
+    socketRef,
+    mediaRecorder,
+    setIsRecording,
+    callActive,
+    send,
+    audioSent,
+    stopRecording,
+    audioPlayer,
+    connectPeer,
+    setContent,
+    content
+  });
+
   const { t } = useTranslation('chat');
 
   const {
@@ -113,7 +149,8 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
   useEffect(() => {
     if (!isTextInput) {
       if (!!finalTranscript) {
-        handleSend(finalTranscript);
+        setContent(finalTranscript);
+        handleSend();
       }
     }
   }, [finalTranscript, isTextInput]);
@@ -255,7 +292,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
               onEmojiClick={handleEmojiInsertion}
               emojiStyle={EmojiStyle.NATIVE}
               lazyLoadEmojis={true}
-              autoFocusSearch={false}
               suggestedEmojisMode={SuggestionMode.FREQUENT}
               categories={[
                 {
@@ -292,6 +328,26 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     </div>
   );
 
+  // const connectSocketWithState = useCallback(() => {
+  //   isConnecting.current = true;
+  //   connectSocket();
+  //   isConnecting.current = false;
+  // }, [isConnecting, connectSocket]);
+
+  // const closeSocketWithState = () => {
+  //   closeSocket();
+  // };
+
+  // // Handle Button Clicks
+  // const connect = async () => {
+  //   try {
+  //     // requires login if user wants to use gpt4 or claude.
+  //     connectSocketWithState();
+  //   } catch (error) {
+  //     console.error('Error during sign in or connect:', error);
+  //   }
+  // };
+
   const openMicrophoneMode = () => {
     if (!browserSupportsSpeechRecognition) {
       message.warning('抱歉，当前浏览器环境无法支持语音功能');
@@ -300,6 +356,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     } else {
       setIsTextInput(false)
     }
+    // connect();
   }
 
   return (
@@ -307,7 +364,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
       {isTextInput ?
         <div className="relative mx-2 flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:mx-4">
           <div
-            className={`${styles['msgInput']} ${disabled ? styles['pnMsgInputDisabled'] : ""}`}
+            className={`${styles['pn-msg-input']} ${disabled ? styles['pnMsgInputDisabled'] : ""}`}
           >
             <div className={styles['pnMsgInputWrapper']}>
               {!actionsAfterInput && renderActions()}
@@ -383,7 +440,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
   );
 };
 
-MessageInput.defaultProps = {
+VoiceInput.defaultProps = {
   disabled: false,
   fileUpload: undefined,
   hideSendButton: false,

@@ -5,6 +5,7 @@ import {
   IconTrash,
   IconX,
 } from '@tabler/icons-react';
+import { useModel } from '@/hooks';
 import {
   DragEvent,
   KeyboardEvent,

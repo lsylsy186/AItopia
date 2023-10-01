@@ -317,6 +317,8 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
         centered
         open={isVoiceListening}
         mask={false}
+        onCancel={SpeechRecognition.stopListening as any}
+        maskClosable={true}
         footer={null}
         closeIcon={null}
       >

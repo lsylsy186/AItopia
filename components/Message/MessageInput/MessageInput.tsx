@@ -110,7 +110,8 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     browserSupportsSpeechRecognition,
     isMicrophoneAvailable,
     finalTranscript,
-    transcript
+    transcript,
+    resetTranscript
   } = useSpeechRecognition();
 
   useEffect(() => {
@@ -118,6 +119,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
       if (!!finalTranscript) {
         console.log('finalTranscript', finalTranscript);
         handleSend(finalTranscript);
+        resetTranscript();
       }
     }
   }, [finalTranscript, isTextInput]);

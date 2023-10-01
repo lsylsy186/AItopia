@@ -8,8 +8,10 @@ import React, {
   useState,
   DetailedHTMLProps,
   TextareaHTMLAttributes,
+  useMemo,
 } from "react";
 import message from 'antd/lib/message';
+import Modal from 'antd/lib/modal';
 import { CommonMessageInputProps, useMessageInputCore } from "../message-input";
 import { useTranslation } from 'next-i18next';
 import { useOuterClick, useResizeObserver } from "../helpers";
@@ -108,11 +110,13 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     browserSupportsSpeechRecognition,
     isMicrophoneAvailable,
     finalTranscript,
+    transcript
   } = useSpeechRecognition();
 
   useEffect(() => {
     if (!isTextInput) {
       if (!!finalTranscript) {
+        console.log('finalTranscript', finalTranscript);
         handleSend(finalTranscript);
       }
     }
@@ -302,8 +306,20 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     }
   }
 
+  const isVoiceListening = !isTextInput && listening;
+
   return (
     <>
+      <Modal
+        title="录音中"
+        centered
+        open={isVoiceListening}
+        mask={false}
+        footer={null}
+        closeIcon={null}
+      >
+        {transcript || '请用麦克风进行语音输入...'}
+      </Modal>
       {isTextInput ?
         <div className="relative mx-2 flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:mx-4">
           <div
@@ -358,14 +374,14 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
               <div className="text-center">
                 <div
                   className={`${styles.talk} w-16 h-16`}
-                  onClick={SpeechRecognition.startListening as any}
+                  onClick={() => SpeechRecognition.startListening({ language: 'zh-CN' }) as any}
                 >
                   <IconMicrophone size={28} />
                 </div>
               </div>
             </div>
           )}
-          {!isTextInput && listening && (
+          {isVoiceListening && (
             <div className="flex align-middle flex-row justify-center bg-transparent border-none">
               <div className="text-center">
                 <span className={`${styles.ping} animate-ping absolute w-16 h-16 opacity-50 rounded-full`}></span>

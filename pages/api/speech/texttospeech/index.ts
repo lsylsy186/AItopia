@@ -58,13 +58,7 @@ const textToSpeech = async (
 };
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
-  }
-
   const { text, voiceId } = req.body;
-
   const apiKey = process.env.ELEVEN_LABS_API_KEY;
   const filePath = "/tmp/audio.mp3";
 

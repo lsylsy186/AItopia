@@ -30,7 +30,7 @@ const useElevenlabsService = () => {
 
   const postTextToSpeech = useCallback(
     (params: { voiceId: string, modelId?: string }, signal?: AbortSignal) => {
-      return fetchService.post<IResponse>(`/api/texttospeech`, {
+      return fetchService.post<IResponse>(`/api/speech/texttospeech`, {
         body: params,
         headers: {
           'Content-Type': 'application/json',

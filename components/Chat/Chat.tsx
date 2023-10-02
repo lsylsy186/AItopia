@@ -33,6 +33,7 @@ import SigninButton from '../Buttons/SinginButton';
 import useApiService from '@/services/useApiService';
 import { calTokenLength } from '@/utils/tiktoken';
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
+import { CharacterAudioPlayer } from '@/components/Audio';
 
 import { SidebarButton } from '@/components/Sidebar/SidebarButton';
 import { IconAlien } from '@tabler/icons-react';
@@ -86,7 +87,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     dispatch: homeDispatch,
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
-  const { fetchUserInfoMethod, user, requestUpdateUserAccount, messageIsStreaming, setMessageIsStreaming } = useModel('global');
+  const { fetchUserInfoMethod, user, requestUpdateUserAccount, messageIsStreaming, setMessageIsStreaming, setVoiceMessage } = useModel('global');
   const { getContentSecurity } = useApiService();
   const signedIn = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
@@ -274,9 +275,13 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           }
           fetchUserInfoMethod(signedIn?.id);
           setMessageIsStreaming(false);
-
           // 更新回复token的算力消耗
           const { tokenCount: responseTokenCount } = await calTokenLength({ ...chatBody, messages: [{ content: text, role: 'assistant' }] }, false);
+          if (responseTokenCount < 100) {
+            setVoiceMessage(text);
+          } else {
+            messageComp.info('文字过长无法语音回答');
+          }
           await requestUpdateUserAccount(signedIn?.id, { tokenCount: responseTokenCount, isSend: false });
 
           // 文本安全 TODO 节流
@@ -294,7 +299,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           }
           saveConversation(updatedConversation);
           // 扣除balance后请求一次最新user
-
           const updatedConversations: Conversation[] = conversations.map(
             (conversation) => {
               if (conversation.id === selectedConversation.id) {
@@ -460,7 +464,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   }, [messagesEndRef]);
 
   const onRoleSelect = useCallback((prompt: string) => {
-    console.log('status', status);
     if (status !== 'authenticated') {
       messageComp.warning('请登录后再发送信息');
       return;
@@ -481,6 +484,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   return (
     <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">
       <RoleModal onSelect={onRoleSelect} />
+      <CharacterAudioPlayer />
       {!(apiKey || serverSideApiKeyIsSet) ? (
         <div className="mx-auto flex h-full w-[300px] flex-col justify-center space-y-6 sm:w-[600px]">
           <div className="text-center text-4xl font-bold text-black dark:text-white">

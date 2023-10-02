@@ -131,7 +131,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
   const textAreaWidth = resizeTextAreaEntry?.contentRect.width;
   const pickerRef = useOuterClick((event) => {
     if ((event?.target as Element).closest(".pn-msg-input__emoji-toggle")) return;
-    console.log('event', event);
     setEmojiPickerShown(false);
   });
   /*

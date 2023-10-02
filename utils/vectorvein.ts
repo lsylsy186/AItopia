@@ -22,8 +22,6 @@ export const vectorveinRequest = () => {
   })
     .then((response: any) => {
       const result = response.data;
-      console.log(response.status);
-      console.log(result);
 
       if (response.status != 200 || result["status"] != 200) {
         console.log("Run workflow failed!");

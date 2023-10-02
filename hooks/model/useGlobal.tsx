@@ -10,6 +10,10 @@ export const useGlobal = () => {
   const [currentRole, setCurrentRole] = useState({});
   const [messageIsStreaming, setMessageIsStreaming] = useState(false);
   const [user, setUser] = useState<any>({ account: defaultAccount });
+  // 是否开启语音模式
+  const [voiceModeOpen, setVoiceModeOpen] = useState(false);
+  // 语音模式的语音内容
+  const [voiceMessage, setVoiceMessage] = useState<string>('');
 
   const { fetchUserInfo, updateUserAccount } = useAuthService();
 
@@ -37,6 +41,10 @@ export const useGlobal = () => {
     currentRole,
     user,
     messageIsStreaming,
+    voiceModeOpen,
+    voiceMessage,
+    setVoiceMessage,
+    setVoiceModeOpen,
     setMessageIsStreaming,
     setUser,
     setRoleModalOpen,

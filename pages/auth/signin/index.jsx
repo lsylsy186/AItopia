@@ -32,7 +32,6 @@ export default function SignIn() {
         message.success('登陆成功');
         router.push('/zh');
       }
-      console.log('login result', result);
     },
     [router],
   );

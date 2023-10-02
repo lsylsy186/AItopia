@@ -40,8 +40,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
           include: { account: true }
         });
 
-        console.log('result', response);
-
         res.status(200).json({
           success: true,
           message: '请求成功',

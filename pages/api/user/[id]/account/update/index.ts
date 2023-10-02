@@ -21,7 +21,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     });
 
     const { password, ...result } = user;
-    console.log('result', result);
     res.status(200).json({
       success: true,
       message: '请求成功',

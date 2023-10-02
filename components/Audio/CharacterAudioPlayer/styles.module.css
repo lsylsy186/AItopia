@@ -1,0 +1,19 @@
+.voiceSwitch {
+  position: fixed;  /* 让按钮固定在页面上 */
+  right: 1px;      /* 距离右边的距离 */
+  top: 40%;     /* 距离底部的距离 */
+  width: 40px;      /* 按钮的宽度 */
+  height: 40px;     /* 按钮的高度 */
+  border-radius: 50%;  /* 使按钮呈现为圆形 */
+  background-color: #28293d;  /* 按钮的背景颜色 */
+  color: #e4e9f0;      /* 按钮上文字的颜色 */
+  text-align: center;  /* 文字居中显示 */
+  line-height: 50px;   /* 垂直居中文字 */
+  cursor: pointer;     /* 鼠标悬停时显示为手指形状 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* 添加一点阴影效果 */
+  opacity: 0.8;
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+  justify-content: center;
+}

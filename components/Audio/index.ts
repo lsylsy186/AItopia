@@ -1,1 +1,1 @@
-export * from './CharacterAudioPlayer';
+export * from './CharacterAudioPlayer/index';

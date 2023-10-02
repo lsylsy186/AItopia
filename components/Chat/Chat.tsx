@@ -11,7 +11,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import toast from 'react-hot-toast';
 import { useTranslation } from 'next-i18next';
 import { getEndpoint } from '@/utils/app/api';
 import {
@@ -172,7 +171,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         if (newBalance < 0) {
           homeDispatch({ field: 'loading', value: false });
           setMessageIsStreaming(false);
-          toast.error('剩余算力不够，请充值');
+          messageComp.error('剩余算力不够，请充值');
           return;
         }
 
@@ -194,7 +193,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           setMessageIsStreaming(false);
           let toastMsg = response.statusText;
           if (response.status === 403) toastMsg = '剩余算力不够，请充值';
-          toast.error(toastMsg);
+          messageComp.error(toastMsg);
           return;
         }
         // 更新发送token的算力消耗
@@ -204,7 +203,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             setMessageIsStreaming(false);
             let toastMsg = res.statusText;
             if (res.status === 403) toastMsg = '剩余算力不够，请充值';
-            toast.error(toastMsg);
+            messageComp.error(toastMsg);
           }
         });
 

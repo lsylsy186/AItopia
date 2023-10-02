@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useModel } from '@/hooks';
+import message from 'antd/lib/message';
 import {
   IconVolume,
   IconVolumeOff
@@ -78,6 +79,7 @@ export function CharacterAudioPlayer() {
   const toggleOpen = () => {
     setVoiceModeOpen(!voiceModeOpen);
     setVoiceMessage('');
+    message.info(`${voiceModeOpen ? '语音回复功能已关闭' : '语音回复功能已开启'}`);
   }
 
   if (!isMobile()) return <></>;

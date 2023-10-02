@@ -1,4 +1,4 @@
-import { Toaster } from 'react-hot-toast';
+// import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Analytics } from '@vercel/analytics/react';
 import { appWithTranslation } from 'next-i18next';
@@ -16,7 +16,6 @@ function App({ Component, pageProps }: AppProps<{}>) {
   const queryClient = new QueryClient();
   return (
     <div className={inter.className}>
-      <Toaster />
       <ModelContextProvider>
         <Providers>
           <QueryClientProvider client={queryClient}>

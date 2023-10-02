@@ -23,7 +23,7 @@ import { useTranslation } from 'next-i18next';
 import { Message } from '@/types/chat';
 import { Plugin } from '@/types/plugin';
 import { Prompt } from '@/types/prompt';
-
+import { isMobile } from '@/utils/app';
 import HomeContext from '@/pages/api/home/home.context';
 
 import { PromptList } from './PromptList';
@@ -87,7 +87,6 @@ export const ChatInput = ({
   const filteredPrompts = prompts.filter((prompt) =>
     prompt.name.toLowerCase().includes(promptInputValue.toLowerCase()),
   );
-  console.log('content', content);
 
   const handleChange = (value: any) => {
     const maxLength = selectedConversation?.model.maxLength;
@@ -132,14 +131,6 @@ export const ChatInput = ({
     setTimeout(() => {
       stopConversationRef.current = false;
     }, 1000);
-  };
-
-  const isMobile = () => {
-    const userAgent =
-      typeof window.navigator === 'undefined' ? '' : navigator.userAgent;
-    const mobileRegex =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i;
-    return mobileRegex.test(userAgent);
   };
 
   const handleInitModal = () => {

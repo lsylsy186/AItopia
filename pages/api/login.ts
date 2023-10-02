@@ -24,7 +24,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
         ...userWithoutPass,
         accessToken
       };
-      console.log('handler result: ', result)
       res.status(200).json(JSON.stringify(result));
     } else {
       res.status(500).json({});

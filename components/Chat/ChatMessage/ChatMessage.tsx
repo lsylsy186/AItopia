@@ -5,9 +5,11 @@ import {
   IconRobot,
   IconTrash,
   IconUser,
+  IconAccessPoint,
 } from '@tabler/icons-react';
 import { FC, memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useModel } from '@/hooks';
+import styles from './styles.module.css'
 
 import { useTranslation } from 'next-i18next';
 
@@ -19,8 +21,8 @@ import HomeContext from '@/pages/api/home/home.context';
 import { getMeta, ENVS } from '@/constants';
 import Image from 'next/image';
 
-import { CodeBlock } from '../Markdown/CodeBlock';
-import { MemoizedReactMarkdown } from '../Markdown/MemoizedReactMarkdown';
+import { CodeBlock } from '../../Markdown/CodeBlock';
+import { MemoizedReactMarkdown } from '../../Markdown/MemoizedReactMarkdown';
 
 import rehypeMathjax from 'rehype-mathjax';
 import remarkGfm from 'remark-gfm';
@@ -40,7 +42,7 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
     dispatch: homeDispatch,
   } = useContext(HomeContext);
 
-  const { messageIsStreaming } = useModel('global');
+  const { messageIsStreaming, voiceModeOpen } = useModel('global');
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
@@ -133,8 +135,12 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
 
   const RobotIcon = useMemo(() => {
     if (showHebao) return <Image priority src='/images/hebao.jpeg' alt='hebao' width={30} height={30} />
-    return <IconRobot size={30} />
-  }, []);
+    return (<div className='relative'>
+      <IconRobot size={30} />
+      {voiceModeOpen && <div className={styles.waveIcon}><IconAccessPoint size={18} /></div>}
+    </div>
+    );
+  }, [voiceModeOpen]);
 
   if (message.hide) return (<></>);
 
@@ -147,12 +153,12 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
       style={{ overflowWrap: 'anywhere' }}
     >
       <div className="relative m-auto flex p-4 text-base md:max-w-2xl md:gap-6 md:py-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
-        <div className="min-w-[40px] text-right font-bold">
+        <div className="relative min-w-[40px] text-right font-bold">
           {message.role === 'assistant' ? <>{RobotIcon}</> : (
             <IconUser size={30} />
           )}
+          {/* <div className={styles.soundWave}></div> */}
         </div>
-
         <div className="prose mt-[-2px] w-full dark:prose-invert">
           {message.role === 'user' ? (
             <div className="flex w-full">

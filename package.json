@@ -27,6 +27,7 @@
     "antd": "^5.7.2",
     "axios": "^1.5.0",
     "bcrypt": "^5.1.0",
+    "elevenlabs-node": "^1.2.0",
     "emoji-picker-react": "^4.5.2",
     "eventsource-parser": "^0.1.0",
     "i18next": "^22.4.13",

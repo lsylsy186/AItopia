@@ -192,8 +192,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
       if (file) {
         const extension = file.name.split('.').pop();
         uploadPhotoFromClient(file, extension).then(({ url }) => {
-          console.log('file', file);
-          console.log('url', url);
           setFile(url);
           setContent(url);
         }).catch((error) => {

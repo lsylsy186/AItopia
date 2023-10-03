@@ -26,7 +26,7 @@ import rehypeMathjax from 'rehype-mathjax';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
-const ImageReg = `^https://[^.]+\.public\.blob\.vercel-storage\.com/upload-[a-zA-Z0-9]+\.png$`;
+const ImageReg = `^https:\/\/.*?\.public\.blob\.vercel-storage\.com\/upload-`;
 
 export interface Props {
   message: Message;

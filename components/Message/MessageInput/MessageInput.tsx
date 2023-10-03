@@ -34,7 +34,7 @@ import {
 } from '@tabler/icons-react';
 import Image from 'next/image';
 import styles from './styles.module.css'
-import { Connect } from './connect';
+import { uploadPhotoFromClient } from '@/lib/blob';
 // import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
@@ -114,6 +114,16 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     resetTranscript
   } = useSpeechRecognition();
 
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+
+  useEffect(() => {
+    if (!!uploadError) {
+      message.error(uploadError);
+      setUploadError('');
+    }
+  }, [uploadError]);
+
   useEffect(() => {
     if (!isTextInput) {
       if (!!finalTranscript) {
@@ -176,11 +186,20 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     }
   };
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     try {
-      const file = event?.target?.files?.[0];
-      setFile(file);
-      setContent(file?.name);
+      const file: any = event?.target?.files?.[0];
+      if (file) {
+        const extension = file.name.split('.').pop();
+        uploadPhotoFromClient(file, extension).then(({ url }) => {
+          setFile(url);
+          setContent(url);
+        }).catch((error) => {
+          setIsUploading(false);
+          setUploadError(`Upload Error: ${error.message}`);
+        });
+
+      }
     } catch (e) {
       onError(e as any);
     }
@@ -224,7 +243,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
           </button>
         ) : (
           <>
-            <button aria-label={addTitle} title={addTitle} onClick={() => fileRef?.current?.click()}>
+            <button aria-label={addTitle} disabled={isUploading} title={addTitle} onClick={() => fileRef?.current?.click()}>
               {fileUpload === "image" ? <IconPhotoPlus /> : <IconFileUpload />}
             </button>
             <input
@@ -235,7 +254,13 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
               onChange={handleFileChange}
               ref={fileRef}
               type="file"
+              disabled={isUploading}
             />
+            {isUploading &&
+              <div className="flex items-center gap-2 flex-grow select-none">
+                <div className="h-4 w-4 animate-spin rounded-full border-t-2 border-neutral-800 opacity-60 dark:border-neutral-100"></div>
+                Uploading...
+              </div>}
           </>
         )}
       </>

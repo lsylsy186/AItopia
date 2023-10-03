@@ -10,16 +10,14 @@ import {
 import { FC, memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useModel } from '@/hooks';
 import styles from './styles.module.css'
-
 import { useTranslation } from 'next-i18next';
-
+import Image from 'next/image';
 import { updateConversation } from '@/utils/app/conversation';
 
 import { Message } from '@/types/chat';
 
 import HomeContext from '@/pages/api/home/home.context';
 import { getMeta, ENVS } from '@/constants';
-import Image from 'next/image';
 
 import { CodeBlock } from '../../Markdown/CodeBlock';
 import { MemoizedReactMarkdown } from '../../Markdown/MemoizedReactMarkdown';
@@ -27,6 +25,8 @@ import { MemoizedReactMarkdown } from '../../Markdown/MemoizedReactMarkdown';
 import rehypeMathjax from 'rehype-mathjax';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
+
+const ImageReg = `^https://[^.]+\.public\.blob\.vercel-storage\.com/upload-[a-zA-Z0-9]+\.png$`;
 
 export interface Props {
   message: Message;
@@ -50,6 +50,10 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
   const [messagedCopied, setMessageCopied] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const isImageType = useMemo(() => {
+    return !!message.content.match(ImageReg);
+  }, [message.content]);
 
   const toggleEditing = () => {
     setIsEditing(!isEditing);
@@ -203,7 +207,13 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
                 </div>
               ) : (
                 <div className="prose whitespace-pre-wrap dark:prose-invert flex-1">
-                  {message.content}
+                  {isImageType ? <Image
+                    priority
+                    src={message.content}
+                    alt={message.content}
+                    width={200}
+                    height={200}
+                  /> : message.content}
                 </div>
               )}
 

@@ -33,10 +33,7 @@ import useApiService from '@/services/useApiService';
 import { calTokenLength } from '@/utils/tiktoken';
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
 import { CharacterAudioPlayer } from '@/components/Audio';
-
-import { SidebarButton } from '@/components/Sidebar/SidebarButton';
-import { IconAlien } from '@tabler/icons-react';
-import { useRouter } from 'next/router';
+import { ChatTopBar } from '@/components/Chat/ChatTopBar';
 
 // import { SystemPrompt } from './SystemPrompt';
 // import { TemperatureSlider } from './Temperature';
@@ -86,7 +83,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     dispatch: homeDispatch,
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
-  const { fetchUserInfoMethod, user, requestUpdateUserAccount, messageIsStreaming, setMessageIsStreaming, setVoiceMessage } = useModel('global');
+  const { fetchUserInfoMethod, user, requestUpdateUserAccount, messageIsStreaming, setMessageIsStreaming, setVoiceMessage, isUploading } = useModel('global');
   const { getContentSecurity } = useApiService();
   const signedIn = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
@@ -470,15 +467,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     handleSend({ role: 'user', content: prompt, hide: true }, 0, null);
   }, [status, handleSend]);
 
-  const router = useRouter();
-  const BalanceComp = () => {
-    return <>
-      <span>剩余算力：<span className={`text-sm ${balance <= 0 ? 'text-red-600' : ''}`}>{balance}</span></span>
-    </>
-  }
-
-  // 支持联系方式
-  const ableContact = env === ENVS.normal || ENVS.local;
 
   return (
     <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">
@@ -551,32 +539,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
               </>
             ) : (
               <>
-                <div className="sticky top-0 z-10 flex justify-center border border-b-neutral-300 bg-neutral-100 py-2 text-sm text-neutral-500 dark:border-none dark:bg-[#444654] dark:text-neutral-200">
-                  {/* {t('Model')}: {selectedConversation?.model.name} | {t('Temp')}
-                  : {selectedConversation?.temperature} |
-                  <button
-                    className="ml-2 cursor-pointer hover:opacity-50"
-                    onClick={handleSettings}
-                  >
-                    <IconSettings size={18} />
-                  </button>
-                  <button
-                    className="ml-2 cursor-pointer hover:opacity-50"
-                    onClick={onClearAll}
-                  >
-                    <IconClearAll size={18} />
-                  </button> */}
-                  <button
-                    className="cursor-pointer select-none gap-3 rounded-md px-3 text-[14px] leading-3 transition-colors duration-200 hover:bg-gray-500/10"
-                    onClick={() => {
-                      if (!ableContact) return;
-                      router.push('/other/contact')
-                    }}
-                  >
-                    <span>{BalanceComp()}</span>
-                  </button>
-                  <SigninButton />
-                </div>
+                <ChatTopBar />
                 {showSettings && (
                   <div className="flex flex-col space-y-10 md:mx-auto md:max-w-xl md:gap-6 md:py-3 md:pt-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
                     <div className="flex h-full flex-col space-y-4 border-b border-neutral-200 p-4 dark:border-neutral-600 md:rounded-lg md:border">

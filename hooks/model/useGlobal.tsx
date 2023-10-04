@@ -14,6 +14,8 @@ export const useGlobal = () => {
   const [voiceModeOpen, setVoiceModeOpen] = useState(false);
   // 语音模式的语音内容
   const [voiceMessage, setVoiceMessage] = useState<string>('');
+  // 上传图片状态
+  const [isUploading, setIsUploading] = useState(false);
 
   const { fetchUserInfo, updateUserAccount } = useAuthService();
 
@@ -43,6 +45,8 @@ export const useGlobal = () => {
     messageIsStreaming,
     voiceModeOpen,
     voiceMessage,
+    isUploading,
+    setIsUploading,
     setVoiceMessage,
     setVoiceModeOpen,
     setMessageIsStreaming,

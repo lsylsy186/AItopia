@@ -8,8 +8,8 @@ import React, {
   useState,
   DetailedHTMLProps,
   TextareaHTMLAttributes,
-  useMemo,
 } from "react";
+import { useModel } from '@/hooks';
 import message from 'antd/lib/message';
 import Modal from 'antd/lib/modal';
 import { CommonMessageInputProps, useMessageInputCore } from "../message-input";
@@ -22,19 +22,15 @@ import EmojiPicker, {
   SuggestionMode,
 } from "emoji-picker-react";
 import {
-  IconFileUpload,
   IconSend,
-  IconX,
-  IconPhotoPlus,
   IconMoodSmile,
   IconKeyboard,
   IconMicrophone,
   IconPlayerPause,
   IconMicrophoneOff
 } from '@tabler/icons-react';
-import Image from 'next/image';
 import styles from './styles.module.css'
-import { uploadPhotoFromClient } from '@/lib/blob';
+import { ImageUploader } from '../ImageUploader';
 // import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
@@ -94,9 +90,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
   } = props;
 
   const {
-    clearInput,
     file,
-    setFile,
     isValidInputText,
     onError,
     startTypingIndicator,
@@ -114,7 +108,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     resetTranscript
   } = useSpeechRecognition();
 
-  const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
 
   useEffect(() => {
@@ -136,7 +129,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
 
   const [emojiPickerShown, setEmojiPickerShown] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
   const resizeTextAreaEntry = useResizeObserver(inputRef as any);
   const textAreaWidth = resizeTextAreaEntry?.contentRect.width;
   const pickerRef = useOuterClick((event) => {
@@ -186,25 +178,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     }
   };
 
-  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    try {
-      const file: any = event?.target?.files?.[0];
-      if (file) {
-        const extension = file.name.split('.').pop();
-        uploadPhotoFromClient(file, extension).then(({ url }) => {
-          setFile(url);
-          setContent(url);
-        }).catch((error) => {
-          setIsUploading(false);
-          setUploadError(`Upload Error: ${error.message}`);
-        });
-
-      }
-    } catch (e) {
-      onError(e as any);
-    }
-  };
-
   const handleEmojiInsertion = useCallback(
     (emoji: EmojiClickData, event: MouseEvent) => {
       try {
@@ -219,53 +192,10 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     [onError, content, setContent]
   );
 
-  const handleRemoveFile = () => {
-    autoSize();
-    clearInput();
-    if (fileRef.current) fileRef.current.value = "";
-  };
-
   useEffect(() => {
     autoSize();
   }, [file, textAreaWidth, content]);
 
-  /*
-  /* Renderers
-  */
-  const renderFileUpload = () => {
-    const addTitle = "Add a file";
-    const removeTitle = "Remove the file";
-    return (
-      <>
-        {file ? (
-          <button aria-label={removeTitle} title={removeTitle} onClick={handleRemoveFile}>
-            <IconX />
-          </button>
-        ) : (
-          <>
-            <button aria-label={addTitle} disabled={isUploading} title={addTitle} onClick={() => fileRef?.current?.click()}>
-              {fileUpload === "image" ? <IconPhotoPlus /> : <IconFileUpload />}
-            </button>
-            <input
-              accept={fileUpload === "image" ? "image/*" : "*"}
-              className={styles["pnMsgInputFileInput"]}
-              data-testid="file-upload"
-              id="file-upload"
-              onChange={handleFileChange}
-              ref={fileRef}
-              type="file"
-              disabled={isUploading}
-            />
-            {isUploading &&
-              <div className="flex items-center gap-2 flex-grow select-none">
-                <div className="h-4 w-4 animate-spin rounded-full border-t-2 border-neutral-800 opacity-60 dark:border-neutral-100"></div>
-                Uploading...
-              </div>}
-          </>
-        )}
-      </>
-    );
-  };
   const renderEmojiPicker = () => {
     const title = "Add an emoji";
     return (
@@ -317,7 +247,16 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
       <div className="flex pn-msg-input__emoji-toggle">
         {!disabled && renderEmojiPicker()}
       </div>
-      {!disabled && fileUpload && renderFileUpload()}
+      {!disabled && fileUpload && <ImageUploader
+        draftMessage={draftMessage}
+        fileUpload={fileUpload}
+        onBeforeSend={onBeforeSend}
+        onSend={onSend}
+        senderInfo={senderInfo}
+        typingIndicator={typingIndicator}
+        content={content}
+        setContent={setContent}
+      />}
       {extraActionsRenderer && extraActionsRenderer()}
     </div>
   );

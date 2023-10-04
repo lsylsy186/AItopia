@@ -12,7 +12,6 @@ import React, {
 import { useModel } from '@/hooks';
 import message from 'antd/lib/message';
 import Modal from 'antd/lib/modal';
-import FloatButton from 'antd/lib/float-button';
 import { CommonMessageInputProps, useMessageInputCore } from "../message-input";
 import { useTranslation } from 'next-i18next';
 import { useOuterClick, useResizeObserver } from "../helpers";
@@ -150,7 +149,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     const input = inputRef.current;
     if (!input) return;
 
-    console.log('input.scrollHeight', input.scrollHeight)
     setTimeout(() => {
       input.style.cssText = `height: auto;`;
       input.style.cssText = `height: ${input.scrollHeight}px;`;
@@ -279,6 +277,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
       message.warning('抱歉，当前设备语音功能无法打开，请检查麦克风相关设置');
     } else {
       // setIsTextInput(false)
+      resetTranscript();
       SpeechRecognition.startListening({ language: 'zh-CN', continuous: true });
     }
   }

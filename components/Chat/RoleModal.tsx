@@ -7,7 +7,6 @@ import Form from 'antd/lib/form';
 import Input from 'antd/lib/input';
 import dynamic from 'next/dynamic'
 import { FC, useCallback, useEffect, useState, useRef } from 'react';
-import va from '@vercel/analytics';
 import { replaceAtPosition } from '@/utils/app/replaceAttr';
 import { PromptSelector } from '../Prompt/PromptSelector';
 import { IApiType } from '@/constants/role/type'
@@ -66,7 +65,6 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
   // 提交预设提示词
   const onFinish = (values: any) => {
     const prompt = fetchPrompt(currentRole.prompt, values);
-    va.track(currentRole.imgAlt, { eventType: 'submit', prompt });
     onSelect(prompt, { apiType: currentRole.api ?? IApiType.openai });
     onCancelModal();
   };

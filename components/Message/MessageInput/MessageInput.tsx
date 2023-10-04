@@ -12,6 +12,7 @@ import React, {
 import { useModel } from '@/hooks';
 import message from 'antd/lib/message';
 import Modal from 'antd/lib/modal';
+import FloatButton from 'antd/lib/float-button';
 import { CommonMessageInputProps, useMessageInputCore } from "../message-input";
 import { useTranslation } from 'next-i18next';
 import { useOuterClick, useResizeObserver } from "../helpers";
@@ -26,8 +27,7 @@ import {
   IconMoodSmile,
   IconKeyboard,
   IconMicrophone,
-  IconPlayerPause,
-  IconMicrophoneOff
+  IconMicrophoneOff,
 } from '@tabler/icons-react';
 import styles from './styles.module.css'
 import { ImageUploader } from '../ImageUploader';
@@ -96,7 +96,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     startTypingIndicator,
     stopTypingIndicator,
   } = useMessageInputCore({ draftMessage, senderInfo, onSend, onBeforeSend, typingIndicator });
-  const [isTextInput, setIsTextInput] = useState(true);
+  // const [isTextInput, setIsTextInput] = useState(true);
   const { t } = useTranslation('chat');
 
   const {
@@ -117,18 +117,25 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     }
   }, [uploadError]);
 
+  console.log('transcript', transcript);
   useEffect(() => {
-    if (!isTextInput) {
-      if (!!finalTranscript) {
-        console.log('finalTranscript', finalTranscript);
-        handleSend(finalTranscript);
-        resetTranscript();
-      }
-    }
-  }, [finalTranscript, isTextInput]);
+    setContent(transcript);
+  }, [transcript]);
 
-  const [emojiPickerShown, setEmojiPickerShown] = useState(false);
+  // 暂时屏蔽：录音完成自动发送功能
+  // useEffect(() => {
+  //   if (!isTextInput) {
+  //     if (!!finalTranscript) {
+  //       console.log('finalTranscript', finalTranscript);
+  //       handleSend(finalTranscript);
+  //       resetTranscript();
+  //     }
+  //   }
+  // }, [finalTranscript, isTextInput]);
+
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [emojiPickerShown, setEmojiPickerShown] = useState(false);
+  const [inputHeight, setInputHeight] = useState(inputRef?.current?.scrollHeight || 0);
   const resizeTextAreaEntry = useResizeObserver(inputRef as any);
   const textAreaWidth = resizeTextAreaEntry?.contentRect.width;
   const pickerRef = useOuterClick((event) => {
@@ -143,9 +150,11 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     const input = inputRef.current;
     if (!input) return;
 
+    console.log('input.scrollHeight', input.scrollHeight)
     setTimeout(() => {
       input.style.cssText = `height: auto;`;
       input.style.cssText = `height: ${input.scrollHeight}px;`;
+      setInputHeight(input.scrollHeight);
     }, 0);
   };
 
@@ -262,16 +271,22 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
   );
 
   const openMicrophoneMode = () => {
+    console.log('browserSupportsSpeechRecognition', browserSupportsSpeechRecognition);
+    console.log('isMicrophoneAvailable', isMicrophoneAvailable);
     if (!browserSupportsSpeechRecognition) {
       message.warning('抱歉，当前浏览器环境无法支持语音功能');
     } else if (!isMicrophoneAvailable) {
       message.warning('抱歉，当前设备语音功能无法打开，请检查麦克风相关设置');
     } else {
-      setIsTextInput(false)
+      // setIsTextInput(false)
+      SpeechRecognition.startListening({ language: 'zh-CN', continuous: true });
     }
   }
 
-  const isVoiceListening = !isTextInput && listening;
+  const closeMicrophoneMode = () => {
+    SpeechRecognition.stopListening();
+  }
+
 
   return (
     <>
@@ -287,47 +302,79 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
       >
         {transcript || '请用麦克风进行语音输入...'}
       </Modal> */}
-      {isTextInput ?
-        <div className="relative mx-2 flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:mx-4">
-          <div
-            className={`${styles['msgInput']} ${disabled ? styles['pnMsgInputDisabled'] : ""}`}
-          >
-            <div className={styles['pnMsgInputWrapper']}>
-              {!actionsAfterInput && renderActions()}
-              <div className={styles.textContainer}>
-                <textarea
-                  {...otherTextAreaProps}
-                  className={styles['pnMsgInputTextarea']}
-                  data-testid="message-input"
-                  disabled={disabled || !!file}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                  placeholder='输入信息'
-                  ref={inputRef}
-                  rows={1}
-                  value={content}
-                />
-                <div
-                  className={styles['microPhone']}
-                  onClick={openMicrophoneMode}
-                >
-                  {browserSupportsSpeechRecognition ? <IconMicrophone size={22} /> : <IconMicrophoneOff size={22} />}
-                </div>
-              </div>
-              {actionsAfterInput && renderActions()}
-              <button
-                className={`${styles['pnMsgInputSend']} ${isValidInputText() && styles['pnMsgInputSend--active']} `}
-                onClick={handleSend}
-              >
-                {messageIsStreaming ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-t-2 border-neutral-800 opacity-60 dark:border-neutral-100"></div>
-                ) : (
-                  <IconSend size={24} />
-                )}
-              </button>
+      {/* <FloatButton
+        shape="circle"
+        style={{  }}
+        icon={<div className="flex align-middle flex-row justify-center bg-transparent border-none">
+          <div className="text-center">
+            <span className={`${styles.ping} animate-ping absolute w-16 h-16 opacity-50 rounded-full`}></span>
+            <div
+              onClick={SpeechRecognition.stopListening as any}
+              className={`${styles.stopTalk} w-16 h-16`}
+            >
+              <IconPlayerPause size={28} />
             </div>
           </div>
-        </div> : <div className="relative mx-2 flex w-full flex-grow flex-col">
+        </div>}
+      /> */}
+      {listening && (
+        <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-10">
+          {/* 蒙层覆盖整个视口并设置一个半透明的背景 */}
+          <div className="relative flex align-middle flex-row justify-center bg-transparent border-none">
+            <div className="text-center">
+              <span className={`${styles.ping} animate-ping absolute w-16 h-16 opacity-50 rounded-full`}></span>
+              <div
+                onClick={closeMicrophoneMode}
+                className={`${styles.stopTalk} w-16 h-16`}
+              >
+                <IconMicrophoneOff size={28} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* {isTextInput ? */}
+      <div className="relative mx-2 flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:mx-4">
+        <div
+          className={`${styles['msgInput']} ${disabled ? styles['pnMsgInputDisabled'] : ""}`}
+        >
+          <div className={styles['pnMsgInputWrapper']}>
+            {!actionsAfterInput && renderActions()}
+            <div className={styles.textContainer} style={{ height: `${inputHeight + 14}px` }}>
+              <textarea
+                {...otherTextAreaProps}
+                className={styles['pnMsgInputTextarea']}
+                data-testid="message-input"
+                disabled={disabled || !!file}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder='输入信息'
+                ref={inputRef}
+                rows={1}
+                value={content}
+              />
+              <div
+                className={styles['microPhone']}
+                onClick={openMicrophoneMode}
+              >
+                {browserSupportsSpeechRecognition ? <IconMicrophone size={22} /> : <IconMicrophoneOff size={22} />}
+              </div>
+            </div>
+            {actionsAfterInput && renderActions()}
+            <button
+              className={`${styles['pnMsgInputSend']} ${isValidInputText() && styles['pnMsgInputSend--active']} `}
+              onClick={handleSend}
+            >
+              {messageIsStreaming ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-t-2 border-neutral-800 opacity-60 dark:border-neutral-100"></div>
+              ) : (
+                <IconSend size={24} />
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+      {/* : <div className="relative mx-2 flex w-full flex-grow flex-col">
           {!isTextInput && !listening && (
             <div className="flex align-middle flex-row justify-center bg-transparent border-none mr-2">
               <div
@@ -348,20 +395,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
               </div>
             </div>
           )}
-          {isVoiceListening && (
-            <div className="flex align-middle flex-row justify-center bg-transparent border-none">
-              <div className="text-center">
-                <span className={`${styles.ping} animate-ping absolute w-16 h-16 opacity-50 rounded-full`}></span>
-                <div
-                  onClick={SpeechRecognition.stopListening as any}
-                  className={`${styles.stopTalk} w-16 h-16`}
-                >
-                  <IconPlayerPause size={28} />
-                </div>
-              </div>
-            </div>
-          )}
-        </div>}
+        </div>} */}
     </>
   );
 };

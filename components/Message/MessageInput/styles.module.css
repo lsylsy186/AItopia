@@ -18,7 +18,7 @@
 }
 
 .textContainer {
-  padding: 6px 14px 8px;
+  padding: 6px 24px 8px 14px;
   height: 32px;
   background: #e4e9f0;
   border-radius: 20px;
@@ -99,7 +99,8 @@
   background: none;
   position: absolute;
   right: 4px;
-  top: 4px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .talk {

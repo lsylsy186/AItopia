@@ -4,7 +4,8 @@ import { GetServerSideProps } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
-
+import { useModel } from '@/hooks';
+import { ChatTopBar } from '@/components/Chat/ChatTopBar';
 import { useCreateReducer } from '@/hooks/useCreateReducer';
 
 import useErrorService from '@/services/errorService';
@@ -30,9 +31,10 @@ import { FolderInterface, FolderType } from '@/types/folder';
 import { OpenAIModelID, OpenAIModels, fallbackModelID } from '@/types/openai';
 import { Prompt } from '@/types/prompt';
 
-import { Chat } from '@/components/Chat/Chat';
+import { Main } from '@/components/Chat/Main';
 import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
+import { Menu } from '@/components/Layout';
 // import Promptbar from '@/components/Promptbar';
 
 import HomeContext from './home.context';
@@ -55,6 +57,7 @@ const Home = ({
   const { getModels } = useApiService();
   const { getModelsError } = useErrorService();
   const [initialRender, setInitialRender] = useState<boolean>(true);
+  const { activeMenu, setActiveMenu } = useModel('global');
 
   const contextValue = useCreateReducer<HomeInitialState>({
     initialState,
@@ -379,10 +382,11 @@ const Home = ({
           </div>
 
           <div className="flex h-full w-full pt-[48px] sm:pt-0">
+            <Menu />
             <Chatbar />
-
-            <div className="flex flex-1 overflow-auto">
-              <Chat stopConversationRef={stopConversationRef} />
+            <div className="flex h-full w-full flex-col overflow-auto">
+              <ChatTopBar />
+              <Main stopConversationRef={stopConversationRef} />
             </div>
 
             {/* <Promptbar /> */}

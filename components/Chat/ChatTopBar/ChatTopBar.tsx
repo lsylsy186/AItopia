@@ -6,6 +6,7 @@ import { useModel } from '@/hooks';
 import { getMeta, ENVS } from '@/constants';
 import { useRouter } from 'next/router';
 import SigninButton from '@/components/Buttons/SinginButton';
+import styles from './styles.module.css'
 
 // 聊天区域顶栏
 export const ChatTopBar: FC<any> = (props: any) => {
@@ -26,8 +27,9 @@ export const ChatTopBar: FC<any> = (props: any) => {
   const ableContact = env === ENVS.normal || ENVS.local;
 
   return (
-    <div className="sticky top-0 z-10 px-2 md:px-5 flex justify-between items-center border border-b-neutral-300 bg-neutral-100 py-2 text-sm text-neutral-500 dark:border-none dark:bg-[#444654] dark:text-neutral-200">
-      {/* {t('Model')}: {selectedConversation?.model.name} | {t('Temp')}
+    <div className="relative">
+      <div className={`${styles.chatTopBar} sticky top-0 z-10 px-2 md:px-5 flex justify-between items-center border-b shadow-[0_0_10px_rgba(0,0,0,0.10)] py-2 text-sm text-neutral-500 border-black/10`}>
+        {/* {t('Model')}: {selectedConversation?.model.name} | {t('Temp')}
     : {selectedConversation?.temperature} |
     <button
       className="ml-2 cursor-pointer hover:opacity-50"
@@ -41,17 +43,18 @@ export const ChatTopBar: FC<any> = (props: any) => {
     >
       <IconClearAll size={18} />
     </button> */}
-      <button
-        className="cursor-pointer select-none gap-3 rounded-md text-[14px] leading-3 transition-colors duration-200 hover:bg-gray-500/10 md:px-10"
-        onClick={() => {
-          if (!ableContact) return;
-          router.push('/other/contact')
-        }}
-      >
-        <span>{BalanceComp()}</span>
-      </button>
-      <Status show={isUploading} />
-      <SigninButton />
+        <button
+          className="cursor-pointer select-none gap-3 rounded-md text-[14px] leading-3 transition-colors duration-200 hover:bg-gray-500/10 md:px-10"
+          onClick={() => {
+            if (!ableContact) return;
+            router.push('/other/contact')
+          }}
+        >
+          <span>{BalanceComp()}</span>
+        </button>
+        <Status show={isUploading} />
+        <SigninButton />
+      </div>
     </div>
   );
 };

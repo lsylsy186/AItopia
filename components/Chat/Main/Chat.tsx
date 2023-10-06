@@ -24,11 +24,11 @@ import { ChatBody, Conversation, Message } from '@/types/chat';
 import { Plugin } from '@/types/plugin';
 import HomeContext from '@/pages/api/home/home.context';
 import { getMeta, ENVS, accessToken } from '@/constants';
-import Spinner from '../Spinner';
-import { ChatInput } from './ChatInput';
-import { ChatLoader } from './ChatLoader';
-import { ErrorMessageDiv } from './ErrorMessageDiv';
-import SigninButton from '../Buttons/SinginButton';
+import Spinner from '../../Spinner';
+import { ChatInput } from '../ChatInput';
+import { ChatLoader } from '../ChatLoader';
+import { ErrorMessageDiv } from '../ErrorMessageDiv';
+import SigninButton from '../../Buttons/SinginButton';
 import useApiService from '@/services/useApiService';
 import { calTokenLength } from '@/utils/tiktoken';
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
@@ -40,16 +40,16 @@ import { ChatTopBar } from '@/components/Chat/ChatTopBar';
 
 const messageComp = message;
 
-const RoleModal = dynamic(() => import('./RoleModal'), {
+const RoleModal = dynamic(() => import('../RoleModal'), {
   loading: () => <div><Spinner size="16px" className="mx-auto" /></div>,
 });
-const RoleList = dynamic(() => import('./RoleList'), {
+const RoleList = dynamic(() => import('../RoleList'), {
   loading: () => <div><Spinner size="16px" className="mx-auto" /></div>,
 });
-const ModelSelect = dynamic(() => import('./ModelSelect'), {
+const ModelSelect = dynamic(() => import('../ModelSelect'), {
   loading: () => <div><Spinner size="16px" className="mx-auto" /></div>,
 });
-const MemoizedChatMessage = dynamic(() => import('./MemoizedChatMessage'), {
+const MemoizedChatMessage = dynamic(() => import('../MemoizedChatMessage'), {
   loading: () => <div><Spinner size="16px" className="mx-auto" /></div>,
 });
 
@@ -489,7 +489,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           >
             {selectedConversation?.messages.length === 0 ? (
               <>
-                <div className="sticky top-0 z-10 flex justify-center border border-b-neutral-300 bg-neutral-100 py-2 text-sm text-neutral-500 dark:border-none dark:bg-[#444654] dark:text-neutral-200">
+                <div className="sticky top-0 z-10 flex justify-center border-b bg-[#f0f3f7] py-2 text-sm text-[#585858] border-black/10 shadow-[0_0_10px_rgba(0,0,0,0.10)]">
                   <SigninButton />
                 </div>
                 <div className="mx-auto flex flex-col space-y-5 md:space-y-10 px-3 pt-5 md:pt-12 sm:max-w-[800px]">

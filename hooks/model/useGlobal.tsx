@@ -16,6 +16,8 @@ export const useGlobal = () => {
   const [voiceMessage, setVoiceMessage] = useState<string>('');
   // 上传图片状态
   const [isUploading, setIsUploading] = useState(false);
+  // 激活菜单项
+  const [activeMenu, setActiveMenu] = useState<string>('chat');
 
   const { fetchUserInfo, updateUserAccount } = useAuthService();
 
@@ -46,6 +48,8 @@ export const useGlobal = () => {
     voiceModeOpen,
     voiceMessage,
     isUploading,
+    activeMenu,
+    setActiveMenu,
     setIsUploading,
     setVoiceMessage,
     setVoiceModeOpen,

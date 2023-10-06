@@ -25,7 +25,7 @@ export const MenuItem = ({ icon, label, active, onClick, name }: IMenuItem) => {
   const mobileActiveClasses = active ? "bg-gray-300 text-gray-900" : "text-black";
   const activeClasses = isMobile() ? mobileActiveClasses : pcActiveClasses;
   const clientClasses = isMobile() ? "mx-4 text-xs w-[60px] h-[46px] p-4" : "text-sm w-[60px] h-[60px] mb-[16px] py-4 px-2";
-  console.log('name', name);
+
   return (
     <div
       className={`${activeClasses} flex flex-col items-center justify-center rounded-lg cursor-pointer transition-colors duration-200 ${clientClasses} ${hoverClasses}`}

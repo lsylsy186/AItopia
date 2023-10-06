@@ -80,7 +80,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
     dispatch: homeDispatch,
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
-  const { fetchUserInfoMethod, user, requestUpdateUserAccount, messageIsStreaming, setMessageIsStreaming, setVoiceMessage, activeMenu, setActiveMenu } = useModel('global');
+  const { fetchUserInfoMethod, user, requestUpdateUserAccount, voiceModeOpen, setMessageIsStreaming, setVoiceMessage, activeMenu, setActiveMenu } = useModel('global');
   const { getContentSecurity } = useApiService();
   const signedIn = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
@@ -270,10 +270,13 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           setMessageIsStreaming(false);
           // 更新回复token的算力消耗
           const { tokenCount: responseTokenCount } = await calTokenLength({ ...chatBody, messages: [{ content: text, role: 'assistant' }] }, false);
-          if (responseTokenCount < 100) {
-            setVoiceMessage(text);
-          } else {
-            messageComp.info('文字过长无法语音回答');
+          // 语音回复模式处理逻辑
+          if (voiceModeOpen) {
+            if (responseTokenCount < 100) {
+              setVoiceMessage(text);
+            } else {
+              messageComp.info('文字过长无法语音回答');
+            }
           }
           await requestUpdateUserAccount(signedIn?.id, { tokenCount: responseTokenCount, isSend: false });
 

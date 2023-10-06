@@ -4,7 +4,7 @@ export const promptOpt: IRole = {
   index: 10,
   img: '/images/hebaozixun.png',
   imgAlt: 'promptOpt',
-  title: 'Prompt改进器',
+  title: '提示词改进器',
   description: '输入prompt，进行打分改进',
   example: '我是你的Prompt改进器, 给我看看你的初始Prompt, 我来给你改进一下',
   prompt: `

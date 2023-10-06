@@ -52,9 +52,14 @@ const defaultPrompt = [
   },
 ];
 
-const WelcomePanel = () => {
+const WelcomePanel = (props: { handleSend: any }) => {
   const meta = getMeta(window.location.href || '');
   const { title } = meta;
+  const { handleSend } = props;
+
+  const onPromptClick = (prompt: string) => {
+    handleSend({ role: 'user', content: prompt }, 0, null);
+  }
 
   return (
     <div className="max-w-full md:w-[650px] h-full mx-auto md:mt-20 mt-0">
@@ -66,7 +71,11 @@ const WelcomePanel = () => {
             <div className="text-base leading-10">{section.title}</div>
           </div>
           <ul>{section.promptList.map((prompt) => (
-            <li className="rounded mb-4 py-3 md:px-4 px-2 text-sm leading-5 cursor-default transition-background duration-100 ease-in-out list-none bg-gray-100 text-gray-600">{prompt}</li>
+            <li
+              onClick={() => onPromptClick(prompt)}
+              className="cursor-pointer hover:bg-gray-200 rounded-md mb-4 py-3 md:px-2 px-2 text-sm leading-5 transition-background duration-100 ease-in-out list-none bg-gray-100 text-gray-600">
+              {`${prompt} ->`}
+            </li>
           ))}</ul>
         </div>)}
       </div>
@@ -81,8 +90,6 @@ export const ChatCommunication = memo(({ stopConversationRef, handleSend, handle
       loading,
       prompts,
     },
-    handleUpdateConversation,
-    dispatch: homeDispatch,
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
   const { fetchUserInfoMethod } = useModel('global');
@@ -188,7 +195,7 @@ export const ChatCommunication = memo(({ stopConversationRef, handleSend, handle
               className="h-[162px] bg-white dark:bg-[#343541]"
               ref={messagesEndRef}
             />
-          </> : <WelcomePanel />}
+          </> : <WelcomePanel handleSend={handleSend} />}
         </div>
       </div>
       <ChatInput

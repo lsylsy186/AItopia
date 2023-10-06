@@ -52,7 +52,7 @@ export const ChatTopBar: FC<any> = (props: any) => {
         >
           <span>{BalanceComp()}</span>
         </button>
-        <Status show={isUploading} />
+        <Status show={isUploading} text='上传中...' />
         <SigninButton />
       </div>
     </div>

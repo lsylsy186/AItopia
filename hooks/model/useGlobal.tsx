@@ -10,7 +10,7 @@ export const useGlobal = () => {
   const [currentRole, setCurrentRole] = useState({});
   const [messageIsStreaming, setMessageIsStreaming] = useState(false);
   const [user, setUser] = useState<any>({ account: defaultAccount });
-  // 是否开启语音模式
+  // 是否开启语音回复模式
   const [voiceModeOpen, setVoiceModeOpen] = useState(false);
   // 语音模式的语音内容
   const [voiceMessage, setVoiceMessage] = useState<string>('');
@@ -18,6 +18,8 @@ export const useGlobal = () => {
   const [isUploading, setIsUploading] = useState(false);
   // 激活菜单项
   const [activeMenu, setActiveMenu] = useState<string>('chat');
+  // 是否全局loading态
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { fetchUserInfo, updateUserAccount } = useAuthService();
 
@@ -49,6 +51,8 @@ export const useGlobal = () => {
     voiceMessage,
     isUploading,
     activeMenu,
+    isLoading,
+    setIsLoading,
     setActiveMenu,
     setIsUploading,
     setVoiceMessage,

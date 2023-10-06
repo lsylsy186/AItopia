@@ -2,6 +2,8 @@ import Form from 'antd/lib/form';
 import Input from 'antd/lib/input';
 import message from 'antd/lib/message';
 import useAuthService, { ISignUpRequestProps } from '@/services/useAuthService';
+import { Status } from '@/components/Chat/Status';
+import { useModel } from '@/hooks';
 import { signIn } from 'next-auth/react';
 
 export const metadata = {
@@ -15,12 +17,15 @@ import { useCallback, useState } from 'react';
 export default function SignUp() {
   const [form] = Form.useForm();
   const [passwordError, setPasswordError] = useState(false);
+  const { setIsLoading, isLoading } = useModel('global');
   const { signUp } = useAuthService();
 
   const onFinish = async (values: ISignUpRequestProps) => {
     if (!values) return;
+    setIsLoading(true);
     const res = await signUp(values);
     if (res.success) {
+      setIsLoading(false);
       message.success(res.message);
       try {
         await signIn('credentials', {
@@ -33,6 +38,7 @@ export default function SignUp() {
         message.error(e as any);
       }
     } else {
+      setIsLoading(false);
       message.error(res.message);
     }
   };
@@ -59,12 +65,15 @@ export default function SignUp() {
 
   return (
     <section className="h-screen bg-gradient-to-b from-gray-100 to-white">
+      <div className="fixed w-[200px] -translate-x-1/2 top-8 left-1/2">
+        <Status show={isLoading} text="请求中..." />
+      </div>
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="pt-32 pb-12 md:pt-40 md:pb-20">
 
           {/* Page header */}
           <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20">
-            <h1 className="h1">Welcome. We exist to make entrepreneurism easier.</h1>
+            <h1 className="h1">Sign Up</h1>
           </div>
 
           {/* Form */}

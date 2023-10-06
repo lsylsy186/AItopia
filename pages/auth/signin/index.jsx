@@ -4,6 +4,9 @@ import React, { useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
+import { Status } from '@/components/Chat/Status';
+
+import { useModel } from '@/hooks';
 import { message } from 'antd';
 import Form from 'antd/lib/form';
 import Input from 'antd/lib/input';
@@ -16,11 +19,13 @@ export const metadata = {
 export default function SignIn() {
   const [form] = Form.useForm();
   const router = useRouter();
+  const { setIsLoading, isLoading } = useModel('global');
 
   const onFinish = useCallback(
     async (values) => {
       if (!values) return;
       const { email, password } = values;
+      setIsLoading(true);
       const result = await signIn('credentials', {
         username: email,
         password,
@@ -28,9 +33,11 @@ export default function SignIn() {
       });
       if (!result.ok) {
         message.error('请检查邮箱或密码是否填写正确');
+        setIsLoading(false);
       } else {
         message.success('登陆成功');
         router.push('/zh');
+        setIsLoading(false);
       }
     },
     [router],
@@ -39,13 +46,14 @@ export default function SignIn() {
 
   return (
     <section className="h-screen bg-gradient-to-b from-gray-100 to-white">
+      <div className="fixed w-[200px] -translate-x-1/2 top-8 left-1/2">
+        <Status show={isLoading} text="请求中..." />
+      </div>
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="pt-32 pb-12 md:pt-40 md:pb-20">
           {/* Page header */}
           <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20">
-            <h1 className="h1">
-              Welcome back. We exist to make entrepreneurism easier.
-            </h1>
+            <h1 className="h1">Login</h1>
           </div>
 
           {/* Form */}

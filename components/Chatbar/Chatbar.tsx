@@ -20,7 +20,7 @@ import { ChatFolders } from './components/ChatFolders';
 import { ChatbarSettings } from './components/ChatbarSettings';
 import { Conversations } from './components/Conversations';
 
-import Sidebar from '../Sidebar';
+import Sidebar from '@/components/Sidebar';
 import ChatbarContext from './Chatbar.context';
 import { ChatbarInitialState, initialState } from './Chatbar.state';
 

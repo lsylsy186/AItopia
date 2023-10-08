@@ -74,12 +74,11 @@ const ChatBot = memo(({ stopConversationRef, botMode }: Props) => {
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
 
-  const { fetchUserInfoMethod, requestUpdateUserAccount, setVoiceMessage, user } = useModel('global');
+  const { fetchUserInfoMethod, requestUpdateUserAccount, setVoiceMessage, user, voiceModeOpen } = useModel('global');
   const { showScrollDownButton } = useModel('chat');
   const {
     setBotCurrentMessage,
     botSelectedConversation,
-    voiceModeOpen,
     botConversations,
     setBotSelectedConversationMessages,
     initedBotConver
@@ -314,6 +313,7 @@ const ChatBot = memo(({ stopConversationRef, botMode }: Props) => {
       signedIn,
       balance,
       messages,
+      voiceModeOpen,
     ],
   );
 

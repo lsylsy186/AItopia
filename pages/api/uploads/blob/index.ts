@@ -17,7 +17,6 @@ const handler = async (request: Request): Promise<Response> => {
       body,
       request,
       onBeforeGenerateToken: async (pathname) => {
-        console.log('pathname', pathname);
         if (isUploadPathnameValid(pathname)) {
           return {
             maximumSizeInBytes: 40_000_000,

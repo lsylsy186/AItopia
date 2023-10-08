@@ -1,13 +1,9 @@
 import {
   IconArrowDown,
-  IconBolt,
-  IconBrandGoogle,
   IconPlayerStop,
   IconRepeat,
-  IconSend,
   IconPlayerTrackNext,
   IconRepeatOff,
-  IconKeyboard
 } from '@tabler/icons-react';
 import { useModel } from '@/hooks';
 import {
@@ -32,10 +28,10 @@ import { VariableModal } from './VariableModal';
 import { MessageInput } from '@/components/Message/MessageInput';
 
 interface Props {
-  onSend: (message: Message, plugin: Plugin | null) => void;
-  onRegenerate: () => void;
-  onContinue: () => void;
-  onRepeat: () => void;
+  onSend: (message: Message, plugin: Plugin | null, type?: any) => void;
+  onRegenerate?: () => void;
+  onContinue?: () => void;
+  onRepeat?: () => void;
   onScrollDownClick: () => void;
   stopConversationRef: MutableRefObject<boolean>;
   textareaRef: MutableRefObject<HTMLTextAreaElement | null>;
@@ -55,9 +51,7 @@ export const ChatInput = ({
   const { t } = useTranslation('chat');
 
   const {
-    state: { selectedConversation, prompts },
-
-    dispatch: homeDispatch,
+    state: { prompts }
   } = useContext(HomeContext);
 
   const [content, setContent] = useState<string>('');
@@ -72,7 +66,11 @@ export const ChatInput = ({
 
   const [text, setText] = useState('');
   const [isTextInput, setIsTextInput] = useState(true);
-  const { messageIsStreaming } = useModel('global');
+  const { messageIsStreaming, isBotMode } = useModel('global');
+  const { selectedConversation } = useModel('chat');
+  const { botSelectedConversation } = useModel('bot');
+
+  const conversation = isBotMode ? botSelectedConversation : selectedConversation;
 
   function handleOnEnter() {
     if (text) {
@@ -89,7 +87,7 @@ export const ChatInput = ({
   );
 
   const handleChange = (value: any) => {
-    const maxLength = selectedConversation?.model.maxLength;
+    const maxLength = conversation?.model.maxLength;
 
     if (maxLength && value.length > maxLength) {
       alert(
@@ -109,7 +107,6 @@ export const ChatInput = ({
     if (messageIsStreaming) {
       return;
     }
-
     const newContent = content || customContent;
 
     if (!newContent) {
@@ -272,7 +269,101 @@ export const ChatInput = ({
   const hideRegenerate = env === ENVS.hebao;
   const showContinue = env === ENVS.hebao;
 
-  // const onFileInputChange = async (e) => {
+  return (
+    <div className={`absolute md:bottom-0 ${isBotMode ? 'bottom-0' : 'bottom-12'} left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 dark:border-white/20 dark:via-[#343541] dark:to-[#343541] md:pt-2`}>
+      <div className="stretch mx-2 mt-4 flex flex-row gap-3 last:mb-2 md:mx-4 md:mt-[52px] md:last:mb-6 lg:mx-auto lg:max-w-3xl">
+        {messageIsStreaming && (
+          <button
+            className="absolute top-0 left-0 right-0 mx-auto mb-3 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+            onClick={handleStopConversation}
+          >
+            <IconPlayerStop size={16} /> {t('Stop Generating')}
+          </button>
+        )}
+
+        {!messageIsStreaming &&
+          conversation &&
+          conversation.messages.length > 0 && (
+            <div className='absolute -top-3 md:top-0 left-0 right-0 mx-auto md:gap-3 gap-1 flex py-2 px-4 justify-center'>
+              {
+                hideRegenerate || !onRegenerate ? <></> : <button
+                  className="flex w-fit items-center gap-2 rounded border border-neutral-200 bg-white py-2 px-3 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+                  onClick={onRegenerate}
+                > <IconRepeatOff size={16} /> 重新生成
+                </button>
+              }
+              {
+                !!onRepeat && <button
+                  className="flex w-fit items-center gap-2 rounded border border-neutral-200 bg-white py-2 px-3 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+                  onClick={onRepeat}
+                >
+                  <IconRepeat size={16} /> 再来一次
+                </button>
+              }
+              {
+                showContinue || !onContinue ? <></> : <button
+                  className="flex w-fit  items-center gap-2 rounded border border-neutral-200 bg-white py-2 px-3 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+                  onClick={onContinue}
+                > <IconPlayerTrackNext size={16} /> 继续
+                </button>
+              }
+            </div>
+          )}
+
+        <div className="relative flex w-full">
+          <MessageInput
+            content={content}
+            selectedConversation={conversation}
+            setContent={setContent}
+            handleKeyDown={handleKeyDown}
+            updatePromptListVisibility={updatePromptListVisibility}
+            handleSend={handleSend}
+            onMsgSend={onSend}
+            messageIsStreaming={messageIsStreaming}
+            fileUpload="image"
+          />
+
+          {showScrollDownButton && (
+            <div className="absolute bottom-16 -right-1 lg:bottom-2 lg:-right-10">
+              <button
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-300 text-gray-800 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-neutral-200"
+                onClick={onScrollDownClick}
+              >
+                <IconArrowDown size={18} />
+              </button>
+            </div>
+          )}
+
+          {showPromptList && filteredPrompts.length > 0 && (
+            <div className="absolute bottom-12 w-full">
+              <PromptList
+                activePromptIndex={activePromptIndex}
+                prompts={filteredPrompts}
+                onSelect={handleInitModal}
+                onMouseOver={setActivePromptIndex}
+                promptListRef={promptListRef}
+              />
+            </div>
+          )}
+
+          {isModalVisible && (
+            <VariableModal
+              prompt={filteredPrompts[activePromptIndex]}
+              variables={variables}
+              onSubmit={handleSubmit}
+              onClose={() => setIsModalVisible(false)}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
+
+// const onFileInputChange = async (e) => {
   //   if (e.currentTarget.files && e.currentTarget.files.length > 0) {
   // const fileMessageParams = {};
   // fileMessageParams.file = e.currentTarget.files[0];
@@ -365,91 +456,3 @@ export const ChatInput = ({
   //     )}
   //   </button>
   // </>
-
-  return (
-    <div className="absolute md:bottom-0 bottom-12 left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 dark:border-white/20 dark:via-[#343541] dark:to-[#343541] md:pt-2">
-      <div className="stretch mx-2 mt-4 flex flex-row gap-3 last:mb-2 md:mx-4 md:mt-[52px] md:last:mb-6 lg:mx-auto lg:max-w-3xl">
-        {messageIsStreaming && (
-          <button
-            className="absolute top-0 left-0 right-0 mx-auto mb-3 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
-            onClick={handleStopConversation}
-          >
-            <IconPlayerStop size={16} /> {t('Stop Generating')}
-          </button>
-        )}
-
-        {!messageIsStreaming &&
-          selectedConversation &&
-          selectedConversation.messages.length > 0 && (
-            <div className='absolute -top-3 md:top-0 left-0 right-0 mx-auto md:gap-3 gap-1 flex py-2 px-4 justify-center'>
-              {
-                hideRegenerate ? <></> : <button
-                  className="flex w-fit items-center gap-2 rounded border border-neutral-200 bg-white py-2 px-3 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
-                  onClick={onRegenerate}
-                > <IconRepeatOff size={16} /> 重新生成
-                </button>
-              }
-              <button
-                className="flex w-fit items-center gap-2 rounded border border-neutral-200 bg-white py-2 px-3 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
-                onClick={onRepeat}
-              >
-                <IconRepeat size={16} /> 再来一次
-              </button>
-              {
-                showContinue ? <></> : <button
-                  className="flex w-fit  items-center gap-2 rounded border border-neutral-200 bg-white py-2 px-3 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
-                  onClick={onContinue}
-                > <IconPlayerTrackNext size={16} /> 继续
-                </button>
-              }
-            </div>
-          )}
-
-        <div className="relative flex w-full">
-          <MessageInput
-            content={content}
-            selectedConversation={selectedConversation}
-            setContent={setContent}
-            handleKeyDown={handleKeyDown}
-            updatePromptListVisibility={updatePromptListVisibility}
-            handleSend={handleSend}
-            messageIsStreaming={messageIsStreaming}
-            fileUpload="image"
-          />
-
-          {showScrollDownButton && (
-            <div className="absolute bottom-16 -right-1 lg:bottom-2 lg:-right-10">
-              <button
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-300 text-gray-800 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-neutral-200"
-                onClick={onScrollDownClick}
-              >
-                <IconArrowDown size={18} />
-              </button>
-            </div>
-          )}
-
-          {showPromptList && filteredPrompts.length > 0 && (
-            <div className="absolute bottom-12 w-full">
-              <PromptList
-                activePromptIndex={activePromptIndex}
-                prompts={filteredPrompts}
-                onSelect={handleInitModal}
-                onMouseOver={setActivePromptIndex}
-                promptListRef={promptListRef}
-              />
-            </div>
-          )}
-
-          {isModalVisible && (
-            <VariableModal
-              prompt={filteredPrompts[activePromptIndex]}
-              variables={variables}
-              onSubmit={handleSubmit}
-              onClose={() => setIsModalVisible(false)}
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};

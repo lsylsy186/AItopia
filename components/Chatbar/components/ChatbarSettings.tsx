@@ -22,23 +22,12 @@ export const ChatbarSettings = () => {
   const balance = user.account?.balance;
 
   const {
-    state: {
-      apiKey,
-      lightMode,
-      serverSideApiKeyIsSet,
-      serverSidePluginKeysSet,
-      conversations,
-    },
-    dispatch: homeDispatch,
-  } = useContext(HomeContext);
-
-  const {
     handleClearConversations,
     handleImportConversations,
     handleExportData,
     handleApiKeyChange,
   } = useContext(ChatbarContext);
-
+  const { conversations } = useModel('chat');
   const BalanceComp = () => {
     return <>
       <span>剩余算力：<span className={`font-bold ${balance <= 0 ? 'text-red-600' : ''}`}>{balance}</span></span>

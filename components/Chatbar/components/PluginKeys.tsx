@@ -3,8 +3,7 @@ import { KeyboardEvent, useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PluginID, PluginKey } from '@/types/plugin';
-
-import HomeContext from '@/pages/api/home/home.context';
+import { useModel } from '@/hooks';
 
 import { SidebarButton } from '@/components/Sidebar/SidebarButton';
 
@@ -12,10 +11,9 @@ import ChatbarContext from '../Chatbar.context';
 
 export const PluginKeys = () => {
   const { t } = useTranslation('sidebar');
-
   const {
-    state: { pluginKeys },
-  } = useContext(HomeContext);
+    pluginKeys,
+  } = useModel('global');
 
   const { handlePluginKeyChange, handleClearPluginKey } =
     useContext(ChatbarContext);
@@ -92,24 +90,24 @@ export const PluginKeys = () => {
                     type="password"
                     value={
                       pluginKeys
-                        .find((p) => p.pluginId === PluginID.GOOGLE_SEARCH)
-                        ?.requiredKeys.find((k) => k.key === 'GOOGLE_API_KEY')
+                        .find((p: any) => p.pluginId === PluginID.GOOGLE_SEARCH)
+                        ?.requiredKeys.find((k: any) => k.key === 'GOOGLE_API_KEY')
                         ?.value
                     }
                     onChange={(e) => {
                       const pluginKey = pluginKeys.find(
-                        (p) => p.pluginId === PluginID.GOOGLE_SEARCH,
+                        (p: any) => p.pluginId === PluginID.GOOGLE_SEARCH,
                       );
 
                       if (pluginKey) {
                         const requiredKey = pluginKey.requiredKeys.find(
-                          (k) => k.key === 'GOOGLE_API_KEY',
+                          (k: any) => k.key === 'GOOGLE_API_KEY',
                         );
 
                         if (requiredKey) {
                           const updatedPluginKey = {
                             ...pluginKey,
-                            requiredKeys: pluginKey.requiredKeys.map((k) => {
+                            requiredKeys: pluginKey.requiredKeys.map((k: any) => {
                               if (k.key === 'GOOGLE_API_KEY') {
                                 return {
                                   ...k,
@@ -151,24 +149,24 @@ export const PluginKeys = () => {
                     type="password"
                     value={
                       pluginKeys
-                        .find((p) => p.pluginId === PluginID.GOOGLE_SEARCH)
-                        ?.requiredKeys.find((k) => k.key === 'GOOGLE_CSE_ID')
+                        .find((p: any) => p.pluginId === PluginID.GOOGLE_SEARCH)
+                        ?.requiredKeys.find((k: any) => k.key === 'GOOGLE_CSE_ID')
                         ?.value
                     }
                     onChange={(e) => {
                       const pluginKey = pluginKeys.find(
-                        (p) => p.pluginId === PluginID.GOOGLE_SEARCH,
+                        (p: any) => p.pluginId === PluginID.GOOGLE_SEARCH,
                       );
 
                       if (pluginKey) {
                         const requiredKey = pluginKey.requiredKeys.find(
-                          (k) => k.key === 'GOOGLE_CSE_ID',
+                          (k: any) => k.key === 'GOOGLE_CSE_ID',
                         );
 
                         if (requiredKey) {
                           const updatedPluginKey = {
                             ...pluginKey,
-                            requiredKeys: pluginKey.requiredKeys.map((k) => {
+                            requiredKeys: pluginKey.requiredKeys.map((k: any) => {
                               if (k.key === 'GOOGLE_CSE_ID') {
                                 return {
                                   ...k,
@@ -206,7 +204,7 @@ export const PluginKeys = () => {
                     className="mt-6 w-full rounded-lg border border-neutral-500 px-4 py-2 text-neutral-900 shadow hover:bg-neutral-100 focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-300"
                     onClick={() => {
                       const pluginKey = pluginKeys.find(
-                        (p) => p.pluginId === PluginID.GOOGLE_SEARCH,
+                        (p: any) => p.pluginId === PluginID.GOOGLE_SEARCH,
                       );
 
                       if (pluginKey) {

@@ -7,6 +7,9 @@ import {
 } from '@tabler/icons-react';
 import { useModel } from '@/hooks';
 import {
+  saveBotConversation,
+} from '@/utils/app/conversation';
+import {
   DragEvent,
   KeyboardEvent,
   MouseEventHandler,
@@ -26,24 +29,29 @@ interface Props {
   conversation: Conversation;
 }
 
-export const ConversationComponent = ({ conversation }: Props) => {
+export const BotConversationComponent = ({ conversation }: Props) => {
   const {
-    state: { selectedConversation },
-    handleSelectConversation,
     handleUpdateConversation,
   } = useContext(HomeContext);
 
   const { handleDeleteConversation } = useContext(ChatbarContext);
+  const { botSelectedConversation, callSetInitedBotConver } = useModel('bot');
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState('');
   const { messageIsStreaming } = useModel('global');
 
+  const handleSelectConversation = (conversation: Conversation) => {
+    callSetInitedBotConver(conversation);
+
+    saveBotConversation(conversation);
+  };
+
   const handleEnterDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      selectedConversation && handleRename(selectedConversation);
+      botSelectedConversation && handleRename(botSelectedConversation);
     }
   };
 
@@ -87,7 +95,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
   const handleOpenRenameModal: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
     setIsRenaming(true);
-    selectedConversation && setRenameValue(selectedConversation.name);
+    botSelectedConversation && setRenameValue(botSelectedConversation.name);
   };
   const handleOpenDeleteModal: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
@@ -104,7 +112,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
 
   return (
     <div className="relative flex items-center">
-      {isRenaming && selectedConversation?.id === conversation.id ? (
+      {isRenaming && botSelectedConversation?.id === conversation.id ? (
         <div className="flex w-full items-center gap-3 rounded-lg bg-[#343541]/90 p-3">
           <IconMessage size={18} />
           <input
@@ -119,7 +127,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
       ) : (
         <button
           className={`flex w-full cursor-pointer items-center gap-3 rounded-lg p-3 text-sm transition-colors duration-200 hover:bg-[#343541]/90 ${messageIsStreaming ? 'disabled:cursor-not-allowed' : ''
-            } ${selectedConversation?.id === conversation.id
+            } ${botSelectedConversation?.id === conversation.id
               ? 'bg-[#343541]/90'
               : ''
             }`}
@@ -130,7 +138,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
         >
           <IconMessage size={18} />
           <div
-            className={`relative max-h-5 flex-1 overflow-hidden text-ellipsis whitespace-nowrap break-all text-left text-[12.5px] leading-3 ${selectedConversation?.id === conversation.id ? 'pr-12' : 'pr-1'
+            className={`relative max-h-5 flex-1 overflow-hidden text-ellipsis whitespace-nowrap break-all text-left text-[12.5px] leading-3 ${botSelectedConversation?.id === conversation.id ? 'pr-12' : 'pr-1'
               }`}
           >
             {conversation.name}
@@ -139,7 +147,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
       )}
 
       {(isDeleting || isRenaming) &&
-        selectedConversation?.id === conversation.id && (
+        botSelectedConversation?.id === conversation.id && (
           <div className="absolute right-1 z-10 flex text-gray-300">
             <SidebarActionButton handleClick={handleConfirm}>
               <IconCheck size={18} />
@@ -150,7 +158,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
           </div>
         )}
 
-      {selectedConversation?.id === conversation.id &&
+      {botSelectedConversation?.id === conversation.id &&
         !isDeleting &&
         !isRenaming && (
           <div className="absolute right-1 z-10 flex text-gray-300">

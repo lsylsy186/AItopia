@@ -6,13 +6,11 @@ import HomeContext from '@/pages/api/home/home.context';
 
 import Folder from '@/components/Folder';
 import { PromptComponent } from '@/components/Promptbar/components/Prompt';
-
+import { useModel } from '@/hooks';
 import PromptbarContext from '../PromptBar.context';
 
 export const PromptFolders = () => {
-  const {
-    state: { folders },
-  } = useContext(HomeContext);
+  const { folders } = useModel('global');
 
   const {
     state: { searchTerm, filteredPrompts },
@@ -48,9 +46,9 @@ export const PromptFolders = () => {
   return (
     <div className="flex w-full flex-col pt-2">
       {folders
-        .filter((folder) => folder.type === 'prompt')
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((folder, index) => (
+        .filter((folder: any) => folder.type === 'prompt')
+        .sort((a: any, b: any) => a.name.localeCompare(b.name))
+        .map((folder: any, index: any) => (
           <Folder
             key={index}
             searchTerm={searchTerm}

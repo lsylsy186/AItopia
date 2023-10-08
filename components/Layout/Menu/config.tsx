@@ -5,6 +5,7 @@ import {
   IconCategory2,
   IconRobot,
 } from '@tabler/icons-react';
+import { MenuType } from '@/constants';
 
 export interface IMenu {
   icon: JSX.Element;
@@ -20,21 +21,21 @@ export const MenuList: IMenu[] = [
     icon: <IconMessages size={24} />,
     label: "对话",
     path: '',
-    name: 'chat',
+    name: MenuType.chat,
     showOnMobile: true,
   },
   {
     icon: <IconCategory2 size={24} />,
     label: "空间",
     path: '',
-    name: 'workspace',
+    name: MenuType.workspace,
     showOnMobile: true,
   },
   {
     icon: <IconRobot size={24} />,
     label: "聊天",
     path: '',
-    name: 'robot',
+    name: MenuType.robot,
     showOnMobile: true,
   },
 ];

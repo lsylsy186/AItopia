@@ -1,5 +1,5 @@
-import { FC, useContext, useState } from 'react';
-
+import { FC, useState } from 'react';
+import { useModel } from '@/hooks';
 import { useTranslation } from 'next-i18next';
 
 import { DEFAULT_TEMPERATURE } from '@/utils/app/const';
@@ -15,9 +15,7 @@ export const TemperatureSlider: FC<Props> = ({
   label,
   onChangeTemperature,
 }) => {
-  const {
-    state: { conversations },
-  } = useContext(HomeContext);
+  const { conversations } = useModel('chat');
   const lastConversation = conversations[conversations.length - 1];
   const [temperature, setTemperature] = useState(
     lastConversation?.temperature ?? DEFAULT_TEMPERATURE,

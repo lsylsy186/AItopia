@@ -7,7 +7,7 @@ import {
   IconUser,
   IconAccessPoint,
 } from '@tabler/icons-react';
-import { FC, memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useModel } from '@/hooks';
 import styles from './styles.module.css'
 import { useTranslation } from 'next-i18next';
@@ -16,7 +16,6 @@ import { updateConversation } from '@/utils/app/conversation';
 
 import { Message } from '@/types/chat';
 
-import HomeContext from '@/pages/api/home/home.context';
 import { getMeta, ENVS } from '@/constants';
 
 import { CodeBlock } from '../../Markdown/CodeBlock';
@@ -37,12 +36,8 @@ export interface Props {
 export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) => {
   const { t } = useTranslation('chat');
 
-  const {
-    state: { selectedConversation, conversations, currentMessage },
-    dispatch: homeDispatch,
-  } = useContext(HomeContext);
-
   const { messageIsStreaming, voiceModeOpen } = useModel('global');
+  const { conversations, setConversations, selectedConversation, setSelectedConversation } = useModel('chat');
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
@@ -80,7 +75,7 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
     if (!selectedConversation) return;
 
     const { messages } = selectedConversation;
-    const findIndex = messages.findIndex((elm) => elm === message);
+    const findIndex = messages.findIndex((elm: any) => elm === message);
 
     if (findIndex < 0) return;
 
@@ -101,8 +96,8 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
       updatedConversation,
       conversations,
     );
-    homeDispatch({ field: 'selectedConversation', value: single });
-    homeDispatch({ field: 'conversations', value: all });
+    setSelectedConversation(single);
+    setConversations(all);
   };
 
   const handlePressEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

@@ -69,11 +69,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
 
   const {
     state: {
-      selectedConversation,
-      conversations,
       models,
       apiKey,
-      pluginKeys,
       serverSideApiKeyIsSet,
       modelError,
       loading,
@@ -83,7 +80,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     dispatch: homeDispatch,
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
-  const { fetchUserInfoMethod, user, requestUpdateUserAccount, messageIsStreaming, setMessageIsStreaming, setVoiceMessage, isUploading } = useModel('global');
+  const { fetchUserInfoMethod, user, requestUpdateUserAccount, pluginKeys, setMessageIsStreaming, setVoiceMessage, isUploading } = useModel('global');
+  const { conversations, setConversations, selectedConversation, setSelectedConversation } = useModel('chat');
   const { getContentSecurity } = useApiService();
   const signedIn = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
@@ -127,10 +125,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           ...selectedConversation,
           messages: newMessage,
         };
-        homeDispatch({
-          field: 'selectedConversation',
-          value: updatedConversation,
-        });
+        setSelectedConversation(updatedConversation);
         homeDispatch({ field: 'loading', value: true });
         setMessageIsStreaming(true);
 
@@ -152,11 +147,11 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           body = JSON.stringify({
             ...chatBody,
             googleAPIKey: pluginKeys
-              .find((key) => key.pluginId === 'google-search')
-              ?.requiredKeys.find((key) => key.key === 'GOOGLE_API_KEY')?.value,
+              .find((key: any) => key.pluginId === 'google-search')
+              ?.requiredKeys.find((key: any) => key.key === 'GOOGLE_API_KEY')?.value,
             googleCSEId: pluginKeys
-              .find((key) => key.pluginId === 'google-search')
-              ?.requiredKeys.find((key) => key.key === 'GOOGLE_CSE_ID')?.value,
+              .find((key: any) => key.pluginId === 'google-search')
+              ?.requiredKeys.find((key: any) => key.key === 'GOOGLE_CSE_ID')?.value,
           });
         }
         const controller = new AbortController();
@@ -264,10 +259,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                 messages: updatedMessages,
               };
             }
-            homeDispatch({
-              field: 'selectedConversation',
-              value: updatedConversation,
-            });
+            setSelectedConversation(updatedConversation);
           }
           fetchUserInfoMethod(signedIn?.id);
           setMessageIsStreaming(false);
@@ -285,10 +277,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             const { data: security } = await getContentSecurity({ text });
             if (!security) {
               updatedConversation.messages = updatedConversation.messages.slice(0, -1);
-              homeDispatch({
-                field: 'selectedConversation',
-                value: updatedConversation,
-              });
+              setSelectedConversation(updatedConversation);
               messageComp.warning('生成内容文案审核不通过');
               return;
             }
@@ -296,7 +285,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           saveConversation(updatedConversation);
           // 扣除balance后请求一次最新user
           const updatedConversations: Conversation[] = conversations.map(
-            (conversation) => {
+            (conversation: Conversation) => {
               if (conversation.id === selectedConversation.id) {
                 return updatedConversation;
               }
@@ -306,7 +295,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           if (updatedConversations.length === 0) {
             updatedConversations.push(updatedConversation);
           }
-          homeDispatch({ field: 'conversations', value: updatedConversations });
+          setConversations(updatedConversations);
           saveConversations(updatedConversations);
         }
         const handleWithPlugin = async () => {
@@ -326,13 +315,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             ...updatedConversation,
             messages: updatedMessages,
           };
-          homeDispatch({
-            field: 'selectedConversation',
-            value: updateConversation,
-          });
+          setSelectedConversation(updateConversation);
           saveConversation(updatedConversation);
           const updatedConversations: Conversation[] = conversations.map(
-            (conversation) => {
+            (conversation: Conversation) => {
               if (conversation.id === selectedConversation.id) {
                 return updatedConversation;
               }
@@ -342,7 +328,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           if (updatedConversations.length === 0) {
             updatedConversations.push(updatedConversation);
           }
-          homeDispatch({ field: 'conversations', value: updatedConversations });
+          setConversations(updatedConversations);
           saveConversations(updatedConversations);
           homeDispatch({ field: 'loading', value: false });
           setMessageIsStreaming(false);
@@ -548,7 +534,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                   </div>
                 )}
 
-                {selectedConversation?.messages.map((message, index) => (
+                {selectedConversation?.messages.map((message: any, index: any) => (
                   <MemoizedChatMessage
                     key={index}
                     message={message}

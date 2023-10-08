@@ -86,14 +86,13 @@ const WelcomePanel = (props: { handleSend: any }) => {
 export const ChatCommunication = memo(({ stopConversationRef, handleSend, handleScroll }: Props) => {
   const {
     state: {
-      selectedConversation,
       loading,
       prompts,
     },
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
   const { fetchUserInfoMethod } = useModel('global');
-  const { showScrollDownButton } = useModel('chat');
+  const { showScrollDownButton, selectedConversation } = useModel('chat');
 
   const signedIn = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
@@ -173,7 +172,7 @@ export const ChatCommunication = memo(({ stopConversationRef, handleSend, handle
       >
         <div className="relative flex flex-col h-full overflow-hidden bg-white dark:bg-[#343541]">
           {showMessageArea ? <>
-            {selectedConversation?.messages.map((message, index) => (
+            {selectedConversation?.messages.map((message: any, index: any) => (
               <MemoizedChatMessage
                 key={index}
                 message={message}
@@ -201,7 +200,7 @@ export const ChatCommunication = memo(({ stopConversationRef, handleSend, handle
       <ChatInput
         stopConversationRef={stopConversationRef}
         textareaRef={textareaRef}
-        onSend={(message, plugin) => {
+        onSend={(message, plugin, _) => {
           setCurrentMessage(message);
           handleSend(message, 0, plugin);
         }}

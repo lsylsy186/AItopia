@@ -1,4 +1,4 @@
-.chatuiContainer {
+.chatuiMobileContainer {
   height: calc(100vh - 136px);
   overflow-y: scroll;
 }

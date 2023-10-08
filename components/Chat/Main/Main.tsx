@@ -1,6 +1,7 @@
 import message from 'antd/lib/message';
 import { useSession } from "next-auth/react";
 import { useModel } from '@/hooks';
+import { isMobile } from '@/utils/app';
 import {
   MutableRefObject,
   memo,
@@ -443,13 +444,13 @@ export const Main = memo(({ stopConversationRef }: Props) => {
     };
   }, [messagesEndRef]);
 
-  const showChatBotContainer = useMemo(() => isBotMode && !botMode, [isBotMode, botMode]);
+  const showChatBotContainer = useMemo(() => isBotMode && !botMode && isMobile(), [isBotMode, botMode]);
 
   return (
     <div className="flex flex-1 overflow-auto">
 
       <CharacterAudioPlayer />
-      <div className={`${showChatBotContainer ? styles.chatuiContainer : ''} relative flex-1 overflow-hidden bg-white dark:bg-[#343541]`}>
+      <div className={`${showChatBotContainer ? styles.chatuiMobileContainer : ''} relative flex-1 overflow-hidden bg-white dark:bg-[#343541]`}>
         {showSettings && (
           <div className="flex flex-col space-y-10 md:mx-auto md:max-w-xl md:gap-6 md:py-3 md:pt-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
             <div className="flex h-full flex-col space-y-4 border-b border-neutral-200 p-4 dark:border-neutral-600 md:rounded-lg md:border">

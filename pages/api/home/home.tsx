@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { GetServerSideProps } from 'next';
 import { useTranslation } from 'next-i18next';
@@ -7,19 +7,21 @@ import Head from 'next/head';
 import { useModel } from '@/hooks';
 import { ChatTopBar } from '@/components/Chat/ChatTopBar';
 import { useCreateReducer } from '@/hooks/useCreateReducer';
-
 import useErrorService from '@/services/errorService';
 import useApiService from '@/services/useApiService';
-
+import { MenuType } from '@/constants';
 import {
   cleanConversationHistory,
   cleanSelectedConversation,
 } from '@/utils/app/clean';
 import { DEFAULT_SYSTEM_PROMPT, DEFAULT_TEMPERATURE } from '@/utils/app/const';
 import {
-  saveConversation,
-  saveConversations,
-  updateConversation,
+  saveConversation as saveChatConversation,
+  saveConversations as saveChatConversations,
+  updateConversation as updateChatConversation,
+  saveBotConversation,
+  saveBotConversations,
+  updateBotConversation,
 } from '@/utils/app/conversation';
 import { saveFolders } from '@/utils/app/folders';
 import { savePrompts } from '@/utils/app/prompts';
@@ -35,6 +37,7 @@ import { Main } from '@/components/Chat/Main';
 import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
 import { Menu } from '@/components/Layout';
+import { useRouter } from 'next/router'
 // import Promptbar from '@/components/Promptbar';
 
 import HomeContext from './home.context';
@@ -57,7 +60,42 @@ const Home = ({
   const { getModels } = useApiService();
   const { getModelsError } = useErrorService();
   const [initialRender, setInitialRender] = useState<boolean>(true);
-  const { activeMenu, setActiveMenu } = useModel('global');
+  const { setShowChatbar, folders, setFolders, pluginKeys, setPluginKeys, setDefaultModelId, isBotMode, setActiveMenu } = useModel('global');
+  const {
+    selectedConversation: chatSelectedConversation,
+    setSelectedConversation: setChatSelectedConversation,
+    setConversations: setChatConversations,
+    conversations: chatConversations
+  } = useModel('chat');
+  const { botSelectedConversation, callSetInitedBotConver, setBotConversations, botConversations } = useModel('bot');
+
+  const router = useRouter()
+  // isChatMode: 仅聊天对话模式
+  const { botMode } = router.query
+
+  useEffect(() => {
+    if (botMode) setActiveMenu(MenuType.robot);
+  }, [botMode]);
+
+  const setSelectedConversation = useMemo(
+    () => (isBotMode ? callSetInitedBotConver : setChatSelectedConversation),
+    [isBotMode]
+  );
+  const setConversations = useMemo(
+    () => (isBotMode ? setBotConversations : setChatConversations),
+    [isBotMode]
+  );
+  const conversations = useMemo(
+    () => (isBotMode ? botConversations : chatConversations),
+    [isBotMode, botConversations, chatConversations]
+  );
+  const selectedConversation = useMemo(
+    () => (isBotMode ? botSelectedConversation : chatSelectedConversation),
+    [isBotMode, botSelectedConversation, chatSelectedConversation]
+  );
+  const saveConversation = useMemo(() => (isBotMode ? saveBotConversation : saveChatConversation), [isBotMode]);
+  const saveConversations = useMemo(() => (isBotMode ? saveBotConversations : saveChatConversations), [isBotMode]);
+  const updateConversation = useMemo(() => (isBotMode ? updateBotConversation : updateChatConversation), [isBotMode]);
 
   const contextValue = useCreateReducer<HomeInitialState>({
     initialState,
@@ -67,9 +105,6 @@ const Home = ({
     state: {
       apiKey,
       lightMode,
-      folders,
-      conversations,
-      selectedConversation,
       prompts,
       temperature,
     },
@@ -101,17 +136,6 @@ const Home = ({
     dispatch({ field: 'modelError', value: getModelsError(error) });
   }, [dispatch, error, getModelsError]);
 
-  // FETCH MODELS ----------------------------------------------
-
-  const handleSelectConversation = (conversation: Conversation) => {
-    dispatch({
-      field: 'selectedConversation',
-      value: conversation,
-    });
-
-    saveConversation(conversation);
-  };
-
   // FOLDER OPERATIONS  --------------------------------------------
 
   const handleCreateFolder = (name: string, type: FolderType) => {
@@ -123,16 +147,16 @@ const Home = ({
 
     const updatedFolders = [...folders, newFolder];
 
-    dispatch({ field: 'folders', value: updatedFolders });
+    setFolders(updatedFolders);
     saveFolders(updatedFolders);
   };
 
   const handleDeleteFolder = (folderId: string) => {
-    const updatedFolders = folders.filter((f) => f.id !== folderId);
-    dispatch({ field: 'folders', value: updatedFolders });
+    const updatedFolders = folders.filter((f: any) => f.id !== folderId);
+    setFolders(updatedFolders);
     saveFolders(updatedFolders);
 
-    const updatedConversations: Conversation[] = conversations.map((c) => {
+    const updatedConversations: Conversation[] = conversations.map((c: any) => {
       if (c.folderId === folderId) {
         return {
           ...c,
@@ -143,7 +167,7 @@ const Home = ({
       return c;
     });
 
-    dispatch({ field: 'conversations', value: updatedConversations });
+    setConversations(updatedConversations);
     saveConversations(updatedConversations);
 
     const updatedPrompts: Prompt[] = prompts.map((p) => {
@@ -162,7 +186,7 @@ const Home = ({
   };
 
   const handleUpdateFolder = (folderId: string, name: string) => {
-    const updatedFolders = folders.map((f) => {
+    const updatedFolders = folders.map((f: any) => {
       if (f.id === folderId) {
         return {
           ...f,
@@ -173,7 +197,7 @@ const Home = ({
       return f;
     });
 
-    dispatch({ field: 'folders', value: updatedFolders });
+    setFolders(updatedFolders);
 
     saveFolders(updatedFolders);
   };
@@ -200,13 +224,15 @@ const Home = ({
 
     const updatedConversations = [...conversations, newConversation];
 
-    dispatch({ field: 'selectedConversation', value: newConversation });
-    dispatch({ field: 'conversations', value: updatedConversations });
+    setSelectedConversation(newConversation);
+    setConversations(updatedConversations);
 
     saveConversation(newConversation);
     saveConversations(updatedConversations);
 
     dispatch({ field: 'loading', value: false });
+
+    return newConversation;
   };
 
   const handleUpdateConversation = (
@@ -223,21 +249,89 @@ const Home = ({
       conversations,
     );
 
-    dispatch({ field: 'selectedConversation', value: single });
-    dispatch({ field: 'conversations', value: all });
+    setSelectedConversation(single);
+    setConversations(all);
   };
 
   // EFFECTS  --------------------------------------------
 
   useEffect(() => {
     if (window.innerWidth < 640) {
-      dispatch({ field: 'showChatbar', value: false });
+      setShowChatbar(false);
     }
   }, [selectedConversation]);
 
+  // 初始化conversations  --------------------------------------------
   useEffect(() => {
-    defaultModelId &&
-      dispatch({ field: 'defaultModelId', value: defaultModelId });
+    // 获取chat聊天历史记录
+    const conversationHistory = localStorage.getItem('conversationHistory');
+    if (conversationHistory) {
+      const parsedConversationHistory: Conversation[] =
+        JSON.parse(conversationHistory);
+      const cleanedConversationHistory = cleanConversationHistory(
+        parsedConversationHistory,
+      );
+
+      setChatConversations(cleanedConversationHistory);
+    }
+    // 获取chat聊天所选聊天记录
+    const selectedConversation = localStorage.getItem('selectedConversation');
+    if (selectedConversation) {
+      const parsedSelectedConversation: Conversation =
+        JSON.parse(selectedConversation);
+      const cleanedSelectedConversation = cleanSelectedConversation(
+        parsedSelectedConversation,
+      );
+      setChatSelectedConversation(cleanedSelectedConversation);
+    } else {
+      const lastConversation = chatConversations[chatConversations.length - 1];
+      setChatSelectedConversation({
+        id: uuidv4(),
+        name: t('New Conversation'),
+        messages: [],
+        model: OpenAIModels[defaultModelId],
+        prompt: DEFAULT_SYSTEM_PROMPT,
+        temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
+        folderId: null,
+      });
+    }
+
+    // 获取bot聊天历史记录
+    const botConversationHistory = localStorage.getItem('botConversationHistory');
+    if (botConversationHistory) {
+      const parsedConversationHistory: Conversation[] =
+        JSON.parse(botConversationHistory);
+      const cleanedConversationHistory = cleanConversationHistory(
+        parsedConversationHistory,
+      );
+
+      setBotConversations(cleanedConversationHistory);
+    }
+    // 获取bot聊天所选聊天记录
+    const botSelectedConversation = localStorage.getItem('botSelectedConversation');
+    if (botSelectedConversation) {
+      const parsedSelectedConversation: Conversation =
+        JSON.parse(botSelectedConversation);
+      const cleanedSelectedConversation = cleanSelectedConversation(
+        parsedSelectedConversation,
+      );
+      callSetInitedBotConver(cleanedSelectedConversation);
+    } else {
+      const lastConversation = botConversations[botConversations.length - 1];
+      callSetInitedBotConver({
+        id: uuidv4(),
+        name: t('New Conversation'),
+        messages: [],
+        model: OpenAIModels[defaultModelId],
+        prompt: DEFAULT_SYSTEM_PROMPT,
+        temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
+        folderId: null,
+      });
+    }
+  }, [defaultModelId]);
+
+  useEffect(() => {
+    defaultModelId && setDefaultModelId(defaultModelId);
     serverSideApiKeyIsSet &&
       dispatch({
         field: 'serverSideApiKeyIsSet',
@@ -273,20 +367,20 @@ const Home = ({
 
     const pluginKeys = localStorage.getItem('pluginKeys');
     if (serverSidePluginKeysSet) {
-      dispatch({ field: 'pluginKeys', value: [] });
+      setPluginKeys([]);
       localStorage.removeItem('pluginKeys');
     } else if (pluginKeys) {
-      dispatch({ field: 'pluginKeys', value: pluginKeys });
+      setPluginKeys(pluginKeys);
     }
 
     if (window.innerWidth < 640) {
-      dispatch({ field: 'showChatbar', value: false });
+      setShowChatbar(false);
       dispatch({ field: 'showPromptbar', value: false });
     }
 
     const showChatbar = localStorage.getItem('showChatbar');
     if (showChatbar) {
-      dispatch({ field: 'showChatbar', value: showChatbar === 'true' });
+      setShowChatbar(showChatbar === 'true');
     }
 
     const showPromptbar = localStorage.getItem('showPromptbar');
@@ -296,51 +390,12 @@ const Home = ({
 
     const folders = localStorage.getItem('folders');
     if (folders) {
-      dispatch({ field: 'folders', value: JSON.parse(folders) });
+      setFolders(JSON.parse(folders));
     }
 
     const prompts = localStorage.getItem('prompts');
     if (prompts) {
       dispatch({ field: 'prompts', value: JSON.parse(prompts) });
-    }
-
-    const conversationHistory = localStorage.getItem('conversationHistory');
-    if (conversationHistory) {
-      const parsedConversationHistory: Conversation[] =
-        JSON.parse(conversationHistory);
-      const cleanedConversationHistory = cleanConversationHistory(
-        parsedConversationHistory,
-      );
-
-      dispatch({ field: 'conversations', value: cleanedConversationHistory });
-    }
-
-    const selectedConversation = localStorage.getItem('selectedConversation');
-    if (selectedConversation) {
-      const parsedSelectedConversation: Conversation =
-        JSON.parse(selectedConversation);
-      const cleanedSelectedConversation = cleanSelectedConversation(
-        parsedSelectedConversation,
-      );
-
-      dispatch({
-        field: 'selectedConversation',
-        value: cleanedSelectedConversation,
-      });
-    } else {
-      const lastConversation = conversations[conversations.length - 1];
-      dispatch({
-        field: 'selectedConversation',
-        value: {
-          id: uuidv4(),
-          name: t('New Conversation'),
-          messages: [],
-          model: OpenAIModels[defaultModelId],
-          prompt: DEFAULT_SYSTEM_PROMPT,
-          temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
-          folderId: null,
-        },
-      });
     }
   }, [
     defaultModelId,
@@ -357,12 +412,11 @@ const Home = ({
         handleCreateFolder,
         handleDeleteFolder,
         handleUpdateFolder,
-        handleSelectConversation,
         handleUpdateConversation,
       }}
     >
       <Head>
-        <title>ChatBot</title>
+        <title>Chatbot</title>
         <meta name="description" content="ChatGPT but better." />
         <meta
           name="viewport"
@@ -382,14 +436,12 @@ const Home = ({
           </div>
 
           <div className="flex h-full w-full pt-[48px] sm:pt-0">
-            <Menu />
+            {!botMode && <Menu />}
             <Chatbar />
             <div className="flex h-full w-full flex-col overflow-auto">
               <ChatTopBar />
               <Main stopConversationRef={stopConversationRef} />
             </div>
-
-            {/* <Promptbar /> */}
           </div>
         </main>
       )}

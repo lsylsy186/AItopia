@@ -9,6 +9,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 import { useTranslation } from 'next-i18next';
 import { getEndpoint } from '@/utils/app/api';
@@ -29,24 +30,22 @@ import useApiService from '@/services/useApiService';
 import { calTokenLength } from '@/utils/tiktoken';
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
 import { CharacterAudioPlayer } from '@/components/Audio';
+import { useRouter } from 'next/router'
 import { ChatTool } from './ChatTool';
 import { ChatCommunication } from './ChatCommunication';
+// import ChatBot from './ChatBot';
+import styles from './styles.module.css'
 
 // import { SystemPrompt } from './SystemPrompt';
 // import { TemperatureSlider } from './Temperature';
 
 const messageComp = message;
 
-const RoleModal = dynamic(() => import('../RoleModal'), {
-  loading: () => <div><Spinner size="16px" className="mx-auto" /></div>,
-});
-const RoleList = dynamic(() => import('../RoleList'), {
-  loading: () => <div><Spinner size="16px" className="mx-auto" /></div>,
-});
 const ModelSelect = dynamic(() => import('../ModelSelect'), {
   loading: () => <div><Spinner size="16px" className="mx-auto" /></div>,
 });
-const MemoizedChatMessage = dynamic(() => import('../MemoizedChatMessage'), {
+
+const DynamicChatBot = dynamic(() => import('./ChatBot'), {
   loading: () => <div><Spinner size="16px" className="mx-auto" /></div>,
 });
 
@@ -66,11 +65,8 @@ export const Main = memo(({ stopConversationRef }: Props) => {
 
   const {
     state: {
-      selectedConversation,
-      conversations,
       models,
       apiKey,
-      pluginKeys,
       serverSideApiKeyIsSet,
       modelError,
       loading,
@@ -80,7 +76,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
     dispatch: homeDispatch,
   } = useContext(HomeContext);
   const { status, data: session } = useSession();
-  const { fetchUserInfoMethod, user, requestUpdateUserAccount, voiceModeOpen, setMessageIsStreaming, setVoiceMessage, activeMenu, setActiveMenu } = useModel('global');
+  const { fetchUserInfoMethod, user, requestUpdateUserAccount, voiceModeOpen, setMessageIsStreaming, setVoiceMessage, activeMenu, setActiveMenu, pluginKeys, isBotMode } = useModel('global');
   const { getContentSecurity } = useApiService();
   const signedIn = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
@@ -88,6 +84,12 @@ export const Main = memo(({ stopConversationRef }: Props) => {
 
   const meta = getMeta(window.location.href || '');
   const { title, env } = meta;
+
+  const { selectedConversation, setSelectedConversation, conversations, setConversations } = useModel('chat');
+
+  const router = useRouter()
+  // isChatMode: 仅聊天对话模式
+  const { botMode } = router.query
 
   // 显示快捷工具标题
   const showShortcutTool = env === ENVS.normal;
@@ -109,25 +111,23 @@ export const Main = memo(({ stopConversationRef }: Props) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = useCallback(
-    async (message: Message, deleteCount = 0, plugin: Plugin | null = null) => {
-      if (selectedConversation) {
+    async (message: Message, deleteCount = 0, plugin: Plugin | null = null, selectedItem?: Conversation) => {
+      const selected = selectedItem ?? selectedConversation;
+      if (selected) {
         let updatedConversation: Conversation;
-        let newMessage = [...selectedConversation.messages, message];
+        let newMessage = [...selected.messages, message];
         if (deleteCount) {
-          const updatedMessages: Message[] = [...selectedConversation.messages];
+          const updatedMessages: Message[] = [...selected.messages];
           for (let i = 0; i < deleteCount; i++) {
             updatedMessages.pop();
           }
           newMessage = [...updatedMessages, message];
         }
         updatedConversation = {
-          ...selectedConversation,
+          ...selected,
           messages: newMessage,
         };
-        homeDispatch({
-          field: 'selectedConversation',
-          value: updatedConversation,
-        });
+        setSelectedConversation(updatedConversation);
         homeDispatch({ field: 'loading', value: true });
         setMessageIsStreaming(true);
 
@@ -149,11 +149,11 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           body = JSON.stringify({
             ...chatBody,
             googleAPIKey: pluginKeys
-              .find((key) => key.pluginId === 'google-search')
-              ?.requiredKeys.find((key) => key.key === 'GOOGLE_API_KEY')?.value,
+              .find((key: any) => key.pluginId === 'google-search')
+              ?.requiredKeys.find((key: any) => key.key === 'GOOGLE_API_KEY')?.value,
             googleCSEId: pluginKeys
-              .find((key) => key.pluginId === 'google-search')
-              ?.requiredKeys.find((key) => key.key === 'GOOGLE_CSE_ID')?.value,
+              .find((key: any) => key.pluginId === 'google-search')
+              ?.requiredKeys.find((key: any) => key.key === 'GOOGLE_CSE_ID')?.value,
           });
         }
         const controller = new AbortController();
@@ -261,10 +261,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
                 messages: updatedMessages,
               };
             }
-            homeDispatch({
-              field: 'selectedConversation',
-              value: updatedConversation,
-            });
+            setSelectedConversation(updatedConversation);
           }
           fetchUserInfoMethod(signedIn?.id);
           setMessageIsStreaming(false);
@@ -285,10 +282,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
             const { data: security } = await getContentSecurity({ text });
             if (!security) {
               updatedConversation.messages = updatedConversation.messages.slice(0, -1);
-              homeDispatch({
-                field: 'selectedConversation',
-                value: updatedConversation,
-              });
+              setSelectedConversation(updatedConversation);
               messageComp.warning('生成内容文案审核不通过');
               return;
             }
@@ -296,8 +290,8 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           saveConversation(updatedConversation);
           // 扣除balance后请求一次最新user
           const updatedConversations: Conversation[] = conversations.map(
-            (conversation) => {
-              if (conversation.id === selectedConversation.id) {
+            (conversation: any) => {
+              if (conversation.id === selected.id) {
                 return updatedConversation;
               }
               return conversation;
@@ -306,7 +300,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           if (updatedConversations.length === 0) {
             updatedConversations.push(updatedConversation);
           }
-          homeDispatch({ field: 'conversations', value: updatedConversations });
+          setConversations(updatedConversations);
           saveConversations(updatedConversations);
         }
         const handleWithPlugin = async () => {
@@ -326,13 +320,10 @@ export const Main = memo(({ stopConversationRef }: Props) => {
             ...updatedConversation,
             messages: updatedMessages,
           };
-          homeDispatch({
-            field: 'selectedConversation',
-            value: updateConversation,
-          });
+          setSelectedConversation(updateConversation);
           saveConversation(updatedConversation);
           const updatedConversations: Conversation[] = conversations.map(
-            (conversation) => {
+            (conversation: any) => {
               if (conversation.id === selectedConversation.id) {
                 return updatedConversation;
               }
@@ -342,7 +333,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           if (updatedConversations.length === 0) {
             updatedConversations.push(updatedConversation);
           }
-          homeDispatch({ field: 'conversations', value: updatedConversations });
+          setConversations(updatedConversations);
           saveConversations(updatedConversations);
           homeDispatch({ field: 'loading', value: false });
           setMessageIsStreaming(false);
@@ -452,12 +443,13 @@ export const Main = memo(({ stopConversationRef }: Props) => {
     };
   }, [messagesEndRef]);
 
+  const showChatBotContainer = useMemo(() => isBotMode && !botMode, [isBotMode, botMode]);
 
   return (
     <div className="flex flex-1 overflow-auto">
 
       <CharacterAudioPlayer />
-      <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">
+      <div className={`${showChatBotContainer ? styles.chatuiContainer : ''} relative flex-1 overflow-hidden bg-white dark:bg-[#343541]`}>
         {showSettings && (
           <div className="flex flex-col space-y-10 md:mx-auto md:max-w-xl md:gap-6 md:py-3 md:pt-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
             <div className="flex h-full flex-col space-y-4 border-b border-neutral-200 p-4 dark:border-neutral-600 md:rounded-lg md:border">
@@ -474,6 +466,9 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           }
           {
             activeMenu === 'chat' && <ChatCommunication handleSend={handleSend} stopConversationRef={stopConversationRef} handleScroll={handleScroll} />
+          }
+          {
+            isBotMode && <DynamicChatBot botMode={botMode} stopConversationRef={stopConversationRef} />
           }
         </>
       </div>

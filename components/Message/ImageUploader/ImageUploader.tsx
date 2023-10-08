@@ -69,10 +69,15 @@ export const ImageUploader: FC<any> = (props: any) => {
     try {
       const file: any = event?.target?.files?.[0];
       if (file) {
+        setIsUploading(true);
         const extension = file.name.split('.').pop();
         uploadPhotoFromClient(file, extension).then(({ url }) => {
           setFile(url);
-          setContent(url);
+          // 先存到输入框
+          // setContent(url);
+          // 直接发送
+          onSend({ role: 'user', content: url }, '', 'image');
+          setIsUploading(false);
         }).catch((error) => {
           setIsUploading(false);
           setUploadError(`Upload Error: ${error.message}`);

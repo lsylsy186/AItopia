@@ -11,7 +11,8 @@ import React, {
 } from "react";
 import { useModel } from '@/hooks';
 import message from 'antd/lib/message';
-import Modal from 'antd/lib/modal';
+import { Message } from '@/types/chat';
+import { Plugin } from '@/types/plugin';
 import { CommonMessageInputProps, useMessageInputCore } from "../message-input";
 import { useTranslation } from 'next-i18next';
 import { useOuterClick, useResizeObserver } from "../helpers";
@@ -28,10 +29,10 @@ import {
   IconMicrophone,
   IconMicrophoneOff,
 } from '@tabler/icons-react';
-import styles from './styles.module.css'
 import { ImageUploader } from '../ImageUploader';
 // import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import styles from './styles.module.css'
 
 export type MessageInputProps = CommonMessageInputProps & {
   /** Option to hide the Send button. */
@@ -47,6 +48,8 @@ export type MessageInputProps = CommonMessageInputProps & {
   updatePromptListVisibility: any;
   content: any;
   handleKeyDown: any;
+  // 等同于其他组件的onSend，为了不和原本input冲突，另起名称
+  onMsgSend: (message: Message, plugin: Plugin | null, type?: any) => void;
 } & Omit<
   DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>,
   | "className"
@@ -75,6 +78,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     onChange,
     onKeyPress,
     onSend,
+    onMsgSend,
     sendButton,
     senderInfo,
     typingIndicator,
@@ -116,7 +120,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     }
   }, [uploadError]);
 
-  console.log('transcript', transcript);
   useEffect(() => {
     setContent(transcript);
   }, [transcript]);
@@ -258,7 +261,8 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
         draftMessage={draftMessage}
         fileUpload={fileUpload}
         onBeforeSend={onBeforeSend}
-        onSend={onSend}
+        onSend={onMsgSend}
+        handleSend={handleSend}
         senderInfo={senderInfo}
         typingIndicator={typingIndicator}
         content={content}

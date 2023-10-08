@@ -1,9 +1,11 @@
 import message from 'antd/lib/message';
 import { useSession } from "next-auth/react";
 import { getMeta, ENVS } from '@/constants';
+import HomeContext from '@/pages/api/home/home.context';
 import {
   memo,
   useCallback,
+  useContext,
 } from 'react';
 import dynamic from 'next/dynamic'
 import { useModel } from '@/hooks';
@@ -29,6 +31,9 @@ interface Props {
 }
 
 export const ChatTool = memo(({ handleSend, models, chatContainerRef, handleScroll }: Props) => {
+  const {
+    handleNewConversation,
+  } = useContext(HomeContext);
   const { status } = useSession();
   const { setActiveMenu } = useModel('global');
   const meta = getMeta(window.location.href || '');
@@ -42,6 +47,7 @@ export const ChatTool = memo(({ handleSend, models, chatContainerRef, handleScro
       messageComp.warning('请登录后再发送信息');
       return;
     }
+    handleNewConversation();
     handleSend({ role: 'user', content: prompt, hide: true }, 0, null);
     setActiveMenu('chat');
   }, [status, handleSend]);

@@ -1,5 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import useAuthService from '@/services/useAuthService';
+import { MenuType } from '@/constants';
+import { Conversation } from '@/types/chat';
+import { FolderInterface } from '@/types/folder';
+import { PluginKey } from '@/types/plugin';
 
 const defaultAccount = {
   balance: 0,
@@ -17,9 +21,19 @@ export const useGlobal = () => {
   // 上传图片状态
   const [isUploading, setIsUploading] = useState(false);
   // 激活菜单项
-  const [activeMenu, setActiveMenu] = useState<string>('chat');
+  const [activeMenu, setActiveMenu] = useState<MenuType>(MenuType.chat);
   // 是否全局loading态
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // chatbar配置
+  const [searchTerm, setSearchTerm] = useState<string>
+    ('');
+  const [filteredConversations, setFilteredConversations] = useState<Conversation[]>([]);
+  const [showChatbar, setShowChatbar] = useState<boolean>(false);
+  const [folders, setFolders] = useState<FolderInterface[]>([]);
+
+  const [pluginKeys, setPluginKeys] = useState<PluginKey[]>([]);
+  const [defaultModelId, setDefaultModelId] = useState<string>('');
 
   const { fetchUserInfo, updateUserAccount } = useAuthService();
 
@@ -42,7 +56,11 @@ export const useGlobal = () => {
     return res;
   }
 
+  // 是bot聊天对话模式
+  const isBotMode = useMemo(() => activeMenu === MenuType.robot, [activeMenu]);
+
   return {
+    isBotMode,
     roleModalOpen,
     currentRole,
     user,
@@ -52,6 +70,18 @@ export const useGlobal = () => {
     isUploading,
     activeMenu,
     isLoading,
+    searchTerm,
+    setSearchTerm,
+    filteredConversations,
+    setFilteredConversations,
+    showChatbar,
+    setShowChatbar,
+    folders,
+    setFolders,
+    pluginKeys,
+    setPluginKeys,
+    defaultModelId,
+    setDefaultModelId,
     setIsLoading,
     setActiveMenu,
     setIsUploading,

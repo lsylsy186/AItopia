@@ -5,7 +5,7 @@ import { useCreateReducer } from '@/hooks/useCreateReducer';
 
 import { savePrompts } from '@/utils/app/prompts';
 
-import { OpenAIModels } from '@/types/openai';
+import { OpenAIModels, OpenAIModelID } from '@/types/openai';
 import { Prompt } from '@/types/prompt';
 
 import HomeContext from '@/pages/api/home/home.context';
@@ -17,18 +17,25 @@ import { Prompts } from './components/Prompts';
 import Sidebar from '../Sidebar';
 import PromptbarContext from './PromptBar.context';
 import { PromptbarInitialState, initialState } from './Promptbar.state';
+import { useModel } from '@/hooks';
 
 import { v4 as uuidv4 } from 'uuid';
 
+
 const Promptbar = () => {
   const { t } = useTranslation('promptbar');
-
+  const {
+    defaultModelId: tempDefaultModelId,
+    setDefaultModelId,
+  } = useModel('global');
   const promptBarContextValue = useCreateReducer<PromptbarInitialState>({
     initialState,
   });
 
+  const defaultModelId = tempDefaultModelId as OpenAIModelID;
+
   const {
-    state: { prompts, defaultModelId, showPromptbar },
+    state: { prompts, showPromptbar },
     dispatch: homeDispatch,
     handleCreateFolder,
   } = useContext(HomeContext);

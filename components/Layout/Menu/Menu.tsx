@@ -52,7 +52,6 @@ const Wrapper = ({ children }: IWrapper) => {
 }
 
 
-
 export const Menu = () => {
   const [isSettingDialogOpen, setIsSettingDialog] = useState<boolean>(false);
   const { activeMenu, setActiveMenu } = useModel('global');

@@ -1,6 +1,6 @@
 import { Conversation } from '@/types/chat';
 
-import { ConversationComponent } from './Conversation';
+import { ConversationComponent } from './Conversation/index';
 
 interface Props {
   conversations: Conversation[];

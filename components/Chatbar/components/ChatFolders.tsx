@@ -6,7 +6,8 @@ import HomeContext from '@/pages/api/home/home.context';
 
 import Folder from '@/components/Folder';
 
-import { ConversationComponent } from './Conversation';
+import { ConversationComponent } from './Conversation/index';
+import { useModel } from '@/hooks';
 
 interface Props {
   searchTerm: string;
@@ -14,10 +15,13 @@ interface Props {
 
 export const ChatFolders = ({ searchTerm }: Props) => {
   const {
-    state: { folders, conversations },
     handleUpdateConversation,
   } = useContext(HomeContext);
+  const { conversations: chatConversations } = useModel('chat');
+  const { botConversations } = useModel('bot');
+  const { folders, isBotMode } = useModel('global');
 
+  const conversations = isBotMode ? botConversations : chatConversations;
   const handleDrop = (e: any, folder: FolderInterface) => {
     if (e.dataTransfer) {
       const conversation = JSON.parse(e.dataTransfer.getData('conversation'));
@@ -32,8 +36,8 @@ export const ChatFolders = ({ searchTerm }: Props) => {
     return (
       conversations &&
       conversations
-        .filter((conversation) => conversation.folderId)
-        .map((conversation, index) => {
+        .filter((conversation: any) => conversation.folderId)
+        .map((conversation: any, index: any) => {
           if (conversation.folderId === currentFolder.id) {
             return (
               <div key={index} className="ml-5 gap-2 border-l pl-2">
@@ -48,9 +52,9 @@ export const ChatFolders = ({ searchTerm }: Props) => {
   return (
     <div className="flex w-full flex-col pt-2">
       {folders
-        .filter((folder) => folder.type === 'chat')
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((folder, index) => (
+        .filter((folder: any) => folder.type === 'chat')
+        .sort((a: any, b: any) => a.name.localeCompare(b.name))
+        .map((folder: any, index: any) => (
           <Folder
             key={index}
             searchTerm={searchTerm}

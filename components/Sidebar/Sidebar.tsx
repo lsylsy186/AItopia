@@ -6,7 +6,7 @@ import {
   CloseSidebarButton,
   OpenSidebarButton,
 } from './components/OpenCloseButton';
-
+import { useModel } from '@/hooks';
 import Search from '../Search';
 
 interface Props<T> {
@@ -41,6 +41,7 @@ const Sidebar = <T,>({
   handleDrop,
 }: Props<T>) => {
   const { t } = useTranslation('promptbar');
+  const { isBotMode } = useModel('global');
 
   const allowDrop = (e: any) => {
     e.preventDefault();
@@ -70,13 +71,14 @@ const Sidebar = <T,>({
             <IconPlus size={16} />
             {addItemButtonTitle}
           </button>
-
-          <button
-            className="ml-2 flex flex-shrink-0 cursor-pointer items-center gap-3 rounded-md border border-white/20 p-3 text-sm text-white transition-colors duration-200 hover:bg-gray-500/10"
-            onClick={handleCreateFolder}
-          >
-            <IconFolderPlus size={16} />
-          </button>
+          {
+            !isBotMode && <button
+              className="ml-2 flex flex-shrink-0 cursor-pointer items-center gap-3 rounded-md border border-white/20 p-3 text-sm text-white transition-colors duration-200 hover:bg-gray-500/10"
+              onClick={handleCreateFolder}
+            >
+              <IconFolderPlus size={16} />
+            </button>
+          }
         </div>
         <Search
           placeholder={t('Search...') || ''}

@@ -47,8 +47,8 @@ export const ChatTool = memo(({ handleSend, models, chatContainerRef, handleScro
       messageComp.warning('请登录后再发送信息');
       return;
     }
-    handleNewConversation();
-    handleSend({ role: 'user', content: prompt, hide: true }, 0, null);
+    const newConver = handleNewConversation();
+    handleSend({ role: 'user', content: prompt, hide: true }, 0, null, newConver);
     setActiveMenu('chat');
   }, [status, handleSend]);
 

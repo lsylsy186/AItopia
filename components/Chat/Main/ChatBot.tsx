@@ -356,7 +356,7 @@ const ChatBot = memo(({ stopConversationRef, botMode }: Props) => {
   // };
   return (
     <Chat
-      navbar={botMode ? undefined : { title: '智能助理' }}
+      // navbar={botMode ? undefined : { title: '智能助理' }}
       messages={messages}
       renderMessageContent={renderMessageContent}
       // quickReplies={defaultQuickReplies}

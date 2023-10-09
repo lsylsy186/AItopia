@@ -1,5 +1,6 @@
 import React, { useState, useMemo, ReactElement, SyntheticEvent } from 'react';
 import { MenuList, IMenu } from './config';
+import { MenuType } from '@/constants';
 import { isMobile } from '@/utils/app';
 import { SettingDialog } from '@/components/Settings/SettingDialog';
 import { useModel } from '@/hooks';
@@ -55,8 +56,12 @@ const Wrapper = ({ children }: IWrapper) => {
 export const Menu = () => {
   const [isSettingDialogOpen, setIsSettingDialog] = useState<boolean>(false);
   const { activeMenu, setActiveMenu } = useModel('global');
+  const { botSelectedConversation, setInitedBotConver } = useModel('bot');
 
   const onMenuClick = (v: string) => {
+    if (activeMenu === MenuType.robot) {
+      setInitedBotConver(botSelectedConversation);
+    }
     setActiveMenu(v);
   };
 
@@ -88,7 +93,7 @@ export const Menu = () => {
       )
       )}
     </div>);
-  }, [ManagementList, activeMenu]);
+  }, [ManagementList, activeMenu, botSelectedConversation]);
 
   return (
     <Wrapper>

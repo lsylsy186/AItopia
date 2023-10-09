@@ -61,9 +61,8 @@
   font-family: inherit;
   font-size: 13px;
   font-weight: bold;
-  margin: 0 9px;
+  padding: 0 9px;
   min-width: 0;
-  padding: 0;
   white-space: nowrap;
 }
 

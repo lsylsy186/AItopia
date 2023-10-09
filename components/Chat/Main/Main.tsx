@@ -312,7 +312,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
         };
         const endpoint = getEndpoint(plugin);
 
-        let body;
+        let body = JSON.stringify(chatBody);;
         const controller = new AbortController();
         const { tokenCount: sentTokenCount } = await calTokenLength(chatBody);
         const subBalance = Math.round(sentTokenCount / 10);

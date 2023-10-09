@@ -15,6 +15,12 @@ export interface IRole {
   options?: IRoleOption[];
   example?: string;
   api?: IApiType;
+  mode?: 'chat' | 'bot';
+  systemPrompt?: string;
+  role?: {
+    avatar: string;
+    name: string;
+  }
 }
 export interface IOption {
   label: any;

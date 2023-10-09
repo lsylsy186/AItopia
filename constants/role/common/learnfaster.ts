@@ -5,6 +5,7 @@ export const learnfaster: IRole = {
   img: '/images/learnfaster.png',
   imgAlt: 'learnfaster',
   title: '知识百科',
+  mode: 'chat',
   description: '80/20原则快速学习知识',
   example: '我想学习关于{}的更多知识.',
   prompt: `

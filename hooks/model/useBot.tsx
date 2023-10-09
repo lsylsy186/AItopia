@@ -24,11 +24,8 @@ export const useBot = () => {
   // 设置botSelectedConversation的messages属性
   const setBotSelectedConversationMessages = (messages: any) => {
     if (botSelectedConversation) {
-      let name = botSelectedConversation.name;
-      if (messages.length === 1) {
-        const { text } = messages[0].content;
-        name = text.length > 30 ? text.substring(0, 30) + '...' : text;
-      }
+      console.log('botSelectedConversation', botSelectedConversation);
+      let name = botSelectedConversation.role?.name ?? '助理';
       const updateBotSelectedConversation = {
         ...botSelectedConversation,
         messages,

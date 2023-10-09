@@ -273,8 +273,6 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
   );
 
   const openMicrophoneMode = () => {
-    console.log('browserSupportsSpeechRecognition', browserSupportsSpeechRecognition);
-    console.log('isMicrophoneAvailable', isMicrophoneAvailable);
     if (!browserSupportsSpeechRecognition) {
       message.warning('抱歉，当前浏览器环境无法支持语音功能');
     } else if (!isMicrophoneAvailable) {

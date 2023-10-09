@@ -32,7 +32,6 @@ import { KeyValuePair } from '@/types/data';
 import { FolderInterface, FolderType } from '@/types/folder';
 import { OpenAIModelID, OpenAIModels, fallbackModelID } from '@/types/openai';
 import { Prompt } from '@/types/prompt';
-
 import { Main } from '@/components/Chat/Main';
 import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
@@ -41,7 +40,7 @@ import { useRouter } from 'next/router'
 // import Promptbar from '@/components/Promptbar';
 
 import HomeContext from './home.context';
-import { HomeInitialState, initialState } from './home.state';
+import { HomeInitialState, initialState, IHandleNewConversationPayload } from './home.state';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -204,31 +203,51 @@ const Home = ({
 
   // CONVERSATION OPERATIONS  --------------------------------------------
 
-  const handleNewConversation = () => {
-    const lastConversation = conversations[conversations.length - 1];
+  const handleNewConversation = (payload?: IHandleNewConversationPayload) => {
+    const { isbot, prompt, source, role, text } = payload || {};
+    let lastConversation = conversations[conversations.length - 1];
+    let initMessages: any = [];
+    if (isbot) {
+      lastConversation = botConversations[botConversations.length - 1];
+      if (source === 'workspace') {
+        initMessages = [{
+          role: 'user',
+          content: { text: text ?? '' } as any,
+          hide: true,
+        }];
+      }
+    }
 
     const newConversation: Conversation = {
       id: uuidv4(),
       name: t('New Conversation'),
-      messages: [],
+      messages: initMessages,
       model: lastConversation?.model || {
         id: OpenAIModels[defaultModelId].id,
         name: OpenAIModels[defaultModelId].name,
         maxLength: OpenAIModels[defaultModelId].maxLength,
         tokenLimit: OpenAIModels[defaultModelId].tokenLimit,
       },
-      prompt: DEFAULT_SYSTEM_PROMPT,
+      prompt: prompt ?? DEFAULT_SYSTEM_PROMPT,
       temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
+      source: !!source ? source : 'new',
+      role,
     };
 
-    const updatedConversations = [...conversations, newConversation];
-
-    setSelectedConversation(newConversation);
-    setConversations(updatedConversations);
-
-    saveConversation(newConversation);
-    saveConversations(updatedConversations);
+    let updatedConversations = [...conversations, newConversation];
+    if (isbot) {
+      updatedConversations = [...botConversations, newConversation];
+      callSetInitedBotConver(newConversation);
+      setBotConversations(updatedConversations);
+      saveBotConversation(newConversation);
+      saveBotConversations(updatedConversations);
+    } else {
+      setSelectedConversation(newConversation);
+      setConversations(updatedConversations);
+      saveConversation(newConversation);
+      saveConversations(updatedConversations);
+    }
 
     dispatch({ field: 'loading', value: false });
 

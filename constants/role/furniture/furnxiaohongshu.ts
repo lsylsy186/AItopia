@@ -7,6 +7,7 @@ export const furnxiaohongshu: IRole = {
   title: '软文助手',
   description: '基于介绍的产品和品类撰写软文',
   example: '作为一名资深的{}行业从业者（{}）, 想在小红书平台做一名{}（品类）介绍博主，这次主要推荐的是{}产品',
+  mode: 'chat',
   prompt: `
   # Role: 小红书优质内容的创作博主
 

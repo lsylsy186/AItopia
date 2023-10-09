@@ -2,6 +2,7 @@ import message from 'antd/lib/message';
 import { useSession } from "next-auth/react";
 import { getMeta, ENVS } from '@/constants';
 import HomeContext from '@/pages/api/home/home.context';
+import { MenuType } from '@/constants';
 import {
   memo,
   useCallback,
@@ -28,9 +29,10 @@ interface Props {
   models: any;
   chatContainerRef: any;
   handleScroll: any;
+  handleBotSend: any;
 }
 
-export const ChatTool = memo(({ handleSend, models, chatContainerRef, handleScroll }: Props) => {
+export const ChatTool = memo(({ handleSend, models, chatContainerRef, handleScroll, handleBotSend }: Props) => {
   const {
     handleNewConversation,
   } = useContext(HomeContext);
@@ -42,16 +44,22 @@ export const ChatTool = memo(({ handleSend, models, chatContainerRef, handleScro
   // 显示快捷工具标题
   const showShortcutTool = env === ENVS.normal;
 
-  const onRoleSelect = useCallback((prompt: string) => {
+  const onRoleSelect = useCallback((prompt: string, options?: any) => {
     if (status !== 'authenticated') {
       messageComp.warning('请登录后再发送信息');
       return;
     }
-    const newConver = handleNewConversation();
-    handleSend({ role: 'user', content: prompt, hide: true }, 0, null, newConver);
-    setActiveMenu('chat');
+    const { mode, systemPrompt, role } = options;
+    const isbot = mode === 'bot';
+    const newConver = handleNewConversation({ isbot, prompt: systemPrompt, source: 'workspace', role, text: prompt });
+    if (isbot) {
+      handleBotSend('text', prompt, newConver);
+      setActiveMenu(MenuType.robot);
+    } else {
+      handleSend({ role: 'user', content: prompt, hide: true }, 0, null, newConver);
+      setActiveMenu(MenuType.chat);
+    }
   }, [status, handleSend]);
-
 
   return (
     <div

@@ -8,6 +8,7 @@ export const weeklyReport: IRole = {
   imgAlt: 'weeklyReport',
   title: '周报助手',
   description: '输入工作内容，帮你整理输出周报',
+  mode: 'chat',
   example: '我是您的周报生成器，请输入你的工作内容，以便我帮你整理输出周报',
   prompt: `
   # Role: 周报生成器

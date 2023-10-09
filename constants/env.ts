@@ -22,11 +22,14 @@ interface IMetaData {
   env: ENVS;
   qrcode?: string;
   wechat?: string;
+  role: any;
 }
 
 interface IMeta {
   [key: string]: IMetaData;
 }
+
+const defaultChatRole = { name: '助理', avatar: '/images/bot.svg' };
 
 export const metaConfig: IMeta = {
   [ENVS.local]: {
@@ -35,6 +38,7 @@ export const metaConfig: IMeta = {
     description: 'Build your own AI assistant.',
     wechat: 'LzerO12345678',
     qrcode: '/images/qrcode1.jpg',
+    role: defaultChatRole,
     mask: [
       'translator',
       'travelor',
@@ -48,7 +52,10 @@ export const metaConfig: IMeta = {
       'restVideoScript',
       'restxiaohongshu',
       'weeklyReport',
-      'promptOpt'
+      'promptOpt',
+      'elonmusk',
+      'cat',
+      'Raiden'
     ],
   },
   [ENVS.normal]: {
@@ -57,6 +64,7 @@ export const metaConfig: IMeta = {
     description: 'Build your own AI assistant.',
     wechat: 'LzerO12345678',
     qrcode: '/images/qrcode1.jpg',
+    role: defaultChatRole,
     mask: [
       'translator',
       'travelor',
@@ -65,19 +73,24 @@ export const metaConfig: IMeta = {
       'gov',
       'petBehaviorist',
       'learnfaster',
-      'weeklyReport',
-      'promptOpt'
+      // 'weeklyReport',
+      'promptOpt',
+      'elonmusk',
+      'cat',
+      'Raiden'
     ],
   },
   [ENVS.hebao]: {
     env: ENVS.hebao,
     title: '禾宝传媒',
+    role: defaultChatRole,
     description: 'Build your own AI assistant',
     mask: ['hebaoxiaohongshu', 'hebaoVideoScript'],
   },
   [ENVS.furniture]: {
     env: ENVS.normal,
     title: '新媒体运营助手',
+    role: defaultChatRole,
     description: 'Build your own AI assistant.',
     wechat: 'LzerO12345678',
     qrcode: '/images/qrcode1.jpg',
@@ -89,6 +102,7 @@ export const metaConfig: IMeta = {
   [ENVS.restaurant]: {
     env: ENVS.normal,
     title: '新媒体运营助手',
+    role: defaultChatRole,
     description: 'Build your own AI assistant.',
     wechat: 'LzerO12345678',
     qrcode: '/images/qrcode1.jpg',

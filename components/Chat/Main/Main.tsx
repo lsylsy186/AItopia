@@ -31,7 +31,7 @@ import useApiService from '@/services/useApiService';
 import { calTokenLength } from '@/utils/tiktoken';
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
 import { CharacterAudioPlayer } from '@/components/Audio';
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 import { ChatTool } from './ChatTool';
 import { ChatCommunication } from './ChatCommunication';
 // import ChatBot from './ChatBot';
@@ -61,6 +61,17 @@ const messageMapUtil = (messages: Message[]) => {
   });
 }
 
+// chatui的message格式转换openai格式
+const chatToBotConverter = (chatMessage: any) => {
+  return chatMessage.map((message: any) => {
+    const { content, position, ...others } = message;
+    return {
+      content: content.text,
+      role: position === 'right' ? 'user' : 'assistant'
+    };
+  });
+}
+
 export const Main = memo(({ stopConversationRef }: Props) => {
   const { t } = useTranslation('chat');
 
@@ -68,10 +79,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
     state: {
       models,
       apiKey,
-      serverSideApiKeyIsSet,
       modelError,
-      loading,
-      prompts,
     },
     handleUpdateConversation,
     dispatch: homeDispatch,
@@ -84,9 +92,10 @@ export const Main = memo(({ stopConversationRef }: Props) => {
   const balance = user?.account?.balance || 0;
 
   const meta = getMeta(window.location.href || '');
-  const { title, env } = meta;
+  const { title, env, role: defaultRole } = meta;
 
   const { selectedConversation, setSelectedConversation, conversations, setConversations } = useModel('chat');
+  const { botSelectedConversation, botConversations } = useModel('bot');
 
   const router = useRouter()
   // isChatMode: 仅聊天对话模式
@@ -110,6 +119,166 @@ export const Main = memo(({ stopConversationRef }: Props) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 延迟导入chatui
+  let Chat, Bubble: any, useMessages, MessageProps;
+  if (typeof window !== 'undefined') {
+    const chatui = require('@chatui/core');
+    Chat = chatui.default;
+    Bubble = chatui.Bubble;
+    useMessages = chatui.useMessages;
+    MessageProps = chatui.MessageProps;
+  }
+
+  const { messages, prependMsgs, resetList, appendMsg, setTyping } = useMessages([]);
+
+  const handleBotSend = useCallback(
+    async (type: string, val: string, selectedItem?: Conversation) => {
+      if (type === 'text' && val.trim()) {
+        appendMsg({
+          type: 'text',
+          content: { text: val },
+          user: { name: '我', avatar: '/images/user.svg' },
+          position: 'right',
+        });
+      } else {
+        appendMsg({
+          type,
+          content: { text: val },
+          user: { name: '我', avatar: '/images/user.svg' },
+          position: 'right',
+        });
+      }
+      const message = { role: 'user', content: val };
+      const selected = selectedItem ?? botSelectedConversation;
+      if (selected) {
+        let updatedConversation: Conversation;
+        let newMessage = [...chatToBotConverter(selected.messages), message];
+        updatedConversation = {
+          ...selected,
+          messages: newMessage,
+        };
+        const chatBody: ChatBody = {
+          model: updatedConversation.model,
+          messages: messageMapUtil(updatedConversation.messages),
+          key: apiKey,
+          prompt: updatedConversation.prompt,
+          temperature: updatedConversation.temperature,
+          userId: signedIn?.id || '',
+          balance,
+        };
+        const endpoint = getEndpoint(null);
+
+        let body = JSON.stringify(chatBody);;
+        const controller = new AbortController();
+        const { tokenCount: sentTokenCount } = await calTokenLength(chatBody);
+
+        const subBalance = Math.round(sentTokenCount / 10);
+        const newBalance = (balance || 0) - subBalance;
+
+        if (newBalance < 0) {
+          setTyping(false);
+          messageComp.error('剩余算力不够，请充值');
+          return;
+        }
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          signal: controller.signal,
+          body,
+        });
+        let promptToSend = chatBody.prompt;
+        if (!promptToSend) {
+          promptToSend = DEFAULT_SYSTEM_PROMPT;
+        }
+
+        if (!response.ok) {
+          // homeDispatch({ field: 'loading', value: false });
+          let toastMsg = response.statusText;
+          if (response.status === 403) toastMsg = '剩余算力不够，请充值';
+          messageComp.error(toastMsg);
+          return;
+        }
+        // 更新发送token的算力消耗
+        requestUpdateUserAccount(signedIn?.id, { tokenCount: sentTokenCount }).then((res: any) => {
+          if (!res.success) {
+            setTyping(false);
+            let toastMsg = res.statusText;
+            if (res.status === 403) toastMsg = '剩余算力不够，请充值';
+            messageComp.error(toastMsg);
+          }
+        });
+
+        const data = response.body;
+        if (!data) {
+          setTyping(false);
+          return;
+        }
+        // 扣除balance后请求一次最新user
+        fetchUserInfoMethod(signedIn?.id);
+
+        setTyping(false);
+        const reader = data.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        let isFirst = true;
+        let text = '';
+        while (!done) {
+          if (stopConversationRef.current === true) {
+            controller.abort();
+            done = true;
+            break;
+          }
+          const { value, done: doneReading } = await reader.read();
+          done = doneReading;
+          const chunkValue = decoder.decode(value);
+          text += chunkValue;
+          if (isFirst) {
+            isFirst = false;
+            // 第一次回复使用 appendMsg
+
+          } else {
+            // 后续流式回复使用 updateMsg
+            // updateMsg(messages[messages.length - 1]?._id || '', {
+            //   type: 'text',
+            //   content: { text },
+            // });
+          }
+        }
+        appendMsg({
+          type: 'text',
+          content: { text },
+          user: selected.role ?? defaultRole,
+        });
+        fetchUserInfoMethod(signedIn?.id);
+        // 更新回复token的算力消耗
+        const { tokenCount: responseTokenCount } = await calTokenLength({ ...chatBody, messages: [{ content: text, role: 'assistant' }] }, false);
+        // 语音回复模式处理逻辑
+        if (voiceModeOpen) {
+          if (responseTokenCount < 100) {
+            setVoiceMessage(text);
+          } else {
+            messageComp.info('文字过长无法语音回答');
+          }
+        }
+        // 更新token使用情况
+        await requestUpdateUserAccount(signedIn?.id, { tokenCount: responseTokenCount, isSend: false });
+      }
+    },
+    [
+      apiKey,
+      botConversations,
+      botSelectedConversation,
+      stopConversationRef,
+      signedIn,
+      balance,
+      messages,
+      voiceModeOpen,
+    ],
+  );
 
   const handleSend = useCallback(
     async (message: Message, deleteCount = 0, plugin: Plugin | null = null, selectedItem?: Conversation) => {
@@ -144,21 +313,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
         const endpoint = getEndpoint(plugin);
 
         let body;
-        if (!plugin) {
-          body = JSON.stringify(chatBody);
-        } else {
-          body = JSON.stringify({
-            ...chatBody,
-            googleAPIKey: pluginKeys
-              .find((key: any) => key.pluginId === 'google-search')
-              ?.requiredKeys.find((key: any) => key.key === 'GOOGLE_API_KEY')?.value,
-            googleCSEId: pluginKeys
-              .find((key: any) => key.pluginId === 'google-search')
-              ?.requiredKeys.find((key: any) => key.key === 'GOOGLE_CSE_ID')?.value,
-          });
-        }
         const controller = new AbortController();
-
         const { tokenCount: sentTokenCount } = await calTokenLength(chatBody);
         const subBalance = Math.round(sentTokenCount / 10);
         const newBalance = (balance || 0) - subBalance;
@@ -463,13 +618,24 @@ export const Main = memo(({ stopConversationRef }: Props) => {
         }
         <>
           {
-            activeMenu === 'workspace' && <ChatTool handleSend={handleSend} models={models} chatContainerRef={chatContainerRef} handleScroll={handleScroll} />
+            activeMenu === 'workspace' && <>
+              <ChatTool handleSend={handleSend} handleBotSend={handleBotSend} models={models} chatContainerRef={chatContainerRef} handleScroll={handleScroll} />
+            </>
           }
           {
             activeMenu === 'chat' && <ChatCommunication handleSend={handleSend} stopConversationRef={stopConversationRef} handleScroll={handleScroll} />
           }
           {
-            isBotMode && <DynamicChatBot botMode={botMode} stopConversationRef={stopConversationRef} />
+            isBotMode && <DynamicChatBot
+              resetList={resetList}
+              Bubble={Bubble}
+              Chat={Chat}
+              messages={messages}
+              handleSend={handleBotSend}
+              logicOnly={!isBotMode}
+              botMode={botMode}
+              stopConversationRef={stopConversationRef}
+            />
           }
         </>
       </div>
@@ -477,3 +643,6 @@ export const Main = memo(({ stopConversationRef }: Props) => {
   );
 });
 Main.displayName = 'Main';
+
+
+

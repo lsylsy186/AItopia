@@ -37,3 +37,14 @@ export const initialState: HomeInitialState = {
   serverSideApiKeyIsSet: false,
   serverSidePluginKeysSet: false,
 };
+
+export interface IHandleNewConversationPayload {
+  isbot?: boolean;
+  prompt?: string;
+  source?: 'new' | 'workspace';
+  text?: string;
+  role?: {
+    avatar: string;
+    name: string;
+  }
+}

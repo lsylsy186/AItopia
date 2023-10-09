@@ -27,4 +27,10 @@ export interface Conversation {
   prompt: string;
   temperature: number;
   folderId: string | null;
+  // 来源：新建，空间
+  source?: 'new' | 'workspace';
+  role?: {
+    avatar: string;
+    name: string;
+  }
 }

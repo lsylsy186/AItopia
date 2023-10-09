@@ -6,7 +6,7 @@ import Modal from 'antd/lib/modal';
 import Form from 'antd/lib/form';
 import Input from 'antd/lib/input';
 import dynamic from 'next/dynamic'
-import { FC, useCallback, useEffect, useState, useRef } from 'react';
+import { FC, useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { replaceAtPosition } from '@/utils/app/replaceAttr';
 import { PromptSelector } from '../Prompt/PromptSelector';
 import { IApiType } from '@/constants/role/type'
@@ -65,7 +65,8 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
   // 提交预设提示词
   const onFinish = (values: any) => {
     const prompt = fetchPrompt(currentRole.prompt, values);
-    onSelect(prompt, { apiType: currentRole.api ?? IApiType.openai });
+    const { role, api, mode, systemPrompt } = currentRole;
+    onSelect(prompt, { apiType: api ?? IApiType.openai, mode, systemPrompt, role });
     onCancelModal();
   };
 
@@ -133,10 +134,16 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
   const onFormSubmit = () => {
     form.submit();
   }
+  const hasOptions = useMemo(() => {
+    return !!currentRole?.options?.length;
+  }, [currentRole]);
 
+  const modalTitle = useMemo(() => {
+    return hasOptions ? "请选择选项以完成你想要的目标" : "开始你的旅程";
+  }, [hasOptions]);
   return (
     <Modal
-      title="请选择选项以完成你想要的目标"
+      title={modalTitle}
       centered
       open={roleModalOpen}
       onCancel={onCancelModal}

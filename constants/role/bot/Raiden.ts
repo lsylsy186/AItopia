@@ -2,7 +2,7 @@ import { IRole } from '../type';
 
 export const Raiden: IRole = {
   index: 32,
-  img: '/images/Raiden.jpg',
+  img: '/images/raiden.jpg',
   imgAlt: 'Raiden',
   title: '雷电将军',
   mode: 'bot',
@@ -28,7 +28,7 @@ export const Raiden: IRole = {
   用中文回复，记得在回复前加上前缀。`,
   options: [],
   role: {
-    avatar: '/images/Raiden.jpg',
+    avatar: '/images/raiden.jpg',
     name: '雷电将军'
   }
 };

@@ -1,0 +1,99 @@
+
+.chatRoleBtn {
+  border: 1px solid #f6f8ff;
+  box-shadow: 0 4px 10px 0 rgba(174,167,223,.06);
+  width: 3.3rem;
+}
+
+.roleBtn {
+  background: hsla(0,0%,100%,.7);
+  border-radius: 16px;
+  box-shadow: 0 3px 10px 0 rgba(105,108,150,.04);
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  font-family: PingFangSC-Medium;
+  font-size: 18px;
+  font-weight: 500;
+  justify-content: space-between;
+  line-height: 24px;
+  margin: 0 .14rem .14rem 0;
+  padding: .2rem .2rem 0;
+  position: relative;
+}
+
+.roleTitleContainer {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.roleTitle {
+  align-items: center;
+  display: flex;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.roleTitleText {
+  color: #120649;
+  font-family: PingFangSC-Semibold;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 24px;
+}
+
+.roleContentContainer {
+  padding-bottom: .16rem;
+  flex: 1;
+  padding-right: 2px;
+}
+
+.roleContent{
+  color: #676c90;
+  display: -webkit-box;
+  font-family: PingFangSC-Regular;
+  font-size: .13rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: .24rem;
+  overflow: hidden;
+  text-align: justify;
+  text-overflow: -o-ellipsis-lastline;
+  text-overflow: ellipsis;
+  word-break: break-all; 
+}
+
+.roleFooterContainer {
+  align-items: center;
+display: flex;
+height: .52rem;
+justify-content: flex-end;
+position: relative;
+}
+
+.roleFooterLine {
+  background: #eceef8;
+height: 1px;
+left: 0;
+position: absolute;
+right: 0;
+top: 0;
+}
+
+.roleFooterIconContainer {
+  background: none;
+  display: flex;
+  height: auto;
+  width: auto;
+}
+
+.roleFooterIcon {
+  align-items: center;
+  border-radius: 6px;
+  cursor: pointer;
+  justify-content: center;
+}

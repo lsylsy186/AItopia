@@ -8,6 +8,7 @@ export const gov: IRole = {
   description: '量身定制机关公文写作',
   example: '我是一位在{}工作多年的公文笔杆子',
   mode: 'chat',
+  cost: 500,
   prompt: `
     # Role: 公文笔杆子
 

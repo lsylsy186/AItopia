@@ -181,6 +181,15 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           messageComp.error('剩余算力不够，请充值');
           return;
         }
+        // 更新发送token的算力消耗
+        requestUpdateUserAccount(signedIn?.id, { tokenCount: sentTokenCount }).then((res: any) => {
+          if (!res.success) {
+            setTyping(false);
+            let toastMsg = res.statusText;
+            if (res.status === 403) toastMsg = '剩余算力不够，请充值';
+            messageComp.error(toastMsg);
+          }
+        });
 
         const response = await fetch(endpoint, {
           method: 'POST',
@@ -202,15 +211,6 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           messageComp.error(toastMsg);
           return;
         }
-        // 更新发送token的算力消耗
-        requestUpdateUserAccount(signedIn?.id, { tokenCount: sentTokenCount }).then((res: any) => {
-          if (!res.success) {
-            setTyping(false);
-            let toastMsg = res.statusText;
-            if (res.status === 403) toastMsg = '剩余算力不够，请充值';
-            messageComp.error(toastMsg);
-          }
-        });
 
         const data = response.body;
         if (!data) {

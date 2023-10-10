@@ -9,6 +9,7 @@ export const hebaozhaiyao: IRole = {
   mode: 'chat',
   example: '',
   prompt: `学习这个URL：{}, 用中文{}，请以列表的形式展现结果，严格遵守用中文回复的规则`,
+  cost: 500,
   options: [{
     label: '信息源',
     key: 'url',

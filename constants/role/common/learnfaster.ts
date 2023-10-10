@@ -7,6 +7,7 @@ export const learnfaster: IRole = {
   title: '知识百科',
   mode: 'chat',
   description: '80/20原则快速学习知识',
+  cost: 100,
   example: '我想学习关于{}的更多知识.',
   prompt: `
     I want to learn about the {}. Identify and share the most important 20% of learnings from this topic that will help me understand 80% of it.

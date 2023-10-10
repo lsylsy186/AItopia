@@ -30,24 +30,10 @@ const RoleList: FC<Props> = ({
 
   return (
     <div className='flex flex-wrap flex-col pb-40 md:w-[800px] w-screen mt-[25px]'>
-      <div className='mb-[20px] relative'>
-        <div className='relative flex items-center mb-[20px] text-xl px-1'>我的助手</div>
-        {chatRoleList.map((roleList: IRole[]) => (
-          <div className='md:w-[800px] w-[400px] overflow-x-scroll grid'>
-            <div className='w-full flex relative'>
-              {
-                roleList.map((role: IRole) => (
-                  <RoleButton role={role} onSelect={onSelect} />
-                ))
-              }
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className='mb-[20px] relative'>
-        <div className='relative flex items-center mb-[20px] text-xl px-1'>我的搭档</div>
-        <div className='w-full flex relative'>
-          {botRoleList.map((roleList: IRole[]) => (
+      {
+        !!chatRoleList.length && <div className='mb-[20px] relative'>
+          <div className='relative flex items-center mb-[20px] text-xl px-1'>我的助手</div>
+          {chatRoleList.map((roleList: IRole[]) => (
             <div className='md:w-[800px] w-[400px] overflow-x-scroll grid'>
               <div className='w-full flex relative'>
                 {
@@ -59,7 +45,25 @@ const RoleList: FC<Props> = ({
             </div>
           ))}
         </div>
-      </div>
+      }
+      {
+        !!botRoleList.length && <div className='mb-[20px] relative'>
+          <div className='relative flex items-center mb-[20px] text-xl px-1'>我的搭档</div>
+          <div className='w-full flex relative'>
+            {botRoleList.map((roleList: IRole[]) => (
+              <div className='md:w-[800px] w-[400px] overflow-x-scroll grid'>
+                <div className='w-full flex relative'>
+                  {
+                    roleList.map((role: IRole) => (
+                      <RoleButton role={role} onSelect={onSelect} />
+                    ))
+                  }
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      }
     </div >
   );
 };

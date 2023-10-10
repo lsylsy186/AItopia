@@ -2,7 +2,8 @@ import { IRole } from '@/constants';
 import { useModel } from '@/hooks';
 import Image from 'next/image';
 import Card from 'antd/lib/card';
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useMemo } from 'react';
+import { IconLockOpen } from '@tabler/icons-react';
 
 // const Card = dynamic(() => import('antd/lib/card'));
 
@@ -17,7 +18,8 @@ const RoleButton: FC<Props> = ({
   role,
   onSelect
 }) => {
-  const { setRoleModalOpen, setCurrentRole } = useModel('global');
+  const { user, setRoleModalOpen, setCurrentRole } = useModel('global');
+  const balance = user?.account?.balance || 0;
 
   const onClick = useCallback(() => {
     if (role.options) {
@@ -28,17 +30,35 @@ const RoleButton: FC<Props> = ({
     }
   }, [role, setRoleModalOpen, setCurrentRole, onSelect]);
 
+  const times = useMemo(() => {
+    return Math.round(balance / role.cost);
+  }, [role, balance]);
+
+  const descriptionComp = useMemo(() => {
+    return (
+      <div className="text-sm text-neutral-500">
+        <span>{role.description}</span>
+        <div className="flex justify-end mt-[3px]">
+          <span className='text-xs'>{role.mode === 'bot' ? <IconLockOpen size={14} /> : <span className='border rounded text-gray-500'>{times}</span>}</span>
+        </div>
+      </div>
+    )
+  }, [role, times]);
+
+  const bodeStyleHeight = role.mode === 'bot' ? 120 : 100;
+
   return (
-    <Card
-      className='m-1'
-      onClick={onClick}
-      hoverable
-      style={{ width: 115 }}
-      bodyStyle={{ padding: 12, fontSize: 14, minHeight: 106 }}
-      cover={<Image priority src={role.img} alt={role.imgAlt} width={115} height={115} />}
-    >
-      <Meta style={{ fontSize: 12 }} title={role.title} description={role.description} />
-    </Card>
+    <div className='md:w-[120px] w-[110px]'>
+      <Card
+        className='m-1'
+        onClick={onClick}
+        hoverable
+        bodyStyle={{ padding: '8px 4px 4px 4px', fontSize: 12, height: bodeStyleHeight }}
+        cover={<Image priority src={role.img} alt={role.imgAlt} width={115} height={115} />}
+      >
+        <Meta style={{ fontSize: 12 }} title={role.title} description={descriptionComp} />
+      </Card>
+    </div>
   );
 };
 

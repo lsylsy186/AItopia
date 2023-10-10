@@ -513,11 +513,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                           }
                       />
                     </div> */}
-                    {
-                      showShortcutTool
-                        ? <div className='text-lg font-semibold text-stone-700'>快捷工具: </div>
-                        : <></>
-                    }
                     <RoleList onSelect={onRoleSelect} />
                   </>
                   )}

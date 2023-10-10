@@ -42,7 +42,7 @@ export const ChatTool = memo(({ handleSend, models, chatContainerRef, handleScro
   const { title, env } = meta;
 
   // 显示快捷工具标题
-  const showShortcutTool = env === ENVS.normal;
+  const showShortcutTool = false;
 
   const onRoleSelect = useCallback((prompt: string, options?: any) => {
     if (status !== 'authenticated') {

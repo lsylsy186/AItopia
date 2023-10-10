@@ -8,6 +8,7 @@ export const promptOpt: IRole = {
   description: '输入prompt，进行打分改进',
   mode: 'chat',
   example: '我是你的Prompt改进器, 给我看看你的初始Prompt, 我来给你改进一下',
+  cost: 500,
   prompt: `
   # Role: Prompt改进器
 

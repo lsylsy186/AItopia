@@ -26,8 +26,9 @@ export const fetch = (): IRole => {
     img: '/images/imagerecognizer.png',
     imgAlt: 'imageRecognizer',
     title: '图片解析',
+    cost: 100,
     mode: 'chat',
-    description: '可用于分析各类图片报告（如医疗诊断报告）',
+    description: '可用于分析各类图片报告',
     example: '',
     prompt: '',
     options: [{

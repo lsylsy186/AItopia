@@ -20,7 +20,8 @@ export interface IRole {
   role?: {
     avatar: string;
     name: string;
-  }
+  },
+  cost: number;
 }
 export interface IOption {
   label: any;

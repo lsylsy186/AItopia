@@ -1,7 +1,7 @@
 import { formType, IRole } from '../type';
 
 export const furnVideoScript: IRole = {
-  index: 6,
+  index: 51,
   img: '/images/furnVideoScript.jpg',
   imgAlt: 'furnVideoScript',
   title: '视频脚本',

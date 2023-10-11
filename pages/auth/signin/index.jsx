@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 
 import { Status } from '@/components/Chat/Status';
 
+import { getMeta } from '@/constants';
 import { useModel } from '@/hooks';
 import { message } from 'antd';
 import Form from 'antd/lib/form';
@@ -20,7 +21,11 @@ export default function SignIn() {
   const [form] = Form.useForm();
   const router = useRouter();
   const { setIsLoading, isLoading } = useModel('global');
-
+  let meta = {};
+  if (typeof window !== 'undefined') {
+    meta = getMeta(window.location.href || '');
+  }
+  const { env } = meta;
   const onFinish = useCallback(
     async (values) => {
       if (!values) return;
@@ -29,10 +34,11 @@ export default function SignIn() {
       const result = await signIn('credentials', {
         username: email,
         password,
+        productLine: env,
         redirect: false,
       });
       if (!result.ok) {
-        message.error('请检查邮箱或密码是否填写正确');
+        message.error('无访问权限，请检查邮箱或密码是否填写正确');
         setIsLoading(false);
       } else {
         message.success('登陆成功');

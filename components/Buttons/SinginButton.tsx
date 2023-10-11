@@ -1,9 +1,28 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
-import React, { useCallback } from 'react';
+import { getMeta } from '@/constants';
+import React, { useCallback, useEffect } from 'react';
+import message from 'antd/lib/message';
 
 const SigninButton = () => {
   const { data: session } = useSession();
-  const signedIn = session && session.user;
+  const signedIn = session && session.user as any;
+  let meta: any = {};
+  if (typeof window !== 'undefined') {
+    meta = getMeta(window.location.href || '');
+  }
+  const { env } = meta;
+  console.log('session.user', session?.user);
+
+  useEffect(() => {
+    if (!!session?.user) {
+      const user = session.user as any;
+      const available = user?.role === 'Super' || (user?.productLine?.toLowerCase() === env.toLowerCase());
+      if (!available) {
+        message.error('无当前应用访问权限');
+        signOut();
+      }
+    }
+  }, [session?.user]);
 
   const onSignInBtnClick = useCallback(() => {
     if (signedIn) signOut();

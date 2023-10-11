@@ -1,4 +1,4 @@
-import prisma from "@/lib/prismadb";
+// import prisma from "@/lib/prismadb";
 import { IResponse } from '@/types/response';
 import { NextApiRequest, NextApiResponse } from 'next';
 

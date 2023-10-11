@@ -8,7 +8,7 @@ export const xiaohongshu: IRole = {
   description: '从人设定位开始撰写小红书文案',
   example: '你现在是一名{}，想在小红书平台做一名{}介绍博主, 提供{}个人设定位',
   mode: 'chat',
-  cost: 500,
+  cost: 450,
   prompt: `
   # Role: 小红书优质内容的创作博主
   

@@ -280,7 +280,8 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
     } else {
       // setIsTextInput(false)
       resetTranscript();
-      SpeechRecognition.startListening({ language: 'zh-CN', continuous: true });
+      // SpeechRecognition.startListening({ language: 'zh-CN', continuous: true });
+      SpeechRecognition.startListening({ language: 'en-US', continuous: true });
     }
   }
 

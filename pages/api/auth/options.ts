@@ -22,7 +22,12 @@ export const options: NextAuthOptions = {
           label: "密码:",
           type: "password",
           placeholder: "输入密码"
-        }
+        },
+        productLine: {
+          label: "产品线:",
+          type: "productLine",
+          placeholder: ""
+        },
       },
       async authorize(credentials) {
         // This is where you need to retrieve user data
@@ -37,6 +42,7 @@ export const options: NextAuthOptions = {
             body: JSON.stringify({
               username: credentials?.username,
               password: credentials?.password,
+              productLine: credentials?.productLine,
             })
           });
           const user = await res.json();

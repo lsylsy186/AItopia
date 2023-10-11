@@ -32,6 +32,7 @@ import { calTokenLength } from '@/utils/tiktoken';
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
 import { CharacterAudioPlayer } from '@/components/Audio';
 import { useRouter } from 'next/router';
+import { signIn } from 'next-auth/react';
 import { ChatTool } from './ChatTool';
 import { ChatCommunication } from './ChatCommunication';
 // import ChatBot from './ChatBot';
@@ -92,7 +93,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
   const balance = user?.account?.balance || 0;
 
   const meta = getMeta(window.location.href || '');
-  const { title, env, role: defaultRole } = meta;
+  const { env, role: defaultRole } = meta;
 
   const { selectedConversation, setSelectedConversation, conversations, setConversations } = useModel('chat');
   const { botSelectedConversation, botConversations } = useModel('bot');
@@ -101,10 +102,23 @@ export const Main = memo(({ stopConversationRef }: Props) => {
   // isChatMode: 仅聊天对话模式
   const { botMode } = router.query
 
-  // 显示快捷工具标题
-  const showShortcutTool = env === ENVS.normal;
   // 需要做文案审核
   const needContentContraints = env === ENVS.normal || env === ENVS.hebao;
+
+  const unauthorizationToLogin = () => {
+    if (status === 'unauthenticated') {
+      messageComp.open({
+        type: 'warning',
+        duration: 5,
+        className: styles.unaothorizationMessage,
+        content: (
+          <div className='inline-block'><span>请先完成</span><button onClick={() => signIn()} className="text-blue-600 cursor-pointer hover:opacity-50">
+            登陆
+          </button>
+          </div>)
+      })
+    }
+  }
 
   useEffect(() => {
     fetchUserInfoMethod(signedIn?.id);
@@ -134,6 +148,10 @@ export const Main = memo(({ stopConversationRef }: Props) => {
 
   const handleBotSend = useCallback(
     async (type: string, val: string, selectedItem?: Conversation) => {
+      if (status !== 'authenticated') {
+        unauthorizationToLogin();
+        return;
+      }
       if (type === 'text' && val.trim()) {
         appendMsg({
           type: 'text',
@@ -277,11 +295,16 @@ export const Main = memo(({ stopConversationRef }: Props) => {
       balance,
       messages,
       voiceModeOpen,
+      status,
     ],
   );
 
   const handleSend = useCallback(
     async (message: Message, deleteCount = 0, plugin: Plugin | null = null, selectedItem?: Conversation) => {
+      if (status !== 'authenticated') {
+        unauthorizationToLogin();
+        return;
+      }
       const selected = selectedItem ?? selectedConversation;
       if (selected) {
         let updatedConversation: Conversation;
@@ -510,6 +533,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
       stopConversationRef,
       signedIn,
       balance,
+      status,
     ],
   );
 

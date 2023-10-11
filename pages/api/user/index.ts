@@ -3,16 +3,33 @@ import * as bcrypt from 'bcrypt';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { IResponse } from '@/types/response';
 import { withPrismaError } from '@/hooks/withPrismaError';
+import { redisClient } from '@/lib/redis';
 
 interface RequestBody {
   name: string;
   email: string;
   password: string;
+  code: string;
 }
 
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   const body = req.body as RequestBody;
+
+  const isValid = await redisClient.valid(body.email, body.code);
+  if (!isValid) {
+    res.status(500).json({ error: 'Invalid code' })
+  }
+
+  const existUser = await prisma.user.findMany({
+    where: {
+      OR: [{ email: body.email }],
+    },
+  });
+  if (existUser.length > 0) {
+    res.status(500).json({ error: 'User already exists' })
+  }
+
   const user = await prisma.user.create({
     data: {
       name: body?.name,

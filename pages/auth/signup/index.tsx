@@ -1,10 +1,12 @@
 import Form from 'antd/lib/form';
 import Input from 'antd/lib/input';
 import message from 'antd/lib/message';
+import Button from 'antd/lib/button';
 import useAuthService, { ISignUpRequestProps } from '@/services/useAuthService';
 import { Status } from '@/components/Chat/Status';
 import { useModel } from '@/hooks';
 import { signIn } from 'next-auth/react';
+import { useCallback, useState, useEffect } from 'react';
 
 export const metadata = {
   title: '注册页',
@@ -12,13 +14,14 @@ export const metadata = {
 }
 
 import Link from 'next/link'
-import { useCallback, useState } from 'react';
 
 export default function SignUp() {
   const [form] = Form.useForm();
   const [passwordError, setPasswordError] = useState(false);
+  const [isSending, setIsSending] = useState(false); // 是否正在发送验证码
+  const [countdown, setCountdown] = useState(0); // 倒计时时间
   const { setIsLoading, isLoading } = useModel('global');
-  const { signUp } = useAuthService();
+  const { signUp, sendMailCode } = useAuthService();
 
   const onFinish = async (values: ISignUpRequestProps) => {
     if (!values) return;
@@ -31,6 +34,7 @@ export default function SignUp() {
         await signIn('credentials', {
           username: values.email,
           password: values.password,
+          code: values.code,
           redirect: true,
           callbackUrl: '/',
         });
@@ -62,6 +66,29 @@ export default function SignUp() {
     }
     return Promise.resolve();
   };
+
+  const sendEmailVerificationCode = () => {
+    const email = form.getFieldValue('email');
+    if (!email) {
+      message.warning('请填写邮箱');
+      return;
+    }
+    setIsSending(true);
+    sendMailCode({ email });
+    setCountdown(60); // 开始60s倒计时
+    setIsSending(false);
+  };
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer); // 清除timer
+    }
+  }, [countdown]);
+
+  const sendVerificationDisabled = isSending || countdown > 0;
 
   return (
     <section className="h-screen bg-gradient-to-b from-gray-100 to-white">
@@ -101,6 +128,32 @@ export default function SignUp() {
                       placeholder="请填写邮箱地址"
                       required />
                   </Form.Item>
+                </div>
+              </div>
+              <div className="flex flex-wrap -mx-3 mb-4">
+                <div className="w-2/3 px-3">
+                  <Form.Item
+                    className='block text-gray-800 text-sm font-medium mb-1'
+                    name="code"
+                    label="邮箱验证码"
+                    rules={[{ required: true, message: '请填写邮箱验证码' }]}
+                  >
+                    <Input
+                      id="code"
+                      type="text"
+                      className="form-input w-full text-gray-800"
+                      placeholder="请填写邮箱验证码"
+                      required />
+                  </Form.Item>
+                </div>
+                <div className="w-1/3 px-3 flex items-end pb-3">
+                  <Button
+                    onClick={sendEmailVerificationCode}
+                    className={`btn text-white bg-blue-500 ${sendVerificationDisabled ? '' : 'hover:bg-blue-600'} w-full`}
+                    disabled={sendVerificationDisabled}
+                  >
+                    {countdown > 0 ? `${countdown}s后重发` : '发送验证码'}
+                  </Button>
                 </div>
               </div>
               <div className="flex flex-wrap -mx-3 mb-4">

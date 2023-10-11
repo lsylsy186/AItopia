@@ -2,3 +2,9 @@
   height: calc(100vh - 136px);
   overflow-y: scroll;
 }
+
+.unaothorizationMessage {
+  display: flex;
+  left: 50%;
+  position: relative;
+}

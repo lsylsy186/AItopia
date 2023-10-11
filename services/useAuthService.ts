@@ -7,6 +7,7 @@ export interface ISignUpRequestProps {
   email: string;
   name: string;
   password: string;
+  code: string;
 }
 
 const useAuthService = () => {
@@ -14,9 +15,9 @@ const useAuthService = () => {
 
   const signUp = useCallback(
     (params: ISignUpRequestProps, signal?: AbortSignal) => {
-      const { email, name, password } = params;
+      const { email, name, password, code } = params;
       return fetchService.post<IResponse>(`/api/user`, {
-        body: { email, name, password },
+        body: { email, name, password, code },
         headers: {
           'Content-Type': 'application/json',
         },
@@ -57,10 +58,25 @@ const useAuthService = () => {
     [fetchService],
   );
 
+
+  const sendMailCode = useCallback(
+    (params: { email: string }, signal?: AbortSignal) => {
+      return fetchService.post<IResponse>('/api/auth/mailCode', {
+        body: params,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal,
+      });
+    },
+    [fetchService],
+  );
+
   return {
     signUp,
     fetchUserInfo,
-    updateUserAccount
+    updateUserAccount,
+    sendMailCode
   };
 };
 

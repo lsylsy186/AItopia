@@ -13,7 +13,9 @@ export const useAdmin = () => {
         key: index,
         name: item.name,
         email: item.email,
-        balance: item.account?.balance
+        balance: item.account?.balance,
+        role: item.role,
+        productLine: item.productLine
       })));
     }
   }

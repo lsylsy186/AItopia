@@ -50,6 +50,16 @@ const columns: ColumnsType<DataType> = [
     key: 'email',
   },
   {
+    title: '产品线',
+    dataIndex: 'productLine',
+    key: 'productLine',
+  },
+  {
+    title: '角色',
+    dataIndex: 'role',
+    key: 'role',
+  },
+  {
     title: '算力',
     dataIndex: 'balance',
     key: 'balance',
@@ -84,7 +94,7 @@ export default function Admin() {
         message.error('无访问权限');
         router.push('/');
       }
-      callFetchUsers(signedIn.productLine);
+      callFetchUsers(productLine);
     }
 
   }, [signedIn, router]);

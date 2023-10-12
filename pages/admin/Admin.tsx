@@ -86,6 +86,7 @@ export const Admin = () => {
       }
       callFetchUsers(signedIn.productLine);
     }
+
   }, [signedIn, router]);
 
   const back = () => {

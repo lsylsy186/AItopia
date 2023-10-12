@@ -269,8 +269,10 @@ export const ChatInput = ({
   const hideRegenerate = env === ENVS.hebao;
   const showContinue = env === ENVS.hebao;
 
+  const containerStyle = isMobile() ? 'bg-gradient-to-b from-transparent via-white to-white' : '';
+
   return (
-    <div className={`absolute md:bottom-0 ${isBotMode ? 'bottom-0' : 'bottom-12'} left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 dark:border-white/20 dark:via-[#343541] dark:to-[#343541] md:pt-2`}>
+    <div className={`fixed md:bottom-0 ${isBotMode ? 'bottom-[48px]' : 'bottom-12'} ${containerStyle} left-1/2 transform -translate-x-1/2 md:w-[700px] w-full border-transparent pt-6 md:pt-2`}>
       <div className="stretch mx-2 mt-4 flex flex-row gap-3 last:mb-2 md:mx-4 md:mt-[52px] md:last:mb-6 lg:mx-auto lg:max-w-3xl">
         {messageIsStreaming && (
           <button

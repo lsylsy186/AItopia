@@ -2,7 +2,6 @@ import React, { useState, useMemo, ReactElement, SyntheticEvent } from 'react';
 import { MenuList, IMenu } from './config';
 import { MenuType } from '@/constants';
 import { isMobile } from '@/utils/app';
-import { SettingDialog } from '@/components/Settings/SettingDialog';
 import { useModel } from '@/hooks';
 import {
   IconSettings
@@ -98,12 +97,6 @@ export const Menu = () => {
   return (
     <Wrapper>
       <>
-        <SettingDialog
-          open={isSettingDialogOpen}
-          onClose={() => {
-            setIsSettingDialog(false);
-          }}
-        />
         {
           isMobile() ? <>{MobileContent}</> : <> <div className="flex-1 px-2 flex flex-col items-center py-3">
             {MenuList.map((menu: IMenu) => (

@@ -12,7 +12,6 @@ export interface ISignUpRequestProps {
 
 const useAuthService = () => {
   const fetchService = useFetch();
-
   const signUp = useCallback(
     (params: ISignUpRequestProps, signal?: AbortSignal) => {
       const { email, name, password, code } = params;
@@ -72,11 +71,24 @@ const useAuthService = () => {
     [fetchService],
   );
 
+  const fetchUsers = useCallback(
+    (params: { productLine: string }) => {
+      return fetchService.get<IResponse>(`/api/users?productLine=${params?.productLine}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken.token}`
+        },
+      });
+    },
+    [fetchService],
+  );
+
   return {
     signUp,
     fetchUserInfo,
     updateUserAccount,
-    sendMailCode
+    sendMailCode,
+    fetchUsers
   };
 };
 

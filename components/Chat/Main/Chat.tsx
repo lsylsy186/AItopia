@@ -1,7 +1,6 @@
 import message from 'antd/lib/message';
 import { useSession } from "next-auth/react";
 import { useModel } from '@/hooks';
-import useAuthService from '@/services/useAuthService';
 import {
   MutableRefObject,
   memo,

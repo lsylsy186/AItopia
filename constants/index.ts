@@ -9,4 +9,5 @@ export enum MenuType {
   chat = "chat",
   workspace = "workspace",
   robot = "robot",
+  setting = "setting",
 }

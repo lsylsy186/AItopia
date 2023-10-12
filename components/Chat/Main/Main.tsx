@@ -2,6 +2,7 @@ import message from 'antd/lib/message';
 import { useSession } from "next-auth/react";
 import { useModel } from '@/hooks';
 import { isMobile } from '@/utils/app';
+import { SettingDialog } from '@/components/Settings/SettingDialog';
 import {
   MutableRefObject,
   memo,
@@ -648,6 +649,9 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           }
           {
             activeMenu === 'chat' && <ChatCommunication handleSend={handleSend} stopConversationRef={stopConversationRef} handleScroll={handleScroll} />
+          }
+          {
+            activeMenu === 'setting' && <SettingDialog />
           }
           {
             isBotMode && <DynamicChatBot

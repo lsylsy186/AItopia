@@ -100,7 +100,7 @@ export default function SignUp() {
 
           {/* Page header */}
           <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20">
-            <h1 className="h1">Sign Up</h1>
+            <h2 className="h2">注册账号</h2>
           </div>
 
           {/* Form */}

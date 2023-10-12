@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Card from 'antd/lib/card';
 import { FC, useCallback, useMemo } from 'react';
 import { IconLockOpen } from '@tabler/icons-react';
+import { isMobile } from '@/utils/app';
 
 // const Card = dynamic(() => import('antd/lib/card'));
 
@@ -36,7 +37,7 @@ const RoleButton: FC<Props> = ({
 
   const descriptionComp = useMemo(() => {
     return (
-      <div className="text-sm text-neutral-500">
+      <div className={`${isMobile() ? 'text-xs' : 'text-sm'} 'text-neutral-500'`}>
         <span>{role.description}</span>
         <div className="flex justify-end mt-[3px]">
           <span className='text-xs'>{role.mode === 'bot' ? <IconLockOpen size={14} /> : <span className='border rounded text-gray-500'>{times}</span>}</span>
@@ -45,7 +46,13 @@ const RoleButton: FC<Props> = ({
     )
   }, [role, times]);
 
-  const bodeStyleHeight = role.mode === 'bot' ? 120 : 100;
+  const bodeStyleHeight = useMemo(() => {
+    let result = role.mode === 'bot' ? 120 : 100;
+    if (isMobile()) {
+      result = role.mode === 'bot' ? 110 : 90;
+    }
+    return result;
+  }, [role?.mode]);
 
   return (
     <div className='md:w-[120px] w-[110px]'>

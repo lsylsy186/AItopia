@@ -59,7 +59,7 @@ export default function SignIn() {
         <div className="pt-32 pb-12 md:pt-40 md:pb-20">
           {/* Page header */}
           <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20">
-            <h1 className="h1">Login</h1>
+            <h2 className="h2">账号登陆</h2>
           </div>
 
           {/* Form */}

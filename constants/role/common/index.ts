@@ -7,3 +7,4 @@ export * from './translator';
 export * from './travelor';
 export * from './weeklyReport';
 export * from './xiaohongshu';
+export * from './dianping';

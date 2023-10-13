@@ -11,7 +11,6 @@ const SigninButton = () => {
     meta = getMeta(window.location.href || '');
   }
   const { env } = meta;
-  console.log('session.user', session?.user);
 
   useEffect(() => {
     if (!!session?.user) {

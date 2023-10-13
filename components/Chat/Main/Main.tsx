@@ -301,7 +301,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
   );
 
   const handleSend = useCallback(
-    async (message: Message, deleteCount = 0, plugin: Plugin | null = null, selectedItem?: Conversation) => {
+    async (message: Message, deleteCount = 0, plugin: Plugin | null = null, selectedItem?: Conversation, options?: {}) => {
       if (status !== 'authenticated') {
         unauthorizationToLogin();
         return;
@@ -333,6 +333,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           temperature: updatedConversation.temperature,
           userId: signedIn?.id || '',
           balance,
+          options,
         };
         const endpoint = getEndpoint(plugin);
 
@@ -389,153 +390,117 @@ export const Main = memo(({ stopConversationRef }: Props) => {
         }
         // 扣除balance后请求一次最新user
         fetchUserInfoMethod(signedIn?.id);
-        const handleWithoutPlugin = async () => {
-          if (updatedConversation.messages.length === 1) {
-            const { content } = message;
-            const customName =
-              content.length > 30 ? content.substring(0, 30) + '...' : content;
-            updatedConversation = {
-              ...updatedConversation,
-              name: customName,
-            };
-          }
-          homeDispatch({ field: 'loading', value: false });
-          const reader = data.getReader();
-          const decoder = new TextDecoder();
-          let done = false;
-          let isFirst = true;
-          let text = '';
-          while (!done) {
-            if (stopConversationRef.current === true) {
-              controller.abort();
-              done = true;
-              break;
-            }
-            const { value, done: doneReading } = await reader.read();
-            done = doneReading;
-            const chunkValue = decoder.decode(value);
-            text += chunkValue;
-            if (isFirst) {
-              isFirst = false;
-              const updatedMessages: Message[] = [
-                ...updatedConversation.messages,
-                { role: 'assistant', content: chunkValue },
-              ];
-              updatedConversation = {
-                ...updatedConversation,
-                messages: updatedMessages,
-              };
-            } else {
-              const updatedMessages: Message[] =
-                updatedConversation.messages.map((message, index) => {
-                  if (index === updatedConversation.messages.length - 1) {
-                    return {
-                      ...message,
-                      content: text,
-                    };
-                  }
-                  return message;
-                });
-              updatedConversation = {
-                ...updatedConversation,
-                messages: updatedMessages,
-              };
-            }
-            setSelectedConversation(updatedConversation);
-          }
-          fetchUserInfoMethod(signedIn?.id);
-          setMessageIsStreaming(false);
-          // 更新回复token的算力消耗
-          const { tokenCount: responseTokenCount } = await calTokenLength({ ...chatBody, messages: [{ content: text, role: 'assistant' }] }, false);
-          // 语音回复模式处理逻辑
-          if (voiceModeOpen) {
-            if (responseTokenCount < 100) {
-              setVoiceMessage(text);
-            } else {
-              messageComp.info('文字过长无法语音回答');
-            }
-          }
-          await requestUpdateUserAccount(signedIn?.id, { tokenCount: responseTokenCount, isSend: false });
 
-          // 文本安全 TODO 节流
-          if (needContentContraints) {
-            const { data: security } = await getContentSecurity({ text });
-            if (!security) {
-              updatedConversation.messages = updatedConversation.messages.slice(0, -1);
-              setSelectedConversation(updatedConversation);
-              messageComp.warning('生成内容文案审核不通过');
-              return;
-            }
-          }
-          saveConversation(updatedConversation);
-          // 扣除balance后请求一次最新user
-          const updatedConversations: Conversation[] = conversations.map(
-            (conversation: any) => {
-              if (conversation.id === selected.id) {
-                return updatedConversation;
-              }
-              return conversation;
-            },
-          );
-          if (updatedConversations.length === 0) {
-            updatedConversations.push(updatedConversation);
-          }
-          setConversations(updatedConversations);
-          saveConversations(updatedConversations);
-        }
-        const handleWithPlugin = async () => {
-          // Flowise
-          // const data = await queryFlowise({ "question": message.content });
-
-          // const updatedMessages: Message[] = [
-          //   ...updatedConversation.messages,
-          //   { role: 'assistant', content: data },
-          // ];
-          const { answer } = await response.json();
-          const updatedMessages: Message[] = [
-            ...updatedConversation.messages,
-            { role: 'assistant', content: answer },
-          ];
+        if (updatedConversation.messages.length === 1) {
+          const { content } = message;
+          const customName =
+            content.length > 30 ? content.substring(0, 30) + '...' : content;
           updatedConversation = {
             ...updatedConversation,
-            messages: updatedMessages,
+            name: customName,
           };
-          setSelectedConversation(updateConversation);
-          saveConversation(updatedConversation);
-          const updatedConversations: Conversation[] = conversations.map(
-            (conversation: any) => {
-              if (conversation.id === selectedConversation.id) {
-                return updatedConversation;
-              }
-              return conversation;
-            },
-          );
-          if (updatedConversations.length === 0) {
-            updatedConversations.push(updatedConversation);
+        }
+        homeDispatch({ field: 'loading', value: false });
+        const reader = data.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        let isFirst = true;
+        let text = '';
+        while (!done) {
+          if (stopConversationRef.current === true) {
+            controller.abort();
+            done = true;
+            break;
           }
-          setConversations(updatedConversations);
-          saveConversations(updatedConversations);
-          homeDispatch({ field: 'loading', value: false });
-          setMessageIsStreaming(false);
+          const { value, done: doneReading } = await reader.read();
+          done = doneReading;
+          const chunkValue = decoder.decode(value);
+          text += chunkValue;
+          if (isFirst) {
+            isFirst = false;
+            const updatedMessages: Message[] = [
+              ...updatedConversation.messages,
+              { role: 'assistant', content: chunkValue },
+            ];
+            updatedConversation = {
+              ...updatedConversation,
+              messages: updatedMessages,
+            };
+          } else {
+            const updatedMessages: Message[] =
+              updatedConversation.messages.map((message, index) => {
+                if (index === updatedConversation.messages.length - 1) {
+                  return {
+                    ...message,
+                    content: text,
+                  };
+                }
+                return message;
+              });
+            updatedConversation = {
+              ...updatedConversation,
+              messages: updatedMessages,
+            };
+          }
+          setSelectedConversation(updatedConversation);
         }
+        fetchUserInfoMethod(signedIn?.id);
+        setMessageIsStreaming(false);
+        // 更新回复token的算力消耗
+        const { tokenCount: responseTokenCount } = await calTokenLength({ ...chatBody, messages: [{ content: text, role: 'assistant' }] }, false);
+        // 语音回复模式处理逻辑
+        if (voiceModeOpen) {
+          if (responseTokenCount < 100) {
+            setVoiceMessage(text);
+          } else {
+            messageComp.info('文字过长无法语音回答');
+          }
+        }
+        await requestUpdateUserAccount(signedIn?.id, { tokenCount: responseTokenCount, isSend: false });
 
-        if (!plugin) {
-          await handleWithoutPlugin();
-        } else {
-          await handleWithPlugin();
+        // 文本安全 TODO 节流
+        if (needContentContraints) {
+          const { data: security } = await getContentSecurity({ text });
+          if (!security) {
+            updatedConversation.messages = updatedConversation.messages.slice(0, -1);
+            setSelectedConversation(updatedConversation);
+            messageComp.warning('生成内容文案审核不通过');
+            return;
+          }
         }
+        saveConversation(updatedConversation);
+        // 扣除balance后请求一次最新user
+        const updatedConversations: Conversation[] = conversations.map(
+          (conversation: any) => {
+            if (conversation.id === selected.id) {
+              return updatedConversation;
+            }
+            return conversation;
+          },
+        );
+        if (updatedConversations.length === 0 || !!selectedItem) {
+          updatedConversations.push(updatedConversation);
+        }
+        setConversations(updatedConversations);
+        saveConversations(updatedConversations);
+        // Flowise
+        // const data = await queryFlowise({ "question": message.content });
+
+        // const updatedMessages: Message[] = [
+        //   ...updatedConversation.messages,
+        //   { role: 'assistant', content: data },
+        // ];
       }
-    },
-    [
-      apiKey,
-      conversations,
-      pluginKeys,
-      selectedConversation,
-      stopConversationRef,
-      signedIn,
-      balance,
-      status,
-    ],
+    }, [
+    apiKey,
+    conversations,
+    pluginKeys,
+    selectedConversation,
+    stopConversationRef,
+    signedIn,
+    balance,
+    status,
+  ]
   );
 
   // const scrollToBottom = useCallback(() => {

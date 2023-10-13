@@ -272,7 +272,7 @@ export const ChatInput = ({
   const containerStyle = isMobile() ? 'bg-gradient-to-b from-transparent via-white to-white' : '';
 
   return (
-    <div className={`fixed z-50 md:bottom-0 ${isBotMode ? 'bottom-[48px]' : 'bottom-12'} ${containerStyle} left-1/2 transform -translate-x-1/2 md:w-[700px] w-full border-transparent pt-6 md:pt-2`}>
+    <div className={`fixed z-30 md:bottom-0 ${isBotMode ? 'bottom-[48px]' : 'bottom-12'} ${containerStyle} left-1/2 transform -translate-x-1/2 md:w-[700px] w-full border-transparent pt-6 md:pt-2`}>
       <div className="stretch mx-2 mt-4 flex flex-row gap-3 last:mb-2 md:mx-4 md:mt-[52px] md:last:mb-6 lg:mx-auto lg:max-w-3xl">
         {messageIsStreaming && (
           <button

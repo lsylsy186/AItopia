@@ -92,7 +92,6 @@ const Home = ({
     () => (isBotMode ? botSelectedConversation : chatSelectedConversation),
     [isBotMode, botSelectedConversation, chatSelectedConversation]
   );
-  const saveConversation = useMemo(() => (isBotMode ? saveBotConversation : saveChatConversation), [isBotMode]);
   const saveConversations = useMemo(() => (isBotMode ? saveBotConversations : saveChatConversations), [isBotMode]);
   const updateConversation = useMemo(() => (isBotMode ? updateBotConversation : updateChatConversation), [isBotMode]);
 
@@ -243,10 +242,10 @@ const Home = ({
       saveBotConversation(newConversation);
       saveBotConversations(updatedConversations);
     } else {
-      setSelectedConversation(newConversation);
-      setConversations(updatedConversations);
-      saveConversation(newConversation);
-      saveConversations(updatedConversations);
+      setChatSelectedConversation(newConversation);
+      setChatConversations(updatedConversations);
+      saveChatConversation(newConversation);
+      saveChatConversations(updatedConversations);
     }
 
     dispatch({ field: 'loading', value: false });

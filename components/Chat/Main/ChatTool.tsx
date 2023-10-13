@@ -49,14 +49,14 @@ export const ChatTool = memo(({ handleSend, models, chatContainerRef, handleScro
       messageComp.warning('请登录后再发送信息');
       return;
     }
-    const { mode, systemPrompt, role } = options;
+    const { mode, systemPrompt, role, apiType } = options;
     const isbot = mode === 'bot';
     const newConver = handleNewConversation({ isbot, prompt: systemPrompt, source: 'workspace', role, text: prompt });
     if (isbot) {
       handleBotSend('text', prompt, newConver);
       setActiveMenu(MenuType.robot);
     } else {
-      handleSend({ role: 'user', content: prompt, hide: true }, 0, null, newConver);
+      handleSend({ role: 'user', content: prompt, hide: true }, 0, null, newConver, { apiType });
       setActiveMenu(MenuType.chat);
     }
   }, [status, handleSend]);
@@ -94,3 +94,5 @@ export const ChatTool = memo(({ handleSend, models, chatContainerRef, handleScro
     </div>
   );
 });
+
+ChatTool.displayName = 'ChatTool';

@@ -1,7 +1,8 @@
 import { Message } from '@/types/chat';
 import { OpenAIModel } from '@/types/openai';
+import { IApiType } from '@/constants/role/type';
 
-import { AZURE_DEPLOYMENT_ID, OPENAI_API_HOST, OPENAI_API_TYPE, OPENAI_API_VERSION, OPENAI_ORGANIZATION } from '../app/const';
+import { AZURE_DEPLOYMENT_ID, OPENAI_API_HOST, OPENAI_API_TYPE, OPENAI_API_VERSION, OPENAI_ORGANIZATION, FASTGPT_API_HOST, FASTGPT_API_KEY } from '../app/const';
 
 import {
   ParsedEvent,
@@ -29,19 +30,26 @@ export const OpenAIStream = async (
   temperature: number,
   key: string,
   messages: Message[],
+  options: any,
 ) => {
-  let url = `${OPENAI_API_HOST}/v1/chat/completions`;
+  let host = OPENAI_API_HOST;
+  let apiKey = process.env.OPENAI_API_KEY;
+  if (options?.apiType === IApiType.fastgpt) {
+    host = FASTGPT_API_HOST;
+    apiKey = FASTGPT_API_KEY;
+  }
+  let url = `${host}/v1/chat/completions`;
   if (OPENAI_API_TYPE === 'azure') {
-    url = `${OPENAI_API_HOST}/openai/deployments/${AZURE_DEPLOYMENT_ID}/chat/completions?api-version=${OPENAI_API_VERSION}`;
+    url = `${host}/openai/deployments/${AZURE_DEPLOYMENT_ID}/chat/completions?api-version=${OPENAI_API_VERSION}`;
   }
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
       ...(OPENAI_API_TYPE === 'openai' && {
-        Authorization: `Bearer ${key ? key : process.env.OPENAI_API_KEY}`
+        Authorization: `Bearer ${key ? key : apiKey}`
       }),
       ...(OPENAI_API_TYPE === 'azure' && {
-        'api-key': `${key ? key : process.env.OPENAI_API_KEY}`
+        'api-key': `${key ? key : apiKey}`
       }),
       ...((OPENAI_API_TYPE === 'openai' && OPENAI_ORGANIZATION) && {
         'OpenAI-Organization': OPENAI_ORGANIZATION,

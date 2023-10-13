@@ -28,3 +28,6 @@ export const BAIDU_APIKEY =
 
 export const BAIDU_SECRETKEY =
   process.env.NEXT_PUBLIC_BAIDU_SECRETKEY || '';
+
+export const FASTGPT_API_HOST = process.env.FASTGPT_API_HOST || '';
+export const FASTGPT_API_KEY = process.env.FASTGPT_API_KEY || '';

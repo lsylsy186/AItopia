@@ -146,7 +146,6 @@ export const ChatInput = ({
   };
 
   const handleKeyDown = (event: any) => {
-    console.log('showPromptList', showPromptList);
     if (showPromptList) {
       if (event.key === 'ArrowDown') {
         event.preventDefault();

@@ -479,11 +479,9 @@ export const Main = memo(({ stopConversationRef }: Props) => {
           },
         );
         if (updatedConversations.length === 0 || !!selectedItem) {
-          console.log('111 updatedConversation: ', updatedConversation);
           updatedConversations.push(updatedConversation);
         }
         setConversations(updatedConversations);
-        console.log('222 conversations: ', updatedConversations);
         saveConversations(updatedConversations);
         // Flowise
         // const data = await queryFlowise({ "question": message.content });

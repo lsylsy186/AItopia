@@ -3,10 +3,15 @@ import Input from 'antd/lib/input';
 import message from 'antd/lib/message';
 import Button from 'antd/lib/button';
 import useAuthService, { ISignUpRequestProps } from '@/services/useAuthService';
+import { getMeta, ENVS, accessToken } from '@/constants';
 import { Status } from '@/components/Chat/Status';
 import { useModel } from '@/hooks';
 import { signIn } from 'next-auth/react';
 import { useCallback, useState, useEffect } from 'react';
+
+const capitalizeFirstLetter = (str: string): any => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 export const metadata = {
   title: '注册页',
@@ -22,11 +27,13 @@ export default function SignUp() {
   const [countdown, setCountdown] = useState(0); // 倒计时时间
   const { setIsLoading, isLoading } = useModel('global');
   const { signUp, sendMailCode } = useAuthService();
+  const meta = getMeta(window.location.href || '');
+  const { env } = meta;
 
   const onFinish = async (values: ISignUpRequestProps) => {
     if (!values) return;
     setIsLoading(true);
-    const res = await signUp(values);
+    const res = await signUp({ ...values, productLine: capitalizeFirstLetter(env) });
     if (res.success) {
       setIsLoading(false);
       message.success(res.message);

@@ -8,15 +8,16 @@ export interface ISignUpRequestProps {
   name: string;
   password: string;
   code: string;
+  productLine: any;
 }
 
 const useAuthService = () => {
   const fetchService = useFetch();
   const signUp = useCallback(
     (params: ISignUpRequestProps, signal?: AbortSignal) => {
-      const { email, name, password, code } = params;
+      const { email, name, password, code, productLine } = params;
       return fetchService.post<IResponse>(`/api/user`, {
-        body: { email, name, password, code },
+        body: { email, name, password, code, productLine },
         headers: {
           'Content-Type': 'application/json',
         },

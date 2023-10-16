@@ -40,6 +40,8 @@ enum Role {
 enum ProductLine {
   Normal
   Hebao
+  Furniture
+  Resturant
 }
 
 model User {

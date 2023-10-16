@@ -10,6 +10,7 @@ interface RequestBody {
   email: string;
   password: string;
   code: string;
+  productLine: any;
 }
 
 
@@ -39,7 +40,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
         create: {
           balance: 5
         }
-      }
+      },
+      productLine: body?.productLine || 'Normal',
     }
   });
   const { password, ...result } = user;

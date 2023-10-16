@@ -75,6 +75,7 @@ export const metaConfig: IMeta = {
       'learnfaster',
       'dianping',
       // 'weeklyReport',
+      'pinpaigushi',
       'promptOpt',
       'elonmusk',
       'cat',
@@ -111,6 +112,7 @@ export const metaConfig: IMeta = {
     mask: [
       'restVideoScript',
       'restxiaohongshu',
+      'pinpaigushi',
       'dianping'
     ],
   }

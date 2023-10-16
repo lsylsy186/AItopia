@@ -42,6 +42,7 @@ enum ProductLine {
   Hebao
   Furniture
   Resturant
+  Local
 }
 
 model User {

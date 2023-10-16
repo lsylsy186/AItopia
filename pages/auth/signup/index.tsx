@@ -27,7 +27,10 @@ export default function SignUp() {
   const [countdown, setCountdown] = useState(0); // 倒计时时间
   const { setIsLoading, isLoading } = useModel('global');
   const { signUp, sendMailCode } = useAuthService();
-  const meta = getMeta(window.location.href || '');
+  let meta: any = {};
+  if (typeof window !== 'undefined') {
+    meta = getMeta(window.location.href || '');
+  }
   const { env } = meta;
 
   const onFinish = async (values: ISignUpRequestProps) => {

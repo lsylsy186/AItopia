@@ -19,7 +19,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
   const isValid = await redisClient.valid(body.email, body.code);
   if (!isValid) {
-    res.status(500).json({ error: 'Invalid code' })
+    res.status(500).end({ error: 'Invalid code' });
   }
 
   const existUser = await prisma.user.findMany({
@@ -28,7 +28,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     },
   });
   if (existUser.length > 0) {
-    res.status(500).json({ error: 'User already exists' })
+    res.status(500).end({ error: 'User already exists' });
   }
 
   const user = await prisma.user.create({

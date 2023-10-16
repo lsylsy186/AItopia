@@ -97,7 +97,8 @@ export const metaConfig: IMeta = {
     qrcode: '/images/qrcode1.jpg',
     mask: [
       'furnVideoScript',
-      'furnxiaohongshu'
+      'furnxiaohongshu',
+      'dianping'
     ],
   },
   [ENVS.restaurant]: {

@@ -21,7 +21,7 @@ export const useGlobal = () => {
   // 上传图片状态
   const [isUploading, setIsUploading] = useState(false);
   // 激活菜单项
-  const [activeMenu, setActiveMenu] = useState<MenuType>(MenuType.robot);
+  const [activeMenu, setActiveMenu] = useState<MenuType>(MenuType.chat);
   // 是否全局loading态
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

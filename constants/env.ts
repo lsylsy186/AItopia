@@ -47,16 +47,15 @@ export const metaConfig: IMeta = {
       'gov',
       'petBehaviorist',
       'learnfaster',
-      'furnVideoScript',
-      'furnxiaohongshu',
       'restVideoScript',
       'restxiaohongshu',
       'weeklyReport',
       'dianping',
       'promptOpt',
+      'pinpaigushi',
       'elonmusk',
       'cat',
-      'Raiden'
+      'Raiden',
     ],
   },
   [ENVS.normal]: {
@@ -110,7 +109,8 @@ export const metaConfig: IMeta = {
     qrcode: '/images/qrcode1.jpg',
     mask: [
       'restVideoScript',
-      'restxiaohongshu'
+      'restxiaohongshu',
+      'dianping'
     ],
   }
 };

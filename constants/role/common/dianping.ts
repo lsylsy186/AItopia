@@ -5,7 +5,7 @@ export const dianping: IRole = {
   img: '/images/hebaoxiaohongshu.png',
   imgAlt: 'dianping',
   title: '点评回复',
-  description: '基于介绍的产品和品类撰写软文',
+  description: '基于客户评价做出恰当评论回复',
   mode: 'chat',
   example: '',
   cost: 450,

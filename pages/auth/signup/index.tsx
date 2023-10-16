@@ -42,6 +42,7 @@ export default function SignUp() {
           username: values.email,
           password: values.password,
           code: values.code,
+          productLine: env,
           redirect: true,
           callbackUrl: '/',
         });

@@ -1,5 +1,5 @@
 import { IRole, formType, language } from './type';
-import { weeklyReport, translator, travelor, learnfaster, petBehaviorist, imageRecognizer, xiaohongshu, gov, promptOpt, dianping, pinpaigushi } from './common';
+import { weeklyReport, translator, travelor, learnfaster, petBehaviorist, imageRecognizer, xiaohongshu, gov, promptOpt, dianping, pinpaigushi, zhishiruanwen } from './common';
 import { elonmusk, cat, Raiden } from './bot';
 import { hebaoxiaohongshu, hebaoVideoScript, hebaozixun, hebaozhaiyao } from './hebao';
 import { furnVideoScript, furnxiaohongshu } from './furniture';
@@ -33,7 +33,8 @@ export const defaultRoleList: IRole[] = [
   cat,
   Raiden,
   dianping,
-  pinpaigushi
+  pinpaigushi,
+  zhishiruanwen
 ].map((elem, index) => {
   elem.index = index;
   return elem;

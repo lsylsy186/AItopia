@@ -24,6 +24,8 @@ export const useGlobal = () => {
   const [activeMenu, setActiveMenu] = useState<MenuType>(MenuType.chat);
   // 是否全局loading态
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  // 语音输入是中文模式还是英文模式
+  const [voiceLang, setVoiceLang] = useState<'en-US' | 'zh-CN'>('zh-CN');
 
   // chatbar配置
   const [searchTerm, setSearchTerm] = useState<string>
@@ -81,6 +83,8 @@ export const useGlobal = () => {
     pluginKeys,
     setPluginKeys,
     defaultModelId,
+    voiceLang,
+    setVoiceLang,
     setDefaultModelId,
     setIsLoading,
     setActiveMenu,

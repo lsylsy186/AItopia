@@ -101,6 +101,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
   } = useMessageInputCore({ draftMessage, senderInfo, onSend, onBeforeSend, typingIndicator });
   // const [isTextInput, setIsTextInput] = useState(true);
   const { t } = useTranslation('chat');
+  const { voiceLang } = useModel('global');
 
   const {
     listening,
@@ -281,7 +282,7 @@ export const MessageInput: FC<MessageInputProps> = (props: MessageInputProps) =>
       // setIsTextInput(false)
       resetTranscript();
       // SpeechRecognition.startListening({ language: 'zh-CN', continuous: true });
-      SpeechRecognition.startListening({ language: 'en-US', continuous: true });
+      SpeechRecognition.startListening({ language: voiceLang, continuous: true });
     }
   }
 

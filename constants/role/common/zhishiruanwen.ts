@@ -5,7 +5,7 @@ export const zhishiruanwen: IRole = {
   img: '/images/zhishiruanwen.png',
   imgAlt: 'zhishiruanwen',
   title: '知识软文',
-  description: '生活知识小百科，用小窍门迅速建号',
+  description: '知识小百科，小窍门迅速建号',
   example: '写一个关于{}(知识点)的小贴，要求用{}(数量)点总结出来',
   mode: 'chat',
   cost: 200,

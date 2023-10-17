@@ -8,7 +8,7 @@ export const dianping: IRole = {
   description: '基于客户评价做出恰当评论回复',
   mode: 'chat',
   example: '',
-  cost: 450,
+  cost: 150,
   prompt: `# Role: 餐饮评价客服
 
   ## Profile

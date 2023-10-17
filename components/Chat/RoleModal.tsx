@@ -10,6 +10,8 @@ import { FC, useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { replaceAtPosition } from '@/utils/app/replaceAttr';
 import { PromptSelector } from '../Prompt/PromptSelector';
 import { IApiType } from '@/constants/role/type'
+import { isMobile } from '@/utils/app';
+import styles from './styles.module.css'
 
 const ImageUploader = dynamic(() => import('./ImageUploader'))
 interface Props {
@@ -86,6 +88,7 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
     return (
       options?.map((item: IRoleOption) => {
         const { type, label, option, key, width } = item;
+        const inputWidth = isMobile() && !!width && width > 200 ? 200 : width;
         let Item = null;
         if (type === formType.select) {
           Item = <Select
@@ -97,7 +100,7 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
         } else if (type === formType.input) {
           Item = <Input
             placeholder={`请输入${label}`}
-            style={{ width: width ?? 200 }}
+            style={{ width: inputWidth ?? 200 }}
           />
         } else if (type === formType.imageUploader) {
           return <ImageUploader
@@ -123,6 +126,7 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
           key={key}
           label={label}
           name={key}
+          className={`${isMobile() ? '' : styles.roleItem}`}
           rules={[{ required: true, message: `请输入或选择${label}` }]}
         >
           {Item}
@@ -145,6 +149,7 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
     <Modal
       title={modalTitle}
       centered
+      className={`${isMobile() ? '' : styles.roleModal}`}
       open={roleModalOpen}
       onCancel={onCancelModal}
       footer={[
@@ -167,7 +172,7 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
           示例: {example}
         </div> : <></>
       }
-      <Form form={form} onFinish={onFinish} onValuesChange={onChange} layout="vertical">
+      <Form form={form} onFinish={onFinish} onValuesChange={onChange} layout={`${isMobile() ? 'vertical' : 'inline'}`}>
         {formRender()}
       </Form>
     </Modal>

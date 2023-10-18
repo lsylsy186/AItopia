@@ -4,3 +4,4 @@ export * from './useElevenlabs';
 export * from './useChat';
 export * from './useBot';
 export * from './useAdmin';
+export * from './useRole';

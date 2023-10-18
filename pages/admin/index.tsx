@@ -5,9 +5,9 @@ import { accessToken } from '@/constants';
 import Menu from 'antd/lib/menu';
 import { useRouter } from 'next/router';
 import type { MenuProps } from 'antd/es/menu';
-import { AdminMenuType, menuList } from './config';
-import { Accounts } from './Accounts';
-import { Operations } from './Operations';
+import { AdminMenuType, menuList } from '@/components/Admin/config';
+import { Accounts } from '@/components/Admin/Accounts';
+import { Operations } from '@/components/Admin/Operations';
 
 
 interface DataType {

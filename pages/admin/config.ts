@@ -25,8 +25,8 @@ export const menuList = [
     label: '历史操作',
     key: AdminMenuType.Operations,
   },
-  {
-    label: '空间管理',
-    key: AdminMenuType.Workspace,
-  },
+  // {
+  //   label: '空间管理',
+  //   key: AdminMenuType.Workspace,
+  // },
 ];

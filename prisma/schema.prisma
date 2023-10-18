@@ -91,10 +91,11 @@ enum OpType {
 }
 
 model Operation {
-  id     Int    @id @default(autoincrement())
-  opType OpType
-  op     String
-  user   String
+  id        Int      @id @default(autoincrement())
+  opType    OpType
+  op        String
+  createdAt DateTime @default(now()) @db.Timestamp(6) // 操作时间
+  user      String
 }
 
 enum ApiType {

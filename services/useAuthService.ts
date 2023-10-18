@@ -84,12 +84,39 @@ const useAuthService = () => {
     [fetchService],
   );
 
+  const fetchOperations = useCallback(
+    () => {
+      return fetchService.get<IResponse>('/api/admin/operation', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken.token}`
+        },
+      });
+    },
+    [fetchService],
+  );
+
+  const addOperation = useCallback(
+    (params: { opType: any, op: string, user: string }) => {
+      return fetchService.post<IResponse>('/api/admin/operation', {
+        body: params,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken.token}`
+        },
+      });
+    },
+    [fetchService],
+  );
+
   return {
     signUp,
     fetchUserInfo,
     updateUserAccount,
     sendMailCode,
-    fetchUsers
+    fetchUsers,
+    fetchOperations,
+    addOperation
   };
 };
 

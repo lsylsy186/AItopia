@@ -203,9 +203,11 @@ const Home = ({
   // CONVERSATION OPERATIONS  --------------------------------------------
 
   const handleNewConversation = (payload?: IHandleNewConversationPayload) => {
-    const { isbot, prompt, source, role, text } = payload || {};
+    const { isbot: isPayloadBot, prompt, source, assistant, text } = payload || {};
     let lastConversation = conversations[conversations.length - 1];
     let initMessages: any = [];
+    const isbot = isPayloadBot === undefined ? isBotMode : isPayloadBot;
+
     if (isbot) {
       lastConversation = botConversations[botConversations.length - 1];
       if (source === 'workspace') {
@@ -231,7 +233,7 @@ const Home = ({
       temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
       source: !!source ? source : 'new',
-      role,
+      assistant,
     };
 
     let updatedConversations = [...conversations, newConversation];

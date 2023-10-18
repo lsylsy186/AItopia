@@ -7,7 +7,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   try {
     const { method, query, headers } = req;
     let token: string = '';
-    console.log('headers', headers);
     if (headers['authorization']?.startsWith("Bearer ")) {
       token = headers['authorization']?.substring(7);
     }

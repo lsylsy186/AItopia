@@ -43,7 +43,7 @@ export interface IHandleNewConversationPayload {
   prompt?: string;
   source?: 'new' | 'workspace';
   text?: string;
-  role?: {
+  assistant?: {
     avatar: string;
     name: string;
   }

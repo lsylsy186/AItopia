@@ -29,7 +29,7 @@ export interface Conversation {
   folderId: string | null;
   // 来源：新建，空间
   source?: 'new' | 'workspace';
-  role?: {
+  assistant?: {
     avatar: string;
     name: string;
   }

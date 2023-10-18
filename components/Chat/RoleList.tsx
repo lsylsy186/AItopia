@@ -1,6 +1,7 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import RoleButton from '@/components/Buttons/RoleButton';
 import { IRole, defaultRoleList, getMeta } from '@/constants';
+import { useModel } from '@/hooks';
 
 interface Props {
   onSelect: (params: string) => void;
@@ -24,6 +25,11 @@ const RoleList: FC<Props> = ({
   list = defaultRoleList
 }) => {
   const { mask } = getMeta(window.location.href || '');
+  // const { callFetchRoleList, roleList: newRoleList } = useModel('role');
+  // console.log('roleList', newRoleList);
+  // useEffect(() => {
+  //   callFetchRoleList();
+  // }, []);
   const roleList = mask ? list.filter(elem => mask.includes(elem.imgAlt)) : list;
   const chatRoleList = useMemo(() => (roleFormatter(roleList, 'chat')), [roleList]);
   const botRoleList = useMemo(() => (roleFormatter(roleList, 'bot')), [roleList]);

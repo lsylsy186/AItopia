@@ -17,7 +17,7 @@ export interface IRole {
   api?: IApiType;
   mode?: 'chat' | 'bot';
   systemPrompt?: string;
-  role?: {
+  assistant?: {
     avatar: string;
     name: string;
   },
@@ -37,14 +37,14 @@ export interface IRoleOption {
   width?: number;
 }
 
-export enum language {
-  zh = '中文',
-  en = '英文'
-}
-
 export enum formType {
   select = 'select',
   input = 'input',
   imageUploader = 'imageUploader',
   promptSelect = 'promptSelect'
+}
+
+export enum language {
+  zh = '中文',
+  en = '英文'
 }

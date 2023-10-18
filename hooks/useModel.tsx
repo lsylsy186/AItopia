@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { useGlobal, useMedia, useElevenlabs, useChat, useBot, useAdmin } from './model';
+import { useGlobal, useMedia, useElevenlabs, useChat, useBot, useAdmin, useRole } from './model';
 
 const defaultState = {
   global: {} as any,
@@ -8,6 +8,7 @@ const defaultState = {
   chat: {} as any,
   bot: {} as any,
   admin: {} as any,
+  role: {} as any,
 };
 
 const ModelContext = createContext(defaultState);
@@ -20,6 +21,7 @@ export const ModelContextProvider = ({ children }: any) => {
     chat: useChat(),
     bot: useBot(),
     admin: useAdmin(),
+    role: useRole(),
   };
   return (
     <ModelContext.Provider value={model}>

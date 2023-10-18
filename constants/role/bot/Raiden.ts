@@ -28,7 +28,7 @@ export const Raiden: IRole = {
   - 似乎完全无关
   用中文回复，记得在回复前加上前缀。`,
   options: [],
-  role: {
+  assistant: {
     avatar: '/images/raiden.jpg',
     name: '雷电将军'
   }

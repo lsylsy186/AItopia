@@ -1,85 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import message from 'antd/lib/message';
-import Table from 'antd/lib/table';
-import { useModel } from '@/hooks';
 import { useSession } from "next-auth/react";
 import { accessToken } from '@/constants';
-// import Menu from 'antd/lib/menu';
+import Menu from 'antd/lib/menu';
 import { useRouter } from 'next/router';
-import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd/es/menu';
+import { AdminMenuType, menuList } from '@/components/Admin/config';
+import { Accounts } from '@/components/Admin/Accounts';
+import { Operations } from '@/components/Admin/Operations';
 
-type MenuItem = Required<MenuProps>['items'][number];
-
-const menuList = [
-  {
-    label: 'Home',
-    key: 'Home',
-  },
-  {
-    label: 'Transactions',
-    key: 'Transactions',
-  },
-  {
-    label: 'Accounts',
-    key: 'Accounts',
-  },
-  {
-    label: 'Tax',
-    key: 'Tax',
-  }
-];
 
 interface DataType {
-  key: string;
+  key: number;
   name: string;
   email: string;
   balance: number;
 }
 
-const columns: ColumnsType<DataType> = [
-  {
-    title: '账号',
-    dataIndex: 'name',
-    key: 'name',
-    render: (text: string) => <a>{text}</a>,
-  },
-  {
-    title: '邮箱',
-    dataIndex: 'email',
-    key: 'email',
-  },
-  {
-    title: '产品线',
-    dataIndex: 'productLine',
-    key: 'productLine',
-  },
-  {
-    title: '角色',
-    dataIndex: 'role',
-    key: 'role',
-  },
-  {
-    title: '算力',
-    dataIndex: 'balance',
-    key: 'balance',
-  },
-  // {
-  //   title: '操作',
-  //   dataIndex: 'operation',
-  //   key: 'Operation',
-  //   render: (_, record) => (
-  //     <Space size="middle">
-  //       <a>Invite {record.name}</a>
-  //       <a>Delete</a>
-  //     </Space>
-  //   ),
-  // },
-];
-
 export default function Admin() {
-  const [menu, setMenu] = useState<string>('home');
-  const { users, callFetchUsers } = useModel('admin');
+  const [activeAdminMenu, setActiveAdminMenu] = useState(AdminMenuType.Accounts);
+
   const { data: session } = useSession();
   const signedIn: any = session && session.user;
   accessToken.token = signedIn?.accessToken?.token || '';
@@ -88,13 +28,12 @@ export default function Admin() {
 
   useEffect(() => {
     if (signedIn?.accessToken?.token) {
-      const { role, productLine } = signedIn;
+      const { role } = signedIn;
       const available = role === 'Super' || role === 'Admin';
       if (!available) {
         message.error('无访问权限');
         router.push('/');
       }
-      callFetchUsers(productLine);
     }
 
   }, [signedIn, router]);
@@ -102,21 +41,35 @@ export default function Admin() {
   const back = () => {
     router.push('/');
   }
+
+  const onClick = (e: any) => {
+    setActiveAdminMenu(e.key);
+  }
   return (
     <div className="flex h-screen w-full bg-white">
-      <main className="flex-grow p-6 bg-white">
-        <div className="flex justify-between items-center mb-4">
+      <div className="my-2">
+        <div className="flex justify-between items-center py-4 px-10">
           <a className="cursor-pointer" onClick={back}>返回</a>
-          {/* <Menu
-            onClick={onClick}
-            style={{ width: 256 }}
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
-            mode="inline"
-            items={menuList}
-          /> */}
         </div>
-        <Table dataSource={users} columns={columns} />
+        <Menu
+          onClick={onClick}
+          style={{ width: 158 }}
+          selectedKeys={[activeAdminMenu]}
+          mode="inline"
+          items={menuList}
+        />
+      </div>
+      <main className="flex-grow p-6 bg-white">
+
+        {
+          activeAdminMenu === AdminMenuType.Accounts && <Accounts />
+        }
+        {
+          activeAdminMenu === AdminMenuType.Operations && <Operations />
+        }
+        {
+          activeAdminMenu === AdminMenuType.Workspace && <Accounts />
+        }
       </main>
     </div>
   )

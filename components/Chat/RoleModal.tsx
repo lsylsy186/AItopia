@@ -67,8 +67,8 @@ const RoleModal: FC<Props> = ({ onSelect }) => {
   // 提交预设提示词
   const onFinish = (values: any) => {
     const prompt = fetchPrompt(currentRole.prompt, values);
-    const { role, api, mode, systemPrompt } = currentRole;
-    onSelect(prompt, { apiType: api ?? IApiType.openai, mode, systemPrompt, role });
+    const { assistant, api, mode, systemPrompt } = currentRole;
+    onSelect(prompt, { apiType: api ?? IApiType.openai, mode, systemPrompt, assistant });
     onCancelModal();
   };
 

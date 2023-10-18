@@ -35,7 +35,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
     const code = await redisClient.new(email);
     const result = await sendEmail([email], '', code.toString());
-    console.log('123 result: ', result);
     if (result) {
       res.status(200).json({
         success: true,

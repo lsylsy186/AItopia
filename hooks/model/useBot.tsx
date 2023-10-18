@@ -24,7 +24,7 @@ export const useBot = () => {
   // 设置botSelectedConversation的messages属性
   const setBotSelectedConversationMessages = (messages: any) => {
     if (botSelectedConversation) {
-      let name = botSelectedConversation.role?.name ?? '助理';
+      let name = botSelectedConversation.assistant?.name ?? '助理';
       const updateBotSelectedConversation = {
         ...botSelectedConversation,
         messages,

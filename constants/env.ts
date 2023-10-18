@@ -51,7 +51,6 @@ export const metaConfig: IMeta = {
       'restxiaohongshu',
       'weeklyReport',
       'dianping',
-      'promptOpt',
       'pinpaigushi',
       'zhishiruanwen',
       'elonmusk',
@@ -78,7 +77,6 @@ export const metaConfig: IMeta = {
       'zhishiruanwen',
       // 'weeklyReport',
       'pinpaigushi',
-      'promptOpt',
       'elonmusk',
       'cat',
       'Raiden'

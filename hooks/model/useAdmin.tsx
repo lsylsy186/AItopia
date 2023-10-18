@@ -10,6 +10,7 @@ export const useAdmin = () => {
     const result = await fetchUsers({ productLine });
     if (result.success && result.data) {
       setUsers((result.data as any).map((item: any, index: number) => ({
+        id: item.id,
         key: index,
         name: item.name,
         email: item.email,

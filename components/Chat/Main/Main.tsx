@@ -94,7 +94,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
   const balance = user?.account?.balance || 0;
 
   const meta = getMeta(window.location.href || '');
-  const { env, role: defaultRole } = meta;
+  const { env, assistant: defaultAssistant } = meta;
 
   const { selectedConversation, setSelectedConversation, conversations, setConversations } = useModel('chat');
   const { botSelectedConversation, botConversations } = useModel('bot');
@@ -270,7 +270,7 @@ export const Main = memo(({ stopConversationRef }: Props) => {
         appendMsg({
           type: 'text',
           content: { text },
-          user: selected.role ?? defaultRole,
+          user: selected.assistant ?? defaultAssistant,
         });
         fetchUserInfoMethod(signedIn?.id);
         // 更新回复token的算力消耗

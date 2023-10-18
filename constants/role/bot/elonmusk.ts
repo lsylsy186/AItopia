@@ -31,7 +31,7 @@ export const elonmusk: IRole = {
   用中文回复，记得在回复前加上前缀。
   `,
   options: [],
-  role: {
+  assistant: {
     avatar: '/images/elonmusk2.svg',
     name: '埃隆·马斯克'
   }

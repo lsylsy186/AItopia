@@ -29,7 +29,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
+enum Auth {
   Super
   Admin
   Mod
@@ -50,7 +50,7 @@ model User {
   email       String      @unique
   name        String?
   password    String
-  role        Role        @default(User)
+  role        Auth        @default(User)
   productLine ProductLine @default(Normal)
   posts       Post[]
   profile     Profile?
@@ -82,4 +82,81 @@ model Account {
   // relation
   user      User   @relation(fields: [accountId], references: [id])
   accountId String @unique
+}
+
+enum OpType {
+  add
+  upgrade
+  delete
+}
+
+model Operation {
+  id     Int    @id @default(autoincrement())
+  opType OpType
+  op     String
+  user   String
+}
+
+enum ApiType {
+  openai
+  fastgpt
+  vectorvein
+  flowise
+}
+
+enum FormType {
+  select
+  input
+  imageUploader
+  promptSelect
+}
+
+enum Mode {
+  chat
+  bot
+}
+
+model Role {
+  id           Int          @id @default(autoincrement())
+  img          String
+  imgAlt       String
+  title        String
+  description  String
+  index        Int
+  prompt       String
+  example      String?
+  api          ApiType?
+  mode         Mode?
+  systemPrompt String?
+  assistant    Assistant?
+  cost         Int
+  roleOptions  RoleOption[]
+}
+
+model Assistant {
+  id     Int    @id @default(autoincrement())
+  avatar String
+  name   String
+  role   Role   @relation(fields: [roleId], references: [id])
+  roleId Int    @unique
+}
+
+model RoleOption {
+  id      Int      @id @default(autoincrement())
+  label   String
+  key     String
+  type    FormType
+  width   Int?
+  role    Role     @relation(fields: [roleId], references: [id])
+  roleId  Int
+  options Option[]
+}
+
+model Option {
+  id           Int        @id @default(autoincrement())
+  label        String
+  value        String
+  prompt       String?
+  roleOption   RoleOption @relation(fields: [roleOptionId], references: [id])
+  roleOptionId Int
 }

@@ -91,7 +91,7 @@ export const metaConfig: IMeta = {
     mask: ['hebaoxiaohongshu', 'hebaoVideoScript', 'zhishiruanwen'],
   },
   [ENVS.furniture]: {
-    env: ENVS.normal,
+    env: ENVS.furniture,
     title: '新媒体运营助手',
     assistant: defaultChatAssistant,
     description: 'Build your own AI assistant.',
@@ -104,7 +104,7 @@ export const metaConfig: IMeta = {
     ],
   },
   [ENVS.restaurant]: {
-    env: ENVS.normal,
+    env: ENVS.restaurant,
     title: '新媒体运营助手',
     assistant: defaultChatAssistant,
     description: 'Build your own AI assistant.',

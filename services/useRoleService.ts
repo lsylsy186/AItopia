@@ -43,10 +43,48 @@ const useRoleService = () => {
     },
     [fetchService],
   );
+  const modRole = useCallback(
+    (params: {
+      id: string,
+      img: string,
+      productLine: string[],
+      title: string,
+      description: string,
+      prompt: string,
+      example: string,
+      cost: number,
+      systemPrompt: string,
+    }) => {
+      return fetchService.post<IResponse>('/api/role/update', {
+        body: params,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken.token}`
+        },
+      });
+    },
+    [fetchService],
+  );
+  const removeRole = useCallback(
+    (params: {
+      id: string,
+    }) => {
+      return fetchService.delete<IResponse>('/api/role', {
+        body: params,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken.token}`
+        },
+      });
+    },
+    [fetchService],
+  );
 
   return {
     fetchRoles,
     addRole,
+    modRole,
+    removeRole
   };
 };
 

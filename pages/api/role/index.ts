@@ -5,26 +5,16 @@ import { NextApiRequest, NextApiResponse } from 'next';
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   try {
     const { method, body } = req;
-    let whereClause = {};
     switch (method) {
       case 'GET':
         const result = await prisma.role.findMany({
-          where: whereClause,
-          select: {
-            id: true,
-            img: true,
-            productLine: true,
-            title: true,
-            description: true,
-            prompt: true,
-            example: true,
-            api: true,
-            mode: true,
-            systemPrompt: true,
-            assistant: true,
-            cost: true,
-            roleOptions: true,
-          }
+          include: {
+            roleOptions: {
+              include: {
+                options: true,
+              },
+            },
+          },
         });
         res.status(200).json({
           success: true,
@@ -68,6 +58,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
           success: true,
           message: '请求成功',
           data: response
+        } as IResponse);
+        break
+      case 'DELETE':
+        const deleteResponse = await prisma.role.delete({
+          where: { id: Number(body.id) },
+        });
+        res.status(200).json({
+          success: true,
+          message: '请求成功',
+          data: deleteResponse
         } as IResponse);
         break
       default:

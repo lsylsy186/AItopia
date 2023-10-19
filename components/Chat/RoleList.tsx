@@ -1,6 +1,6 @@
 import { FC, useEffect, useMemo } from 'react';
 import RoleButton from '@/components/Buttons/RoleButton';
-import { IRole, defaultRoleList, getMeta } from '@/constants';
+import { IRole, defaultRoleList, getMeta, ENVS } from '@/constants';
 import { useModel } from '@/hooks';
 
 interface Props {
@@ -24,13 +24,19 @@ const RoleList: FC<Props> = ({
   onSelect,
   list = defaultRoleList
 }) => {
-  const { mask } = getMeta(window.location.href || '');
-  // const { callFetchRoleList, roleList: newRoleList } = useModel('role');
-  // console.log('roleList', newRoleList);
-  // useEffect(() => {
-  //   callFetchRoleList();
-  // }, []);
-  const roleList = mask ? list.filter(elem => mask.includes(elem.imgAlt)) : list;
+  const { mask, env } = getMeta(window.location.href || '');
+  const { callFetchRoleList, roleList: newRoleList } = useModel('role');
+
+  useEffect(() => {
+    callFetchRoleList();
+  }, []);
+
+  const roleList = useMemo(() => {
+    const formatNewRoleList = newRoleList.filter((role: any) => env === ENVS.local || role.productLine.includes(env));
+    const tempRoleList = mask ? list.filter(elem => mask.includes(elem.imgAlt)) : list;
+    return [...tempRoleList, ...formatNewRoleList];
+  }, [newRoleList, list]);
+
   const chatRoleList = useMemo(() => (roleFormatter(roleList, 'chat')), [roleList]);
   const botRoleList = useMemo(() => (roleFormatter(roleList, 'bot')), [roleList]);
 

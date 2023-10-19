@@ -80,7 +80,7 @@ model Account {
   balance Int @default(0)
 
   // relation
-  user      User   @relation(fields: [accountId], references: [id])
+  user      User   @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId String @unique
 }
 
@@ -137,7 +137,7 @@ model Assistant {
   id     Int    @id @default(autoincrement())
   avatar String
   name   String
-  role   Role   @relation(fields: [roleId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId Int    @unique
 }
 
@@ -147,7 +147,7 @@ model RoleOption {
   key     String
   type    FormType
   width   Int?
-  role    Role     @relation(fields: [roleId], references: [id])
+  role    Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId  Int
   options Option[]
 }
@@ -157,6 +157,6 @@ model Option {
   label        String
   value        String
   prompt       String?
-  roleOption   RoleOption @relation(fields: [roleOptionId], references: [id])
+  roleOption   RoleOption @relation(fields: [roleOptionId], references: [id], onDelete: Cascade)
   roleOptionId Int
 }

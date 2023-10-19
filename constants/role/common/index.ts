@@ -8,5 +8,4 @@ export * from './travelor';
 export * from './weeklyReport';
 export * from './xiaohongshu';
 export * from './dianping';
-export * from './pinpaigushi';
 export * from './zhishiruanwen';

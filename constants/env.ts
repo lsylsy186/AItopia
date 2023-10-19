@@ -52,6 +52,7 @@ export const metaConfig: IMeta = {
       'weeklyReport',
       'dianping',
       'pinpaigushi',
+      'pinpaigushi2',
       'zhishiruanwen',
       'elonmusk',
       'cat',
@@ -113,7 +114,8 @@ export const metaConfig: IMeta = {
       'restVideoScript',
       'restxiaohongshu',
       'pinpaigushi',
-      'dianping'
+      'pinpaigushi2',
+      'dianping',
     ],
   }
 };

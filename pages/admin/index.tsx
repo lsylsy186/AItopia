@@ -4,18 +4,7 @@ import { useSession } from "next-auth/react";
 import { accessToken } from '@/constants';
 import Menu from 'antd/lib/menu';
 import { useRouter } from 'next/router';
-import type { MenuProps } from 'antd/es/menu';
-import { AdminMenuType, menuList } from '@/components/Admin/config';
-import { Accounts } from '@/components/Admin/Accounts';
-import { Operations } from '@/components/Admin/Operations';
-
-
-interface DataType {
-  key: number;
-  name: string;
-  email: string;
-  balance: number;
-}
+import { Workspace, Accounts, Operations, AdminMenuType, menuList } from '@/components/Admin';
 
 export default function Admin() {
   const [activeAdminMenu, setActiveAdminMenu] = useState(AdminMenuType.Accounts);
@@ -68,7 +57,7 @@ export default function Admin() {
           activeAdminMenu === AdminMenuType.Operations && <Operations />
         }
         {
-          activeAdminMenu === AdminMenuType.Workspace && <Accounts />
+          activeAdminMenu === AdminMenuType.Workspace && <Workspace />
         }
       </main>
     </div>

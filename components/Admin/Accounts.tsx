@@ -211,6 +211,7 @@ export const Accounts = () => {
         }}
         bordered
         pagination={{
+          pageSize: 20,
           onChange: cancel,
         }}
       />

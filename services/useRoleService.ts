@@ -19,7 +19,20 @@ const useRoleService = () => {
   );
 
   const addRole = useCallback(
-    (params: { opType: any, op: string, user: string }) => {
+    (params: {
+      img: string;
+      productLine: string[],
+      title: string,
+      description: string,
+      prompt: string,
+      example: string,
+      api: string,
+      mode: string,
+      systemPrompt: string,
+      assistant: any,
+      cost: string,
+      roleOptions: any
+    }) => {
       return fetchService.post<IResponse>('/api/role', {
         body: params,
         headers: {

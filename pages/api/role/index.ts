@@ -13,10 +13,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
           select: {
             id: true,
             img: true,
-            imgAlt: true,
+            productLine: true,
             title: true,
             description: true,
-            index: true,
             prompt: true,
             example: true,
             api: true,
@@ -37,10 +36,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
         const response = await prisma.role.create({
           data: {
             img: body.img,
-            imgAlt: body.imgAlt,
+            productLine: body.productLine,
             title: body.title,
             description: body.description,
-            index: body.index,
             prompt: body.prompt,
             example: body.example,
             api: body.api,
@@ -48,7 +46,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
             systemPrompt: body.systemPrompt,
             assistant: body.assistant,
             cost: body.cost,
-            roleOptions: body.roleOptions,
+            roleOptions: {
+              create: body.roleOptions.map((option: any) => ({
+                label: option.label,
+                key: option.key,
+                type: option.type,
+                width: option.width,
+                options: {
+                  create: option.options.map((opt: any) => ({
+                    label: opt.label,
+                    value: opt.value,
+                    prompt: opt.prompt || null
+                  }))
+                }
+              }))
+            }
           },
         });
 

@@ -14,6 +14,7 @@ export interface IRole {
   prompt: string;
   options?: IRoleOption[];
   example?: string;
+  temperature?: number;
   api?: IApiType;
   mode?: 'chat' | 'bot';
   systemPrompt?: string;

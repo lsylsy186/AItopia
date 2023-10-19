@@ -17,7 +17,7 @@ import { accessToken } from '@/constants';
 import { useRouter } from 'next/router';
 import { IconCircleMinus, IconCirclePlus } from '@tabler/icons-react';
 import { uploadPhotoFromClient } from '@/lib/blob';
-import { IApiType, modeList, roleOptions, widthOptions, productLineOptions } from './config';
+import { IApiType, modeList, roleOptions, widthOptions, productLineOptions, ModeType } from './config';
 
 const formItemLayout = {
   labelCol: {
@@ -70,6 +70,7 @@ const getColumns = (payload: any) => {
       title: '描述',
       dataIndex: 'description',
       key: 'description',
+      width: 100,
     },
     {
       title: '提示词',
@@ -87,6 +88,10 @@ const getColumns = (payload: any) => {
       title: '模式',
       dataIndex: 'mode',
       key: 'mode',
+      render: (value: ModeType) => {
+        const modeItem = modeList.find(v => v.value === value);
+        return modeItem?.label;
+      }
     },
     {
       title: '系统提示词',
@@ -272,7 +277,7 @@ export const Workspace = () => {
     <div className="w-full relative flex items-end justify-center flex-col">
       <Button className="my-5" type="default" onClick={onOpenCreateRole}>新增模块</Button>
       <Modal
-        title="创建模块"
+        title="删除模块"
         centered
         width={500}
         open={showDeleteRoleModal}
@@ -289,7 +294,7 @@ export const Workspace = () => {
         <p>点击提交按钮删除</p>
       </Modal>
       <Modal
-        title="创建模块"
+        title={`${isEdit ? '编辑' : '创建'}模块`}
         centered
         width={800}
         open={showCreateRoleModal}

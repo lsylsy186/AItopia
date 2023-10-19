@@ -54,6 +54,7 @@ export const metaConfig: IMeta = {
       'pinpaigushi',
       'pinpaigushi2',
       'zhishiruanwen',
+      'youahaiwaigou',
       'elonmusk',
       'cat',
       'Raiden',
@@ -78,9 +79,10 @@ export const metaConfig: IMeta = {
       'zhishiruanwen',
       // 'weeklyReport',
       'pinpaigushi',
+      'youahaiwaigou',
       'elonmusk',
       'cat',
-      'Raiden'
+      'Raiden',
     ],
   },
   [ENVS.hebao]: {

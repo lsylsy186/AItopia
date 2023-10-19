@@ -9,3 +9,4 @@ export * from './weeklyReport';
 export * from './xiaohongshu';
 export * from './dianping';
 export * from './zhishiruanwen';
+export * from './haiwaigoukefu';

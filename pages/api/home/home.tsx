@@ -203,7 +203,7 @@ const Home = ({
   // CONVERSATION OPERATIONS  --------------------------------------------
 
   const handleNewConversation = (payload?: IHandleNewConversationPayload) => {
-    const { isbot: isPayloadBot, prompt, source, assistant, text } = payload || {};
+    const { isbot: isPayloadBot, prompt, source, assistant, text, temperature } = payload || {};
     let lastConversation = conversations[conversations.length - 1];
     let initMessages: any = [];
     const isbot = isPayloadBot === undefined ? isBotMode : isPayloadBot;
@@ -218,7 +218,7 @@ const Home = ({
         }];
       }
     }
-
+    const newTemperature = temperature ?? lastConversation?.temperature;
     const newConversation: Conversation = {
       id: uuidv4(),
       name: t('New Conversation'),
@@ -230,7 +230,7 @@ const Home = ({
         tokenLimit: OpenAIModels[defaultModelId].tokenLimit,
       },
       prompt: prompt ?? DEFAULT_SYSTEM_PROMPT,
-      temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
+      temperature: newTemperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
       source: !!source ? source : 'new',
       assistant,

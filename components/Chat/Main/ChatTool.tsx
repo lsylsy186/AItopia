@@ -49,9 +49,9 @@ export const ChatTool = memo(({ handleSend, models, chatContainerRef, handleScro
       messageComp.warning('请登录后再发送信息');
       return;
     }
-    const { mode, systemPrompt, assistant, apiType } = options;
+    const { mode, systemPrompt, assistant, apiType, temperature } = options;
     const isbot = mode === 'bot';
-    const newConver = handleNewConversation({ isbot, prompt: systemPrompt, source: 'workspace', assistant, text: prompt });
+    const newConver = handleNewConversation({ isbot, prompt: systemPrompt, source: 'workspace', assistant, text: prompt, temperature });
     if (isbot) {
       handleBotSend('text', prompt, newConver);
       setActiveMenu(MenuType.robot);

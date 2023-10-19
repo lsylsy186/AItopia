@@ -9,7 +9,7 @@ import { useModel } from '@/hooks';
 import { useSession } from "next-auth/react";
 import { accessToken } from '@/constants';
 import { useRouter } from 'next/router';
-import { OperationType } from './config';
+import { OperationType, UserRoleType, userRoleList } from './config';
 
 interface DataType {
   key: number;
@@ -140,6 +140,10 @@ export const Accounts = () => {
       title: '角色',
       dataIndex: 'role',
       key: 'role',
+      render: (value: UserRoleType) => {
+        const userItem = userRoleList.find(v => v.value === value);
+        return userItem?.label;
+      }
     },
     {
       title: '算力',

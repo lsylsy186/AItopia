@@ -6,6 +6,12 @@ export enum AdminMenuType {
   Workspace = 'Workspace',
 }
 
+export enum UserRoleType {
+  Super = 'Super',
+  Admin = 'Admin',
+  User = 'User',
+}
+
 export enum OperationType {
   add = 'add',
   upgrade = 'upgrade',
@@ -17,6 +23,21 @@ export const OperationTypeMap = {
   [OperationType.upgrade]: '更新',
   [OperationType.delete]: '删除',
 }
+
+export const userRoleList = [
+  {
+    value: UserRoleType.Super,
+    label: '超级账户',
+  },
+  {
+    value: UserRoleType.Admin,
+    label: '管理员',
+  },
+  {
+    value: UserRoleType.User,
+    label: '用户',
+  },
+]
 
 export const menuList = [
   {
@@ -68,13 +89,17 @@ export const roleOptions = [
 
 export const widthOptions = [
   {
-    value: 200,
-    label: '200'
+    value: 150,
+    label: '短'
   },
   {
-    value: 150,
-    label: '150'
-  }
+    value: 200,
+    label: '中'
+  },
+  {
+    value: 250,
+    label: '长'
+  },
 ];
 
 export const productLineOptions = [

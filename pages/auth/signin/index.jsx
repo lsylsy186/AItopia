@@ -26,6 +26,7 @@ export default function SignIn() {
     meta = getMeta(window.location.href || '');
   }
   const { env } = meta;
+  console.log('env', env);
   const onFinish = useCallback(
     async (values) => {
       if (!values) return;

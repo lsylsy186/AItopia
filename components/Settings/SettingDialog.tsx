@@ -35,7 +35,9 @@ export const SettingDialog: FC = () => {
 
   const { data: session } = useSession();
   const signedIn: any = session && session.user;
+  console.log('signedIn', signedIn);
   const hasAdminAuth = signedIn.role === 'Super' || signedIn.role === 'Admin';
+  console.log('hasAdminAuth', hasAdminAuth);
 
   // const modalRef = useRef<HTMLDivElement>(null);
 

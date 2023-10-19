@@ -37,7 +37,6 @@ export default function SignUp() {
     if (!values) return;
     setIsLoading(true);
     const pl = capitalizeFirstLetter(env);
-    console.log('pl', pl);
 
     const res = await signUp({ ...values, productLine: capitalizeFirstLetter(env) });
     if (res.success) {

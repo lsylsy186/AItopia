@@ -15,8 +15,6 @@ const SigninButton = () => {
   useEffect(() => {
     if (!!session?.user) {
       const user = session.user as any;
-      console.log('user?.productLine', user?.productLine);
-      console.log('env', env);
       const available = user?.role === 'Super' || (user?.productLine?.toLowerCase() === env.toLowerCase());
       if (!available) {
         message.error('无当前应用访问权限');

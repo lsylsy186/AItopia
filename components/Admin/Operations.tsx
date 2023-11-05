@@ -19,6 +19,8 @@ export const Operations = () => {
       title: '操作 ID',
       dataIndex: 'id',
       key: 'id',
+      defaultSortOrder: 'descend',
+      sorter: (a: any, b: any) => a.id - b.id,
       render: (text: string) => <a>{text}</a>,
     },
     {
@@ -66,6 +68,9 @@ export const Operations = () => {
       dataSource={operations}
       columns={mergedColumns}
       bordered
+      pagination={{
+        pageSize: 20,
+      }}
     />
   )
 }

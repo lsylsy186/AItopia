@@ -35,7 +35,7 @@ export default function Admin() {
     setActiveAdminMenu(e.key);
   }
   return (
-    <div className="flex h-screen w-full bg-white">
+    <div className="flex w-full bg-white">
       <div className="my-2">
         <div className="flex justify-between items-center py-4 px-10">
           <a className="cursor-pointer" onClick={back}>返回</a>

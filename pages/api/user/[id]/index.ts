@@ -46,6 +46,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
           data: response
         } as IResponse);
         break
+      case 'DELETE':
+        const { id, role } = body;
+        if (!role || role !== 'User') {
+          res.status(500).json({ error: 'Error' });
+          return;
+        }
+        const deleteResponse = await prisma.user.delete({
+          where: { id },
+          include: { account: true }
+        });
+
+        res.status(200).json({
+          success: true,
+          message: '请求成功',
+          data: deleteResponse
+        } as IResponse);
+        break
       default:
         res.setHeader('Allow', ['GET', 'POST'])
         res.status(405).end(`Method ${method} Not Allowed`)

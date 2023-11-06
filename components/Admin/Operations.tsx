@@ -47,7 +47,7 @@ export const Operations = () => {
   ];
 
   // 只有Super权限账户可以修改算力
-  const mergedColumns = columns.filter(column => !(signedIn?.role !== 'Super' && column.dataIndex === 'operation'));
+  const mergedColumns: any = columns.filter(column => !(signedIn?.role !== 'Super' && column.dataIndex === 'operation'));
 
   const router = useRouter();
 

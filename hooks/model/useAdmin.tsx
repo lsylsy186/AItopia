@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 
 export const useAdmin = () => {
-  const { fetchUsers, fetchOperations, addOperation } = useAuthService();
+  const { fetchUsers, fetchOperations, addOperation, removeAccount, modUser } = useAuthService();
   const [users, setUsers] = useState<any>([]);
   const [operations, setOperations] = useState<any>([]);
 
@@ -40,11 +40,23 @@ export const useAdmin = () => {
     return result;
   }
 
+  const callRemoveAccount = async (payload: { id: string, auth: any }) => {
+    const result = await removeAccount(payload);
+    return result;
+  }
+
+  const callModUser = async (payload: { id: string, data: any }) => {
+    const result = await modUser(payload);
+    return result;
+  }
+
   return {
     users,
     callFetchUsers,
     operations,
     callFetchOperations,
     callAddOperation,
+    callRemoveAccount,
+    callModUser,
   };
 };

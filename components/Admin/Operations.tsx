@@ -19,6 +19,8 @@ export const Operations = () => {
       title: '操作 ID',
       dataIndex: 'id',
       key: 'id',
+      defaultSortOrder: 'descend',
+      sorter: (a: any, b: any) => a.id - b.id,
       render: (text: string) => <a>{text}</a>,
     },
     {
@@ -45,7 +47,7 @@ export const Operations = () => {
   ];
 
   // 只有Super权限账户可以修改算力
-  const mergedColumns = columns.filter(column => !(signedIn?.role !== 'Super' && column.dataIndex === 'operation'));
+  const mergedColumns: any = columns.filter(column => !(signedIn?.role !== 'Super' && column.dataIndex === 'operation'));
 
   const router = useRouter();
 
@@ -66,6 +68,9 @@ export const Operations = () => {
       dataSource={operations}
       columns={mergedColumns}
       bordered
+      pagination={{
+        pageSize: 20,
+      }}
     />
   )
 }

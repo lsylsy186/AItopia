@@ -109,6 +109,34 @@ const useAuthService = () => {
     [fetchService],
   );
 
+  const removeAccount = useCallback(
+    (params: {
+      id: string, auth: any
+    }) => {
+      return fetchService.delete<IResponse>(`/api/user/${params?.id}`, {
+        body: params,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken.token}`
+        },
+      });
+    },
+    [fetchService],
+  );
+
+  const modUser = useCallback((params: { id: string, data: any }, signal?: AbortSignal) => {
+    const { id, data } = params;
+    return fetchService.post<IResponse>(`/api/user/${id}/account/update`, {
+      body: params,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken.token}`
+      },
+    });
+  },
+    [fetchService],
+  );
+
   return {
     signUp,
     fetchUserInfo,
@@ -116,7 +144,9 @@ const useAuthService = () => {
     sendMailCode,
     fetchUsers,
     fetchOperations,
-    addOperation
+    addOperation,
+    removeAccount,
+    modUser
   };
 };
 

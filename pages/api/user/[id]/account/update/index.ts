@@ -7,17 +7,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     const query = req.query as any;
     const body = req.body;
 
+    const { data } = body;
+    if (!data.role || data.role !== 'User') {
+      res.status(500).json({ error: 'Error' });
+      return;
+    }
     const user = await prisma.user.update({
       where: { id: query.id }, // 要更新的用户的查询条件
       data: {
-        account: {
-          update: {
-            where: { accountId: query.id },
-            data: body
-          }
-        }
+        name: data.name,
       },
-      include: { account: true }
     });
 
     const { password, ...result } = user;

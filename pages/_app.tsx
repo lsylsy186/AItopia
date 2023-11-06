@@ -14,7 +14,7 @@ const inter = Inter({ subsets: ['latin'] });
 function App({ Component, pageProps }: AppProps<{}>) {
   const queryClient = new QueryClient();
   return (
-    <div className={inter.className}>
+    <div className={`${inter.className} h-[100vh] bg-white`}>
       <ModelContextProvider>
         <Providers>
           <QueryClientProvider client={queryClient}>

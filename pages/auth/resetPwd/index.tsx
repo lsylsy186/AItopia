@@ -1,32 +1,26 @@
 import Form from 'antd/lib/form';
 import Input from 'antd/lib/input';
 import message from 'antd/lib/message';
-import Button from 'antd/lib/button';
+import { signIn } from 'next-auth/react';
 import useAuthService, { ISignUpRequestProps } from '@/services/useAuthService';
 import { getMeta, ENVS, accessToken } from '@/constants';
 import { Status } from '@/components/Chat/Status';
 import { useModel } from '@/hooks';
-import { signIn } from 'next-auth/react';
 import { useCallback, useState, useEffect } from 'react';
 
-const capitalizeFirstLetter = (str: string): any => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
 export const metadata = {
-  title: '注册页',
+  title: '修改密码页',
   description: '',
 }
 
 import Link from 'next/link'
 
-export default function SignUp() {
+export default function ChangePwd() {
   const [form] = Form.useForm();
   const [passwordError, setPasswordError] = useState(false);
-  const [isSending, setIsSending] = useState(false); // 是否正在发送验证码
-  const [countdown, setCountdown] = useState(0); // 倒计时时间
   const { setIsLoading, isLoading } = useModel('global');
-  const { signUp, sendMailCode } = useAuthService();
+  const { modPwd } = useAuthService();
   let meta: any = {};
   if (typeof window !== 'undefined') {
     meta = getMeta(window.location.href || '');
@@ -36,9 +30,8 @@ export default function SignUp() {
   const onFinish = async (values: ISignUpRequestProps) => {
     if (!values) return;
     setIsLoading(true);
-    const pl = capitalizeFirstLetter(env);
-
-    const res = await signUp({ ...values, productLine: capitalizeFirstLetter(env) });
+    console.log('values', values);
+    const res = await modPwd(values);
     if (res.success) {
       setIsLoading(false);
       message.success(res.message);
@@ -80,36 +73,6 @@ export default function SignUp() {
     return Promise.resolve();
   };
 
-  const sendEmailVerificationCode = () => {
-    const email = form.getFieldValue('email');
-    if (!email) {
-      message.warning('请填写邮箱');
-      return;
-    }
-    setIsSending(true);
-    sendMailCode({ email });
-    setCountdown(60); // 开始60s倒计时
-    setIsSending(false);
-  };
-
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => {
-        setCountdown(countdown - 1);
-      }, 1000);
-      return () => clearTimeout(timer); // 清除timer
-    }
-  }, [countdown]);
-
-  useEffect(() => {
-    if (env === ENVS.hebao) {
-      message.warning('当前环境不可注册');
-      window.location.href = '/';
-    }
-  }, []);
-
-  const sendVerificationDisabled = isSending || countdown > 0;
-
   return (
     <section className="h-screen bg-gradient-to-b from-gray-100 to-white">
       <div className="fixed w-[200px] -translate-x-1/2 top-8 left-1/2">
@@ -120,7 +83,7 @@ export default function SignUp() {
 
           {/* Page header */}
           <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20">
-            <h2 className="h2">注册账号</h2>
+            <h2 className="h2">修改密码</h2>
           </div>
 
           {/* Form */}
@@ -128,52 +91,34 @@ export default function SignUp() {
             <Form form={form} onFinish={onFinish} onValuesChange={onChange} layout="vertical">
               <div className="flex flex-wrap -mx-3 mb-4">
                 <div className="w-full px-3">
-                  <Form.Item className='block text-gray-800 text-sm font-medium mb-1' name="name" label="名称" rules={[{ required: true, message: '请填写名称' }]}>
+                  <Form.Item className='block text-gray-800 text-sm font-medium mb-1' name="email" label="邮箱" rules={[{ required: true, message: '请填写邮箱' }]}>
                     <Input
-                      id="name"
-                      type="text"
+                      id="email"
+                      type="email"
                       className="form-input w-full text-gray-800"
-                      placeholder="请填写个人名称"
+                      placeholder="请填写邮箱/手机号"
                       required />
                   </Form.Item>
                 </div>
               </div>
               <div className="flex flex-wrap -mx-3 mb-4">
                 <div className="w-full px-3">
-                  <Form.Item className='block text-gray-800 text-sm font-medium mb-1' name="email" label="邮箱" rules={[{ required: true, message: '请填写邮箱' }]}>
-                    <Input
-                      id="email"
-                      type="email"
-                      className="form-input w-full text-gray-800"
-                      placeholder="请填写邮箱地址"
-                      required />
-                  </Form.Item>
-                </div>
-              </div>
-              <div className="flex flex-wrap -mx-3 mb-4">
-                <div className="w-2/3 px-3">
                   <Form.Item
                     className='block text-gray-800 text-sm font-medium mb-1'
-                    name="code"
-                    label="邮箱验证码"
-                    rules={[{ required: true, message: '请填写邮箱验证码' }]}
+                    name="oldpassword"
+                    label="旧密码"
+                    rules={[
+                      { required: true, message: '请填写旧密码' },
+                      { validator: passwordValidator }
+                    ]}
                   >
-                    <Input
-                      id="code"
-                      type="text"
+                    <Input.Password
+                      id="oldpassword"
+                      type="password"
                       className="form-input w-full text-gray-800"
-                      placeholder="请填写邮箱验证码"
+                      placeholder="请填写旧密码"
                       required />
                   </Form.Item>
-                </div>
-                <div className="w-1/3 px-3 flex items-end pb-3">
-                  <Button
-                    onClick={sendEmailVerificationCode}
-                    className={`btn text-white bg-blue-500 ${sendVerificationDisabled ? '' : 'hover:bg-blue-600'} w-full`}
-                    disabled={sendVerificationDisabled}
-                  >
-                    {countdown > 0 ? `${countdown}s后重发` : '发送验证码'}
-                  </Button>
                 </div>
               </div>
               <div className="flex flex-wrap -mx-3 mb-4">
@@ -181,9 +126,9 @@ export default function SignUp() {
                   <Form.Item
                     className='block text-gray-800 text-sm font-medium mb-1'
                     name="password"
-                    label="密码"
+                    label="新密码"
                     rules={[
-                      { required: true, message: '请填写密码' },
+                      { required: true, message: '请填写新密码' },
                       { validator: passwordValidator }
                     ]}
                   >
@@ -191,7 +136,7 @@ export default function SignUp() {
                       id="password"
                       type="password"
                       className="form-input w-full text-gray-800"
-                      placeholder="请填写密码"
+                      placeholder="请填写新密码"
                       required />
                   </Form.Item>
                 </div>
@@ -218,7 +163,7 @@ export default function SignUp() {
               </div>
               <div className="flex flex-wrap -mx-3 mt-6">
                 <div className="w-full px-3">
-                  <button key="submit" className="btn text-white bg-blue-600 hover:bg-blue-700 w-full">注册</button>
+                  <button key="submit" className="btn text-white bg-blue-600 hover:bg-blue-700 w-full">提交</button>
                 </div>
               </div>
               <div className="text-sm text-gray-500 text-center mt-3">

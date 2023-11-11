@@ -9,17 +9,19 @@ interface RequestBody {
   name: string;
   email: string;
   password: string;
-  code: string;
+  code?: string;
   productLine: any;
+  verify: boolean;
 }
 
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   const body = req.body as RequestBody;
-
-  const isValid = await redisClient.valid(body.email, body.code);
-  if (!isValid) {
-    res.status(500).end({ error: 'Invalid code' });
+  if (body.verify) {
+    const isValid = await redisClient.valid(body.email, body?.code || '');
+    if (!isValid) {
+      res.status(500).end({ error: 'Invalid code' });
+    }
   }
 
   const existUser = await prisma.user.findMany({

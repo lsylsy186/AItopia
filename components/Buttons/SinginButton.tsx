@@ -1,4 +1,5 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import { getMeta } from '@/constants';
 import React, { useCallback, useEffect } from 'react';
 import message from 'antd/lib/message';
@@ -12,6 +13,8 @@ const SigninButton = () => {
   }
   const { env } = meta;
 
+  const router = useRouter();
+
   useEffect(() => {
     if (!!session?.user) {
       const user = session.user as any;
@@ -23,6 +26,10 @@ const SigninButton = () => {
     }
   }, [session?.user]);
 
+  const goResetPwd = () => {
+    router.push('/auth/resetPwd');
+  }
+
   const onSignInBtnClick = useCallback(() => {
     if (signedIn) signOut();
     else signIn();
@@ -30,7 +37,7 @@ const SigninButton = () => {
   return (
     <div className='flex ml-2'>
       {signedIn ? <>
-        <p className='text-sky-600'>{session?.user?.name}</p>
+        <p className='text-sky-600 cursor-pointer' onClick={goResetPwd}>{session?.user?.name}</p>
       </> : <></>}
       <button onClick={() => onSignInBtnClick()} className="ml-2 cursor-pointer hover:opacity-50">
         {signedIn ? '退出登录' : '登陆'}

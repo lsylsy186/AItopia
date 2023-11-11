@@ -322,7 +322,7 @@ export const Accounts = () => {
       setIsLoading(false);
       message.success(res.message);
       await callAddOperation({
-        opType: OperationType.delete,
+        opType: OperationType.add,
         op: `创建用户：「${values.name}」`,
         user: signedIn.name
       });

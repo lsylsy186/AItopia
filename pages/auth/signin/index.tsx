@@ -78,14 +78,13 @@ export default function SignIn() {
                   <Form.Item
                     className="block text-gray-800 text-sm font-medium mb-1"
                     name="email"
-                    label="邮箱"
-                    rules={[{ required: true, message: '请填写邮箱' }]}
+                    label="账号"
+                    rules={[{ required: true, message: '请填写账号' }]}
                   >
                     <Input
                       id="email"
-                      type="email"
                       className="form-input w-full text-gray-800"
-                      placeholder="输入您的邮箱"
+                      placeholder="输入您的账号"
                       required
                     />
                   </Form.Item>

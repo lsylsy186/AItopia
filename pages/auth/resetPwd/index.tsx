@@ -91,10 +91,9 @@ export default function ChangePwd() {
             <Form form={form} onFinish={onFinish} onValuesChange={onChange} layout="vertical">
               <div className="flex flex-wrap -mx-3 mb-4">
                 <div className="w-full px-3">
-                  <Form.Item className='block text-gray-800 text-sm font-medium mb-1' name="email" label="邮箱" rules={[{ required: true, message: '请填写邮箱' }]}>
+                  <Form.Item className='block text-gray-800 text-sm font-medium mb-1' name="email" label="账号" rules={[{ required: true, message: '请填写账号' }]}>
                     <Input
                       id="email"
-                      type="email"
                       className="form-input w-full text-gray-800"
                       placeholder="请填写邮箱/手机号"
                       required />

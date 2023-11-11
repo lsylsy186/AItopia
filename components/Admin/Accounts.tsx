@@ -7,11 +7,13 @@ import Input from 'antd/lib/input';
 import Typography from 'antd/lib/typography';
 import Modal from 'antd/lib/modal';
 import Button from 'antd/lib/button';
+import Spin from 'antd/lib/spin';
 import { useModel } from '@/hooks';
 import { useSession } from "next-auth/react";
 import { accessToken } from '@/constants';
 import { useRouter } from 'next/router';
 import { OperationType, UserRoleType, userRoleList } from './config';
+import useAuthService, { ISignUpRequestProps } from '@/services/useAuthService';
 
 interface DataType {
   key: number;
@@ -68,10 +70,16 @@ const EditableCell: React.FC<EditableCellProps> = ({
 export const Accounts = () => {
   const { users, callFetchUsers, callAddOperation, callRemoveAccount, callModUser } = useModel('admin');
   const [form] = Form.useForm();
+  const [accountForm] = Form.useForm();
   const [editingKey, setEditingKey] = useState(-1);
   const [showDeleteRoleModal, setShowDeleteRoleModal] = useState(false);
+  const [showNewAccountModal, setShowNewAccountModal] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
   const [deleteId, setDeleteId] = useState<string>('');
-  const { requestUpdateUserAccount } = useModel('global');
+  const { requestUpdateUserAccount, setIsLoading, isLoading } = useModel('global');
+  const { signUpWithoutVerify } = useAuthService();
+
+  console.log('users', users);
 
   const { data: session } = useSession();
   const signedIn: any = session && session.user;
@@ -280,8 +288,59 @@ export const Accounts = () => {
     }
   }
 
+  const onNewAccountClick = () => {
+    setShowNewAccountModal(true);
+  }
+  const onCancelNewAccountModal = () => {
+    setShowNewAccountModal(false);
+  }
+
+  const compareToFirstPassword = (_: any, value: any) => {
+    if (value && value !== accountForm.getFieldValue('password')) {
+      setPasswordError(true);
+    } else {
+      setPasswordError(false);
+    }
+    return Promise.resolve();
+  };
+
+  const passwordValidator = (_: any, value: any) => {
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(value)) {
+      return Promise.reject('密码至少包含8个字符，且包含字母和数字');
+    }
+    return Promise.resolve();
+  };
+
+  const onFinish = async (values: ISignUpRequestProps) => {
+    console.log('values', values);
+    if (!values) return;
+    setIsLoading(true);
+
+    const res = await signUpWithoutVerify({ ...values, productLine: 'Hebao' });
+    if (res.success) {
+      setIsLoading(false);
+      message.success(res.message);
+      await callAddOperation({
+        opType: OperationType.delete,
+        op: `创建用户：「${values.name}」`,
+        user: signedIn.name
+      });
+    } else {
+      setIsLoading(false);
+      message.error(res.message);
+    }
+    callFetchUsers(signedIn.productLine || 'Normal');
+    setShowNewAccountModal(false);
+  };
+  const onChange = () => { };
+
+  const onNewSubmit = () => {
+    accountForm.submit();
+  }
+
   return (
-    <>
+    <div className='flex justify-center flex-col items-end'>
       <Modal
         title="删除账户"
         centered
@@ -299,8 +358,99 @@ export const Accounts = () => {
       >
         <p>点击提交按钮删除</p>
       </Modal>
+      <Modal
+        title="新增账户"
+        centered
+        width={500}
+        open={showNewAccountModal}
+        onCancel={onCancelNewAccountModal}
+        footer={[
+          <Button key="cancel" onClick={onCancelNewAccountModal}>
+            取消
+          </Button>,
+          <Button key="submit" className="bg-[#202123] select-none items-center rounded-md border border-white/20 text-white transition-colors duration-200 hover:bg-gray-500/10" type="primary" onClick={onNewSubmit}>
+            提交
+          </Button>,
+        ]}
+      >
+        <Form form={accountForm} onFinish={onFinish} onValuesChange={onChange} layout="vertical">
+          {
+            isLoading && <div className="fixed w-[2px] -translate-x-1/2 top-1/2 left-1/2 z-50">
+              <Spin />
+            </div>
+          }
+          <div className="flex flex-wrap -mx-3 mb-4">
+            <div className="w-full px-3">
+              <Form.Item className='block text-gray-800 text-sm font-medium mb-1' name="name" label="名称" rules={[{ required: true, message: '请填写名称' }]}>
+                <Input
+                  id="name"
+                  type="text"
+                  className="form-input w-full text-gray-800"
+                  placeholder="请填写个人名称"
+                  required />
+              </Form.Item>
+            </div>
+          </div>
+          <div className="flex flex-wrap -mx-3 mb-4">
+            <div className="w-full px-3">
+              <Form.Item className='block text-gray-800 text-sm font-medium mb-1' name="email" label="邮箱" rules={[{ required: true, message: '请填写邮箱' }]}>
+                <Input
+                  id="email"
+                  type="email"
+                  className="form-input w-full text-gray-800"
+                  placeholder="请填写邮箱或手机号"
+                  required />
+              </Form.Item>
+            </div>
+          </div>
+          <div className="flex flex-wrap -mx-3 mb-4">
+            <div className="w-full px-3">
+              <Form.Item
+                className='block text-gray-800 text-sm font-medium mb-1'
+                name="password"
+                label="密码"
+                rules={[
+                  { required: true, message: '请填写密码' },
+                  { validator: passwordValidator }
+                ]}
+              >
+                <Input.Password
+                  id="password"
+                  type="password"
+                  className="form-input w-full text-gray-800"
+                  placeholder="请填写密码"
+                  required />
+              </Form.Item>
+            </div>
+          </div>
+          <div className="flex flex-wrap -mx-3 mb-4">
+            <div className="w-full px-3">
+              <Form.Item
+                className='block text-gray-800 text-sm font-medium mb-1'
+                name="confirmPassword"
+                label="确认密码"
+                rules={[{ required: true, message: '请填写确认密码' }, { validator: compareToFirstPassword }]}
+                validateStatus={passwordError ? 'error' : ''}
+                help={passwordError && '两次填写不一致'}
+              >
+                <Input.Password
+                  id="confirmPassword"
+                  type="password"
+                  className="form-input w-full text-gray-800"
+                  placeholder="请再次填写密码"
+                  required
+                />
+              </Form.Item>
+            </div>
+          </div>
+        </Form>
+      </Modal>
+      <div className='flex mb-2'>
+        <Button onClick={onNewAccountClick}>新增账户</Button>
+      </div>
       <Form form={form} component={false}>
         <Table
+          className='w-full'
           dataSource={users}
           columns={mergedColumns}
           components={{
@@ -315,6 +465,6 @@ export const Accounts = () => {
           }}
         />
       </Form>
-    </>
+    </div>
   )
 }

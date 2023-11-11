@@ -7,7 +7,7 @@ export interface ISignUpRequestProps {
   email: string;
   name: string;
   password: string;
-  code: string;
+  code?: string;
   productLine: any;
 }
 
@@ -17,7 +17,21 @@ const useAuthService = () => {
     (params: ISignUpRequestProps, signal?: AbortSignal) => {
       const { email, name, password, code, productLine } = params;
       return fetchService.post<IResponse>(`/api/user`, {
-        body: { email, name, password, code, productLine },
+        body: { email, name, password, code, productLine, verify: true },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal,
+      });
+    },
+    [fetchService],
+  );
+
+  const signUpWithoutVerify = useCallback(
+    (params: ISignUpRequestProps, signal?: AbortSignal) => {
+      const { email, name, password, productLine } = params;
+      return fetchService.post<IResponse>(`/api/user`, {
+        body: { email, name, password, productLine, verify: false },
         headers: {
           'Content-Type': 'application/json',
         },
@@ -136,6 +150,16 @@ const useAuthService = () => {
   },
     [fetchService],
   );
+  const modPwd = useCallback((params: any, signal?: AbortSignal) => {
+    return fetchService.post<IResponse>(`/api/auth/updatePwd`, {
+      body: params,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
+    [fetchService],
+  );
 
   return {
     signUp,
@@ -146,7 +170,9 @@ const useAuthService = () => {
     fetchOperations,
     addOperation,
     removeAccount,
-    modUser
+    modUser,
+    modPwd,
+    signUpWithoutVerify,
   };
 };
 

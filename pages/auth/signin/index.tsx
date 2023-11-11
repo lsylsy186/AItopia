@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 
 import { Status } from '@/components/Chat/Status';
 
-import { getMeta } from '@/constants';
+import { ENVS, getMeta } from '@/constants';
 import { useModel } from '@/hooks';
 import { message } from 'antd';
 import Form from 'antd/lib/form';
@@ -21,23 +21,23 @@ export default function SignIn() {
   const [form] = Form.useForm();
   const router = useRouter();
   const { setIsLoading, isLoading } = useModel('global');
-  let meta = {};
+  let meta: any = {};
   if (typeof window !== 'undefined') {
     meta = getMeta(window.location.href || '');
   }
   const { env } = meta;
-  console.log('env', env);
+
   const onFinish = useCallback(
-    async (values) => {
+    async (values: any) => {
       if (!values) return;
       const { email, password } = values;
       setIsLoading(true);
-      const result = await signIn('credentials', {
+      const result: any = await signIn('credentials', {
         username: email,
         password,
         productLine: env,
         redirect: false,
-      });
+      }) || {};
       if (!result.ok) {
         message.error('无访问权限，请检查邮箱或密码是否填写正确');
         setIsLoading(false);
@@ -49,7 +49,9 @@ export default function SignIn() {
     },
     [router],
   );
-  const onChange = useCallback(() => {}, []);
+  const onChange = useCallback(() => { }, []);
+
+  const hideSignup = env === ENVS.hebao;
 
   return (
     <section className="h-screen bg-gradient-to-b from-gray-100 to-white">
@@ -113,16 +115,6 @@ export default function SignIn() {
                   </Form.Item>
                 </div>
               </div>
-              {/* <div className="flex flex-wrap -mx-3 mb-4">
-                <div className="w-full px-3">
-                  <div className="flex justify-between">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="form-checkbox" />
-                      <span className="text-gray-600 ml-2">保持登陆</span>
-                    </label>
-                  </div>
-                </div>
-              </div> */}
               <div className="flex flex-wrap -mx-3 mt-6">
                 <div className="w-full px-3">
                   <button className="btn text-white bg-blue-600 hover:bg-blue-700 w-full">
@@ -142,15 +134,17 @@ export default function SignIn() {
                 aria-hidden="true"
               ></div>
             </div> */}
-            <div className="text-gray-600 text-center mt-6">
-              你还没有一个账户?{' '}
-              <Link
-                href="/auth/signup"
-                className="text-blue-600 hover:underline transition duration-150 ease-in-out"
-              >
-                注册
-              </Link>
-            </div>
+            {!hideSignup && (
+              <div className="text-gray-600 text-center mt-6">
+                你还没有一个账户?{' '}
+                <Link
+                  href="/auth/signup"
+                  className="text-blue-600 hover:underline transition duration-150 ease-in-out"
+                >
+                  注册
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

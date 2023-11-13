@@ -594,7 +594,8 @@ export const Main = memo(({ stopConversationRef }: Props) => {
   return (
     <div className="flex flex-1 overflow-auto">
 
-      <CharacterAudioPlayer />
+      {/* 暂时下掉语音播放能力 */}
+      {/* <CharacterAudioPlayer /> */}
       <div className={`${showChatBotContainer ? styles.chatuiMobileContainer : ''} relative flex-1 overflow-hidden bg-white dark:bg-[#343541]`}>
         {showSettings && (
           <div className="flex flex-col space-y-10 md:mx-auto md:max-w-xl md:gap-6 md:py-3 md:pt-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
